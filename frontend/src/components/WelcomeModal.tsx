@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { BRAND_NAME } from "../config";
 
@@ -8,7 +8,7 @@ const HOW_TOS: { icon: string; text: string }[] = [
     icon: "📍",
     text: "Drag the pin to work and pick a commute — the bands show how far you can live.",
   },
-  { icon: "🖱️", text: "Click any area for prices, commute estimates, and local context." },
+  { icon: "👆", text: "Click or tap any area for prices, commute estimates, and local context." },
 ];
 
 interface Props {
@@ -19,6 +19,10 @@ interface Props {
  * that matter. App owns visibility + the localStorage dismissal flag; the
  * About panel's "How it works" link reopens it. */
 export default function WelcomeModal({ onClose }: Props) {
+  // Keyboard users land inside the dialog instead of on the map behind it.
+  const ctaRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => ctaRef.current?.focus(), []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -26,7 +30,13 @@ export default function WelcomeModal({ onClose }: Props) {
   }, [onClose]);
 
   return (
-    <div className="about welcome" role="dialog" aria-label={`Welcome to ${BRAND_NAME}`}>
+    <div
+      className="about welcome"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Welcome to ${BRAND_NAME}`}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="about__card welcome__card">
         <header className="about__head">
           {/* The slogan banner, not the plain wordmark — this is the one
@@ -51,7 +61,7 @@ export default function WelcomeModal({ onClose }: Props) {
             </li>
           ))}
         </ul>
-        <button type="button" className="welcome__cta" onClick={onClose}>
+        <button type="button" ref={ctaRef} className="welcome__cta" onClick={onClose}>
           Explore the map
         </button>
       </div>

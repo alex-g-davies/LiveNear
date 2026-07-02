@@ -12,7 +12,7 @@ const regions: RegionInfo[] = [
 describe("RegionPicker (national)", () => {
   it("lists regions with counts and reflects the active state", () => {
     render(<RegionPicker regions={regions} state="WA" onStateChange={() => {}} />);
-    expect(screen.getByRole("option", { name: "Washington (484)" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Washington · 484 ZIPs" })).toBeInTheDocument();
     expect((screen.getByLabelText("State") as HTMLSelectElement).value).toBe("WA");
   });
 

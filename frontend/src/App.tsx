@@ -439,9 +439,13 @@ export default function App() {
       >
         ⌖
       </button>
-      {isoLoading && <div className="iso-chip">Updating reach…</div>}
+      {isoLoading && (
+        <div className="iso-chip" role="status">
+          Updating reach…
+        </div>
+      )}
       {dual && intersection?.empty && !isoLoading && (
-        <div className="status status--warn iso-empty">
+        <div className="status status--warn iso-empty" role="status">
           No area within both commutes — try a longer time or move a pin
         </div>
       )}
@@ -453,8 +457,16 @@ export default function App() {
           ...(regionsFailed ? [`Region list unavailable — showing ${stateCode} only`] : []),
         ]}
       />
-      {loading && <div className="status">Loading map…</div>}
-      {error && <div className="status status--error">Couldn’t load map data: {error}</div>}
+      {loading && (
+        <div className="status" role="status">
+          Loading map…
+        </div>
+      )}
+      {error && (
+        <div className="status status--error" role="alert">
+          Couldn’t load map data: {error}
+        </div>
+      )}
     </div>
   );
 }

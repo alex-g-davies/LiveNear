@@ -10,15 +10,23 @@ describe("WelcomeModal (017 R1)", () => {
     expect(dialog).toHaveTextContent(/see where you could live/i);
     expect(dialog).toHaveTextContent(/budget/i);
     expect(dialog).toHaveTextContent(/pin/i);
-    expect(dialog).toHaveTextContent(/click any area/i);
+    expect(dialog).toHaveTextContent(/click or tap any area/i);
   });
 
-  it("closes via the CTA, the close button, and Esc", () => {
+  it("closes via the CTA, the close button, Esc, and the backdrop", () => {
     const onClose = vi.fn();
     render(<WelcomeModal onClose={onClose} />);
     fireEvent.click(screen.getByRole("button", { name: "Explore the map" }));
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(onClose).toHaveBeenCalledTimes(3);
+    fireEvent.click(screen.getByRole("dialog")); // backdrop, not the card
+    expect(onClose).toHaveBeenCalledTimes(4);
+  });
+
+  it("does not close when the card itself is clicked", () => {
+    const onClose = vi.fn();
+    render(<WelcomeModal onClose={onClose} />);
+    fireEvent.click(screen.getByText(/see where you could live/i));
+    expect(onClose).not.toHaveBeenCalled();
   });
 });

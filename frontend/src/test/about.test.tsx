@@ -23,7 +23,7 @@ describe("AboutPanel (012 R5)", () => {
     expect(dialog).toHaveTextContent(/not financial or real-estate advice/);
   });
 
-  it("closes via the close button and Esc", () => {
+  it("closes via the close button, Esc, and the backdrop", () => {
     render(<AboutPanel />);
     fireEvent.click(screen.getByRole("button", { name: /About & data/ }));
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
@@ -31,6 +31,10 @@ describe("AboutPanel (012 R5)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /About & data/ }));
     fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /About & data/ }));
+    fireEvent.click(screen.getByRole("dialog")); // backdrop, not the card
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 

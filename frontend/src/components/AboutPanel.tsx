@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { BRAND_NAME } from "../config";
 
@@ -21,6 +21,11 @@ interface Props {
  * the estimates-not-advice disclaimer. */
 export default function AboutPanel({ onShowIntro }: Props) {
   const [open, setOpen] = useState(false);
+  // Keyboard users land inside the dialog instead of on the panel behind it.
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (open) closeRef.current?.focus();
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -38,13 +43,16 @@ export default function AboutPanel({ onShowIntro }: Props) {
         <div
           className="about"
           role="dialog"
+          aria-modal="true"
           aria-label={`About ${BRAND_NAME} and its data sources`}
+          onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
           <div className="about__card">
             <header className="about__head">
               <h2 className="about__title">About {BRAND_NAME}</h2>
               <button
                 type="button"
+                ref={closeRef}
                 className="about__close"
                 aria-label="Close"
                 onClick={() => setOpen(false)}

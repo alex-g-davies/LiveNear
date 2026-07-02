@@ -157,7 +157,7 @@ export default function ControlsPanel({
       </div>
 
       <p className="panel-foot">
-        Hover a ZIP for quick stats, click for details · {minutes}-min drive-time overlay
+        Hover a ZIP for quick stats, click or tap for details · {minutes}-min drive-time overlay
       </p>
       <AboutPanel onShowIntro={onShowIntro} />
     </div>
