@@ -142,7 +142,14 @@ body,
   cursor: pointer;
 }
 
+.work__add:hover {
+  background: #f1f6fb;
+}
+
 .work__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-left: 6px;
   border: none;
   background: transparent;
@@ -152,13 +159,13 @@ body,
   padding: 0 4px;
 }
 
+.work__remove:hover {
+  color: var(--ink);
+}
+
 .address__target {
   flex: none;
   margin: 0;
-}
-
-.iso-empty {
-  bottom: 56px;
 }
 
 /* Visual grouping (010 R4): sections separated by hairlines. */
@@ -298,6 +305,10 @@ body,
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.address__btn:hover:not(:disabled) {
+  background: #2b6fa8;
 }
 
 .address__btn:disabled {
@@ -482,6 +493,10 @@ body,
   text-overflow: ellipsis;
 }
 
+.switcher__btn:hover:not(.switcher__btn--active) {
+  color: var(--ink);
+}
+
 .switcher__btn--active {
   color: var(--ink);
   background: #fff;
@@ -609,6 +624,10 @@ body,
   cursor: pointer;
 }
 
+.movers__tab:hover:not(.movers__tab--active) {
+  color: var(--ink);
+}
+
 .movers__tab--active {
   color: var(--ink);
   background: #fff;
@@ -676,6 +695,12 @@ body,
 .status--error {
   border-color: #f3b4b4;
   color: #a12626;
+}
+
+/* Sits above the bottom status bar. Extra class in the selector so this wins
+   the cascade over the later `.status { bottom: 16px }` rule. */
+.status.iso-empty {
+  bottom: 56px;
 }
 
 /* Stacked degradation notices (005 R2). Inside .toasts the toasts flow in a
@@ -1030,9 +1055,12 @@ body,
   font-weight: 600;
 }
 
-/* Price chart (009 R4) */
+/* Price chart (009 R4) — viewBox scaling lets it fill the panel (and the
+   full-width mobile sheet) instead of sitting at a fixed 280px. */
 .chart {
   display: block;
+  width: 100%;
+  height: auto;
   margin: 6px 0 0;
 }
 
@@ -1201,8 +1229,30 @@ body,
   .status__dismiss,
   .zip-detail__close,
   .zip-detail__pin,
+  .about__close,
+  .about-trigger,
+  .work__add,
+  .work__remove,
+  .zip-wiki__more,
   .panel-fold > summary {
     min-height: 44px;
+  }
+
+  .work__remove,
+  .status__dismiss {
+    min-width: 44px;
+  }
+}
+
+/* Vestibular-safety (WCAG 2.3.3): drop slide/scale animations and
+   transitions for users who ask the OS for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -1229,6 +1279,13 @@ body,
   .status {
     bottom: auto;
     top: 12px;
+  }
+
+  /* Below the toasts' slot; the bottom sheets would cover a bottom-anchored
+     warning. */
+  .status.iso-empty {
+    bottom: auto;
+    top: 56px;
   }
 
   /* Sheet collapse (015 R5): either sheet shrinks to a slim handle so the

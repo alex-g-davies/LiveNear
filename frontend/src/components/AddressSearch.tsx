@@ -12,10 +12,12 @@ interface Props {
   onTargetChange?: (target: "A" | "B") => void;
 }
 
-type Status = "idle" | "loading" | "error" | "ok";
+type Status = "idle" | "loading" | "error";
 
 /** Free-text address search that geocodes via the backend and moves the work
- * location to the result. */
+ * location to the result. Success shows no message of its own — the located
+ * address appears on the pin's address row right below, so echoing it here
+ * would print the same text twice. */
 export default function AddressSearch({ onLocated, proximity, target, onTargetChange }: Props) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -30,8 +32,7 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
     try {
       const r = await getGeocode(query, proximity ?? undefined);
       onLocated(r.lat, r.lon, r.place_name);
-      setStatus("ok");
-      setMsg(r.place_name);
+      setStatus("idle");
     } catch (err) {
       setStatus("error");
       setMsg(
@@ -69,16 +70,27 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
           id="address-input"
           className="address__input"
           type="text"
+          enterKeyHint="search"
           placeholder="Search an address or landmark"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value);
+            // A stale "no match" under a corrected query reads as a failure.
+            if (status === "error") {
+              setStatus("idle");
+              setMsg("");
+            }
+          }}
         />
         <button className="address__btn" type="submit" disabled={status === "loading"}>
           {status === "loading" ? "…" : "Go"}
         </button>
       </div>
       {msg && (
-        <span className={status === "error" ? "address__msg address__msg--error" : "address__msg"}>
+        <span
+          role={status === "error" ? "alert" : undefined}
+          className={status === "error" ? "address__msg address__msg--error" : "address__msg"}
+        >
           {msg}
         </span>
       )}

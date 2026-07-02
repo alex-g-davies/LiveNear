@@ -19,7 +19,8 @@ export default function RegionPicker({ regions, state, onStateChange }: Props) {
       >
         {regions.map((r) => (
           <option key={r.code} value={r.code}>
-            {r.name} ({r.zip_count})
+            {/* Say what the number is — a bare "(484)" reads as noise. */}
+            {r.name} · {r.zip_count} ZIPs
           </option>
         ))}
       </select>
