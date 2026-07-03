@@ -3,11 +3,13 @@ import { useState } from "react";
 import type { CommuteVariation, RegionInfo, ZipValue } from "../api/client";
 import { BRAND_NAME } from "../config";
 import type { ColorStop, MetricDef, MetricKey, TravelMode } from "../config";
+import type { MatchResult } from "../lib/matches";
 import AboutPanel from "./AboutPanel";
 import AddressSearch from "./AddressSearch";
 import BudgetInput from "./BudgetInput";
 import CommuteControl from "./CommuteControl";
 import Legend from "./Legend";
+import MatchesPanel from "./MatchesPanel";
 import MetricSwitcher from "./MetricSwitcher";
 import RegionPicker from "./RegionPicker";
 import TopMovers from "./TopMovers";
@@ -40,6 +42,8 @@ interface Props {
   onSearchTargetChange: (target: "A" | "B") => void;
   /** Bias point for address search — the selected region's center. */
   searchProximity: { lat: number; lon: number } | null;
+  /** Affordable-AND-commutable shortlist (019); null hides the fold. */
+  matches: MatchResult | null;
   records: Map<string, ZipValue>;
   onZipChosen: (zip: string) => void;
   /** Reopens the welcome modal from the About panel (017 R1). */
@@ -72,6 +76,7 @@ export default function ControlsPanel({
   searchTarget,
   onSearchTargetChange,
   searchProximity,
+  matches,
   records,
   onZipChosen,
   onShowIntro,
@@ -148,6 +153,12 @@ export default function ControlsPanel({
           onModeChange={onModeChange}
         />
       </div>
+
+      {matches && (
+        <div className="panel__section">
+          <MatchesPanel result={matches} budget={budget} onZipChosen={onZipChosen} />
+        </div>
+      )}
 
       <div className="panel__section">
         <span className="section-label">Shade map by</span>

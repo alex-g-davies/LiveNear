@@ -27,6 +27,7 @@ import { metricValuesFromFeatures, resolveStops } from "./lib/colorScale";
 import { departLabel, rangeLabel } from "./lib/format";
 import { centroidsByZip, scenariosContaining } from "./lib/geo";
 import { intersectIsochrones } from "./lib/intersect";
+import { computeMatches } from "./lib/matches";
 import { regionForPoint } from "./lib/locateRegion";
 import { parseAppUrl, serializeAppUrl } from "./lib/urlState";
 import { deltaPct, percentileRank, stateMedian } from "./lib/zipStats";
@@ -148,6 +149,13 @@ export default function App() {
 
   // One centroid per ZIP (009): commute-reach check now, fly-to targets later.
   const centroids = useMemo(() => centroidsByZip(geojson), [geojson]);
+
+  // Affordable-AND-commutable shortlist (019 R1): null until a reach overlay
+  // exists so the fold only appears once there is something to match against.
+  const matches = useMemo(
+    () => (isochrone ? computeMatches(records, centroids, isochrone, budget) : null),
+    [records, centroids, isochrone, budget],
+  );
 
   // Routed commute estimates for the selected ZIP (013; per-pin in 016).
   const selectedCentroid = selectedZip ? (centroids.get(selectedZip) ?? null) : null;
@@ -426,6 +434,7 @@ export default function App() {
         searchTarget={searchTarget}
         onSearchTargetChange={setSearchTarget}
         searchProximity={region?.center ? { lat: region.center[1], lon: region.center[0] } : null}
+        matches={matches}
         records={records}
         onZipChosen={selectZipAndFly}
         onShowIntro={() => setShowWelcome(true)}
