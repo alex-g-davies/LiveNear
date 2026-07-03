@@ -6,13 +6,17 @@ Render subdomains are fixed at service creation)*
 
 Decide where you could live by overlaying **housing cost** and **commute
 time**, nationwide. The map shades every ZIP in a selected state by median
-home value (or YoY change, or $/sqft), de-emphasizes ZIPs over your budget,
-and overlays live traffic-aware drive-time contours from a work pin you can
-drag or set by address search. Clicking a ZIP opens a detail panel with a
-price-history chart, Census population/income and a price-to-income
-affordability multiple, state percentile context, and commute reach — pin one
-ZIP to compare it against another, jump around via the top YoY movers list,
-and share any view as a URL. First-time visitors are geolocated to their own
+home value (or YoY change, $/sqft, or a price-to-income affordability
+multiple), hatches ZIPs over your budget, and overlays live traffic-aware
+commute contours — driving, cycling, or walking — around a work pin you can
+drag or set by address search; add a **second workplace** and the map shows
+only where *both* can commute. A **"Your matches"** panel ranks the ZIPs
+that are simultaneously within budget and within reach. Clicking a ZIP opens
+a detail panel with a price-history chart, Census population/income and
+affordability multiple, state percentile context, routed rush-hour commute
+ranges (e.g. "55–73 min"), and a Wikipedia area summary — pin one ZIP to
+compare it against another, jump around via the top YoY movers list, and
+share any view as a URL. First-time visitors are geolocated to their own
 state (with a clean fallback).
 
 Built spec-by-spec (see [`specs/`](specs/)): Seattle MVP
@@ -24,7 +28,16 @@ Built spec-by-spec (see [`specs/`](specs/)): Seattle MVP
 ([`007`](specs/007-national-coverage)) → Census ACS enrichment
 ([`008`](specs/008-acs-enrichment)) → ZIP explorer
 ([`009`](specs/009-zip-explorer)) → national UX + branding
-([`010`](specs/010-ui-refresh-branding)).
+([`010`](specs/010-ui-refresh-branding)) → commute accuracy
+([`011`](specs/011-commute-accuracy)) → area context
+([`012`](specs/012-area-context)) → travel modes + routed ranges
+([`013`](specs/013-commute-modes-and-ranges)) → affordability metric
+([`014`](specs/014-affordability-metric)) → pin address + panel polish
+([`015`](specs/015-pin-address-and-panel-polish)) → dual workplaces
+([`016`](specs/016-dual-workplaces)) → orientation & clarity
+([`017`](specs/017-orientation-and-clarity)) → LiveNear rebrand
+([`018`](specs/018-livenear-rebrand)) → matches shortlist
+([`019`](specs/019-matches-shortlist)).
 
 The map is the product: a FastAPI backend serves preprocessed aggregate data
 and proxies the (token-bearing) Mapbox calls; a React + MapLibre frontend
@@ -68,6 +81,8 @@ Endpoints (rate-limited per IP; data responses carry strong ETags + gzip):
 | `GET /api/zips.geojson` | ZIP polygons with scalar metrics merged in.                   |
 | `GET /api/isochrone`    | 15/30/45/60-min traffic-aware bands — fixture or live Mapbox. |
 | `GET /api/geocode`      | Address search, biased to the selected region's center.       |
+| `GET /api/geocode/reverse` | Nearest address for a dropped work pin.                    |
+| `GET /api/commute`      | Routed rush-window commute ranges for a (home, work) pair.    |
 
 ### Configuration
 
@@ -188,7 +203,9 @@ self-certify done. Quick smoke for any deploy:
 1. The choropleth + legend render for a distant state (try HI or AK); the
    legend's five colors each cover ≈20% of the state's ZIPs.
 2. A budget de-emphasizes over-budget ZIPs; the drive-time bands redraw for
-   15/30/45/60 min and are road-bounded (not circles) with a live token.
+   15/30/45/60 min and are road-bounded (not circles) with a live token; the
+   "Your matches" fold lists only in-budget, in-reach ZIPs and updates as
+   either constraint changes.
 3. Clicking a ZIP opens the detail panel (chart, ACS fields, percentile,
    commute reach); pin + click another ZIP compares them.
 4. A copied URL (`?state=…&zip=…&budget=…`) reproduces the view in a fresh
