@@ -18,6 +18,7 @@ import httpx
 from shapely.geometry import mapping, shape
 
 from . import tzlookup, usage
+from .bounded_cache import BoundedCache
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,12 @@ MODE_PROFILES = {"drive": "driving-traffic", "walk": "walking", "cycle": "cyclin
 MODE_LABELS = {"walk": "Walking", "cycle": "Cycling"}
 
 # In-process TTL cache: (lon, lat, minutes, mode) -> (expires_at, payload).
-_CACHE: dict[tuple[float, float, int, str], tuple[float, dict[str, Any]]] = {}
+# Bounded LRU (004 follow-up): payloads run tens of KB, so 512 entries keeps
+# the worst case in the tens of MB while comfortably covering a day of
+# distinct (origin, minutes, mode) combinations within the daily call budget.
+_CACHE: BoundedCache[tuple[float, float, int, str], tuple[float, dict[str, Any]]] = BoundedCache(
+    512
+)
 CACHE_TTL_SECONDS = 24 * 60 * 60
 
 # Origins are snapped to this grid (~500 m) before the cache key and any Mapbox
@@ -168,7 +174,11 @@ def enforce_nesting(ordered: list[tuple[str, Any]]) -> list[tuple[str, Any]]:
             geom = geom.buffer(0)  # repair self-intersections
         clipped = geom if acc is None else geom.intersection(acc)
         if clipped.is_empty or clipped.geom_type not in ("Polygon", "MultiPolygon"):
-            clipped = geom  # degenerate intersection -> keep this band unclipped
+            # Degenerate intersection -> keep this band unclipped. The strict
+            # peak ⊆ typical ⊆ off-peak guarantee is violated for this
+            # response; surface it in logs instead of failing silently.
+            logger.warning("Isochrone nesting fallback: %s band kept unclipped", scenario)
+            clipped = geom
         out.append((scenario, clipped))
         acc = clipped
     return out
