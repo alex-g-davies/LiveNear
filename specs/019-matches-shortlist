@@ -1,0 +1,80 @@
+# Spec 019 — Matches Shortlist
+
+Status: Draft
+Owner: <you>
+Related: 001 R4 (budget de-emphasis), 009 R3/R6 (commute-reach check +
+top movers — the list-that-flies pattern this reuses), 014 (price-to-income
+metric — the ranking signal), 016 (dual workplaces — matches respect the
+intersection). First thin slice of the long-deferred "optimization" roadmap
+item (CLAUDE.md).
+
+## Overview
+
+The map overlays affordability and commute but never states the answer: a
+user must visually hunt for ZIPs that are simultaneously un-hatched and
+inside the drive-time bands. This spec adds a ranked, clickable "Your
+matches" list — the ZIPs that are both within budget and within commute
+reach — computed entirely client-side from data the app has already
+loaded. No new endpoints, no additional Mapbox spend.
+
+## Requirements
+
+- **R1 — Match computation.** A pure function derives the shortlist from
+  the loaded records, ZIP centroids, the active isochrone collection, and
+  the budget. A ZIP matches when its centroid lies inside the "typical"
+  (midday) reach band — the app's established honest default; if the
+  collection carries no typical band (an upstream scenario was skipped),
+  containment in any band qualifies. With a budget set, `median_value`
+  must also be ≤ budget; with no budget, reach alone qualifies. In dual
+  mode the input collection is already the client-side intersection
+  (016), so matches are ZIPs both workplaces can reach — no extra logic.
+- **R2 — Ranked panel.** A "Your matches" fold in the controls panel
+  (above Top movers) lists the top 8 matches with place name, median
+  value, and the price-to-income multiple; the summary line shows the
+  total match count. Ranking: price-to-income ascending (the app's own
+  affordability signal), ZIPs without the ratio after those with it,
+  median value ascending as the tiebreak. Clicking a row selects and
+  flies to the ZIP (same behavior as Top movers).
+- **R3 — Empty and absent states.** No isochrone yet (still loading, or
+  fetch failed) → the panel does not render at all. Reach present but
+  zero matches → the fold renders a one-line nudge ("No ZIPs are within
+  both budget and reach — try raising either"). The list re-derives
+  live when budget, commute time, mode, pins, or state change.
+
+## Non-functional / Constraints
+
+- No new dependencies and no backend changes: reuses `centroidsByZip`,
+  `scenariosContaining`, and the records map already in memory.
+- The computation is memoized and O(ZIPs × bands); it must not
+  perceptibly lag pin drags in the largest states (TX ≈ 2k ZIPs).
+- Panel follows the existing fold pattern (`details.panel-fold`) and the
+  40/44 px touch-target rules (010 R5).
+
+## Acceptance Criteria
+
+- [ ] WA, budget $600k, 30-min drive from the default pin → the fold
+      lists ≤ 8 ZIPs, each inside the midday band and ≤ $600k; the
+      summary shows the true total; clicking a row opens that ZIP's
+      detail panel and flies to it.
+- [ ] Clearing the budget widens the list (reach-only); shortening the
+      commute to 15 min shrinks it; switching to walk mode re-derives it.
+- [ ] Add a second workplace far away → matches come only from the
+      intersection; an empty intersection yields the empty-state nudge.
+- [ ] Before the first isochrone resolves (and when it fails), no
+      matches fold is present.
+- [ ] `npm run test` green, including new unit tests for the match/rank
+      logic and component tests for the panel states.
+
+## Out of Scope (explicit)
+
+- Server-side or multi-metric scoring (blended cost surface remains a
+  future spec); user-tunable ranking weights.
+- Monthly-payment affordability math (candidate spec 020).
+- Persisting or sharing the shortlist beyond the existing URL state.
+
+## Verification notes
+
+R1 → matches unit tests (containment, budget edge, typical-band
+fallback, ranking, tiebreaks); R2/R3 → matchesPanel component tests +
+manual walk of the acceptance list against a running app. The human
+verifies; the implementing agent does not self-certify done.

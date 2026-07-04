@@ -14,6 +14,7 @@ from urllib.parse import quote
 import httpx
 
 from . import usage
+from .bounded_cache import BoundedCache
 from .isochrone import snap_origin
 
 logger = logging.getLogger(__name__)
@@ -21,8 +22,10 @@ logger = logging.getLogger(__name__)
 GEOCODE_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places/{query}.json"
 
 # Cache: normalized query (forward) or "rev|lon,lat" (reverse, snapped) ->
-# (expires_at, result-or-None). None caches a miss.
-_CACHE: dict[str, tuple[float, dict[str, Any] | None]] = {}
+# (expires_at, result-or-None). None caches a miss. Bounded LRU (004
+# follow-up): entries are tiny, but user-supplied queries make the key space
+# effectively unbounded without a cap.
+_CACHE: BoundedCache[str, tuple[float, dict[str, Any] | None]] = BoundedCache(4096)
 CACHE_TTL_SECONDS = 24 * 60 * 60
 
 

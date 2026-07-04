@@ -19,6 +19,7 @@ from typing import Any
 import httpx
 
 from . import tzlookup, usage
+from .bounded_cache import BoundedCache
 from .isochrone import next_departure, snap_origin
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,11 @@ AM_DEPARTURES = ((7, 15), (8, 0), (8, 45))  # home -> work
 PM_DEPARTURES = ((16, 30), (17, 15), (18, 0))  # work -> home
 
 # (mode, from_lon, from_lat, to_lon, to_lat) -> (expires_at, payload-or-None).
-_CACHE: dict[tuple[str, float, float, float, float], tuple[float, dict[str, Any] | None]] = {}
+# Bounded LRU (004 follow-up): pair keys square the snapped-grid cardinality,
+# so a cap matters most here; payloads are small dicts.
+_CACHE: BoundedCache[
+    tuple[str, float, float, float, float], tuple[float, dict[str, Any] | None]
+] = BoundedCache(4096)
 CACHE_TTL_SECONDS = 24 * 60 * 60
 
 
