@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { type CommuteVariation, type RegionInfo, getRegions } from "./api/client";
 import ControlsPanel from "./components/ControlsPanel";
+import GettingStarted from "./components/GettingStarted";
 import MapView from "./components/MapView";
 import Toasts from "./components/Toasts";
 import WelcomeModal from "./components/WelcomeModal";
@@ -51,6 +52,18 @@ function welcomeDismissed(): boolean {
   }
 }
 
+// Getting-started checklist flag (new-user onboarding): set once the
+// checklist completes or is dismissed, so it never returns.
+const CHECKLIST_KEY = "livenear.getting-started-done";
+
+function checklistCompleted(): boolean {
+  try {
+    return window.localStorage.getItem(CHECKLIST_KEY) === "1";
+  } catch {
+    return true; // storage blocked -> never nag
+  }
+}
+
 export default function App() {
   const [budget, setBudget] = useState(INITIAL_URL.budget ?? 0);
   const [metricKey, setMetricKey] = useState<MetricKey>(INITIAL_URL.metric ?? "value");
@@ -79,12 +92,30 @@ export default function App() {
   const userTouchedRef = useRef(false);
   const geoAppliedRef = useRef(false);
   const geoFix = useGeolocate(GEOLOCATE);
+  // True first visit (new-user onboarding): drives the pin hint and the
+  // getting-started checklist. Frozen at mount — reopening the intro from
+  // About later must not re-trigger first-run behavior.
+  const [firstVisit] = useState(() => !welcomeDismissed());
   // First-visit welcome (017 R1); reopenable from About -> "How it works".
-  const [showWelcome, setShowWelcome] = useState(() => !welcomeDismissed());
+  const [showWelcome, setShowWelcome] = useState(firstVisit);
   const handleWelcomeClose = useCallback(() => {
     setShowWelcome(false);
     try {
       window.localStorage.setItem(WELCOME_KEY, "1");
+    } catch {
+      /* storage blocked -> dismiss for this session only */
+    }
+  }, []);
+
+  // Getting-started progress: each step ticks from real app state. Deep-link
+  // params count as already done — that user didn't start from zero.
+  const [checklistOpen, setChecklistOpen] = useState(() => firstVisit && !checklistCompleted());
+  const [workSet, setWorkSet] = useState(INITIAL_URL.work != null);
+  const [explored, setExplored] = useState(INITIAL_URL.zip != null);
+  const handleChecklistDone = useCallback(() => {
+    setChecklistOpen(false);
+    try {
+      window.localStorage.setItem(CHECKLIST_KEY, "1");
     } catch {
       /* storage blocked -> dismiss for this session only */
     }
@@ -242,6 +273,11 @@ export default function App() {
     };
   }, [selectedZip, records, centroids, isochrone, minutes, commute, commuteB, mode, dual]);
 
+  // First area opened -> the "explore" step is done, even if closed again.
+  useEffect(() => {
+    if (selectedZip) setExplored(true);
+  }, [selectedZip]);
+
   // Esc closes the detail panel (009 R1).
   useEffect(() => {
     if (!selectedZip) return;
@@ -317,15 +353,18 @@ export default function App() {
     userTouchedRef.current = true;
     setWork({ lat, lon });
     setWorkSeed(null);
+    setWorkSet(true);
   }, []);
   const handleWork2Drag = useCallback((lat: number, lon: number) => {
     userTouchedRef.current = true;
     setWork2({ lat, lon });
     setWork2Seed(null);
+    setWorkSet(true);
   }, []);
   const handleAddressLocated = useCallback(
     (lat: number, lon: number, label: string) => {
       userTouchedRef.current = true;
+      setWorkSet(true);
       if (searchTarget === "B" && work2 != null) {
         setWork2({ lat, lon });
         setWork2Seed(label);
@@ -391,6 +430,7 @@ export default function App() {
         stateCode={stateCode}
         focusPoint={focusPoint}
         focusSignal={focusSignal}
+        pinHint={firstVisit}
       />
       {selectedZip && (
         <ZipDetailPanel
@@ -438,6 +478,16 @@ export default function App() {
         records={records}
         onZipChosen={selectZipAndFly}
         onShowIntro={() => setShowWelcome(true)}
+        firstRun={
+          checklistOpen && !showWelcome ? (
+            <GettingStarted
+              budgetSet={budget > 0}
+              workSet={workSet}
+              explored={explored}
+              onDone={handleChecklistDone}
+            />
+          ) : null
+        }
       />
       <button
         type="button"
@@ -458,7 +508,9 @@ export default function App() {
           No area within both commutes — try a longer time or move a pin
         </div>
       )}
-      {showWelcome && <WelcomeModal onClose={handleWelcomeClose} />}
+      {showWelcome && (
+        <WelcomeModal onClose={handleWelcomeClose} budget={budget} onBudgetChange={setBudget} />
+      )}
       <Toasts
         messages={[
           ...notices,

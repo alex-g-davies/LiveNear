@@ -249,6 +249,14 @@ body,
   color: var(--ink);
 }
 
+.budget-input__hint {
+  display: block;
+  margin-top: 5px;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 /* Work-location control */
 .work {
   display: flex;
@@ -863,6 +871,89 @@ body,
   background: #2b6fa8;
 }
 
+/* The modal's budget capture sits between the steps and the CTA. */
+.welcome .budget-input {
+  margin: 12px 0 0;
+}
+
+.welcome__reopen {
+  margin: 10px 0 0;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* First-visit getting-started checklist (new-user onboarding) — an accented
+   card at the top of the controls panel, gone once completed or dismissed. */
+.checklist {
+  margin: 8px 0 4px;
+  padding: 8px 10px;
+  background: #f1f6fb;
+  border: 1px solid #d7e6f2;
+  border-radius: 8px;
+}
+
+.checklist__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.checklist__title {
+  font-size: var(--fs-section);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #2b6fa8;
+}
+
+.checklist__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.checklist__dismiss:hover {
+  color: var(--ink);
+}
+
+.checklist__list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.checklist__item {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 3px 0;
+  font-size: var(--fs-control);
+  color: var(--ink);
+}
+
+.checklist__item--done {
+  color: var(--muted);
+}
+
+.checklist__mark {
+  flex: none;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.checklist__item--done .checklist__mark {
+  color: #2e7d32;
+}
+
 .about__intro-link {
   padding: 0;
   border: none;
@@ -1293,6 +1384,7 @@ body,
   .address__btn,
   .address__input,
   .welcome__cta,
+  .checklist__dismiss,
   .status__dismiss,
   .zip-detail__close,
   .zip-detail__pin,
@@ -1306,6 +1398,7 @@ body,
   }
 
   .work__remove,
+  .checklist__dismiss,
   .status__dismiss {
     min-width: 44px;
   }

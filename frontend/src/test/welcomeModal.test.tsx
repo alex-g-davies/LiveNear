@@ -29,4 +29,23 @@ describe("WelcomeModal (017 R1)", () => {
     fireEvent.click(screen.getByText(/see where you could live/i));
     expect(onClose).not.toHaveBeenCalled();
   });
+
+  it("captures an optional budget when wired (new-user onboarding)", () => {
+    const onBudgetChange = vi.fn();
+    render(<WelcomeModal onClose={() => {}} budget={0} onBudgetChange={onBudgetChange} />);
+    fireEvent.change(screen.getByLabelText("Budget in dollars"), {
+      target: { value: "650,000" },
+    });
+    expect(onBudgetChange).toHaveBeenCalledWith(650000);
+  });
+
+  it("hides the budget field when no handler is wired", () => {
+    render(<WelcomeModal onClose={() => {}} />);
+    expect(screen.queryByLabelText("Budget in dollars")).toBeNull();
+  });
+
+  it("tells the user the intro can be reopened", () => {
+    render(<WelcomeModal onClose={() => {}} />);
+    expect(screen.getByRole("dialog")).toHaveTextContent(/reopen this intro anytime/i);
+  });
 });

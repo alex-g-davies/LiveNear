@@ -44,4 +44,18 @@ describe("BudgetInput (R4)", () => {
     });
     expect(onChange).toHaveBeenCalledWith(1200000);
   });
+
+  it("shows the hint only while no budget is set (new-user onboarding)", () => {
+    const { rerender } = render(
+      <BudgetInput budget={0} onChange={() => {}} hint="Areas over budget fade" />,
+    );
+    expect(screen.getByText("Areas over budget fade")).toBeInTheDocument();
+    rerender(<BudgetInput budget={800000} onChange={() => {}} hint="Areas over budget fade" />);
+    expect(screen.queryByText("Areas over budget fade")).toBeNull();
+  });
+
+  it("renders a custom label when given", () => {
+    render(<BudgetInput budget={0} onChange={() => {}} label="Your max home price (optional)" />);
+    expect(screen.getByText("Your max home price (optional)")).toBeInTheDocument();
+  });
 });

@@ -49,6 +49,9 @@ interface Props {
    * to fly to the point — same counter pattern as recenterSignal. */
   focusPoint: [number, number] | null;
   focusSignal: number;
+  /** First visit (new-user onboarding): open the work pin's popup with a
+   * "drag me" nudge so the pin is discoverable. Read once at map creation. */
+  pinHint?: boolean;
 }
 
 const ZIP_SOURCE = "zips";
@@ -143,6 +146,7 @@ export default function MapView({
   stateCode,
   focusPoint,
   focusSignal,
+  pinHint,
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -213,8 +217,15 @@ export default function MapView({
     badge.style.display = "none";
     const pin = new maplibregl.Marker({ element: pinEl, draggable: true, anchor: "center" })
       .setLngLat([workRef.current.lon, workRef.current.lat])
-      .setPopup(new maplibregl.Popup({ closeButton: false, offset: 22 }).setText("Work location"))
+      .setPopup(
+        new maplibregl.Popup({ closeButton: false, offset: 22 }).setText(
+          // First visit: actionable label, opened immediately — the welcome
+          // modal says "drag the pin" but nothing on the map identifies it.
+          pinHint ? "Drag me to your workplace" : "Work location",
+        ),
+      )
       .addTo(m);
+    if (pinHint) pin.togglePopup();
     pin.on("dragend", () => {
       const p = pin.getLngLat();
       onWorkChangeRef.current(p.lat, p.lng);
