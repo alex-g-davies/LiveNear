@@ -39,6 +39,23 @@ export function formatBudgetInput(value: number): string {
   return value > 0 ? value.toLocaleString("en-US") : "";
 }
 
+/** Whole-dollar monthly amount, e.g. 3180 -> "$3,180/mo". */
+export function formatMonthly(value: number): string {
+  return `${formatUsd(value)}/mo`;
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Data vintage label from an ISO date, e.g. "2026-04-30" -> "Apr 2026";
+ * anything unparseable -> "" so callers can simply omit the line. */
+export function formatMonthYear(iso: string | null | undefined): string {
+  const m = /^(\d{4})-(\d{2})/.exec(iso ?? "");
+  if (!m) return "";
+  const month = Number(m[2]);
+  if (month < 1 || month > 12) return "";
+  return `${MONTHS[month - 1]} ${m[1]}`;
+}
+
 /** Affordability multiple, e.g. 6.5 -> "6.5×"; null -> "—". */
 export function formatRatio(value: number | null | undefined): string {
   return value == null ? "—" : `${value.toFixed(1)}×`;

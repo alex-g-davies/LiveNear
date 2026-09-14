@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 
 import type { ZipValue } from "../api/client";
-import { formatCount, formatPct, formatRatio, formatUsd, placeLabel } from "../lib/format";
+import { type BudgetSpec, monthlyPaymentForPrice } from "../lib/affordability";
+import {
+  formatCount,
+  formatMonthly,
+  formatPct,
+  formatRatio,
+  formatUsd,
+  placeLabel,
+} from "../lib/format";
 import type { WikiSummary } from "../lib/wiki";
 import { deltaPct } from "../lib/zipStats";
 import PriceChart from "./PriceChart";
@@ -27,6 +35,9 @@ interface Props {
   metroLabel: string;
   stateCode: string;
   budget: number;
+  /** Budget as typed (020 R4): in payment mode the badge echoes this ZIP's
+   * estimated monthly payment under the same assumptions. */
+  budgetSpec?: BudgetSpec;
   context: ZipContext;
   /** True while the commute estimate fetch is in flight (013 R3). */
   estimating: boolean;
@@ -40,7 +51,7 @@ interface Props {
   onUnpin: () => void;
 }
 
-function budgetBadge(budget: number, value: number | undefined) {
+function budgetBadge(budget: number, value: number | undefined, spec?: BudgetSpec) {
   if (!budget || value == null) return null;
   const diff = budget - value;
   const cls = diff >= 0 ? "zip-detail__badge--under" : "zip-detail__badge--over";
@@ -48,7 +59,16 @@ function budgetBadge(budget: number, value: number | undefined) {
     diff >= 0
       ? `Under budget by ${formatUsd(diff)}`
       : `Over budget by ${formatUsd(-diff)}`;
-  return <span className={`zip-detail__badge ${cls}`}>{text}</span>;
+  const monthly =
+    spec?.mode === "payment"
+      ? ` · ≈ ${formatMonthly(monthlyPaymentForPrice(value, spec.downPct, spec.ratePct))}`
+      : "";
+  return (
+    <span className={`zip-detail__badge ${cls}`}>
+      {text}
+      {monthly}
+    </span>
+  );
 }
 
 function Metric({ label, value, tone }: { label: string; value: string; tone?: string }) {
@@ -145,6 +165,7 @@ export default function ZipDetailPanel({
   metroLabel,
   stateCode,
   budget,
+  budgetSpec,
   context,
   estimating,
   wiki,
@@ -204,7 +225,7 @@ export default function ZipDetailPanel({
           <p className="zip-detail__value">
             {record ? formatUsd(record.median_value) : "No price data"}
           </p>
-          {budgetBadge(budget, record?.median_value)}
+          {budgetBadge(budget, record?.median_value, budgetSpec)}
 
           <div className="zip-detail__metrics">
             <Metric

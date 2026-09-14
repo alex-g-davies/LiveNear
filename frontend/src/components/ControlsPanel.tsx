@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { CommuteVariation, RegionInfo, ZipValue } from "../api/client";
 import { BRAND_NAME } from "../config";
 import type { ColorStop, MetricDef, MetricKey, TravelMode } from "../config";
+import type { BudgetSpec } from "../lib/affordability";
 import type { MatchResult } from "../lib/matches";
 import AboutPanel from "./AboutPanel";
 import AddressSearch from "./AddressSearch";
@@ -18,8 +19,13 @@ interface Props {
   regions: RegionInfo[];
   state: string;
   onStateChange: (code: string) => void;
+  /** Effective dollar budget (legend + downstream); derived from the spec. */
   budget: number;
-  onBudgetChange: (budget: number) => void;
+  /** Budget as typed — price or monthly payment (020 R2). */
+  budgetSpec: BudgetSpec;
+  onBudgetSpecChange: (spec: BudgetSpec) => void;
+  /** Vintage of the loaded values (`as_of`) for the legend + About. */
+  asOf: string | null;
   activeMetric: MetricDef;
   stops: ColorStop[];
   metricKey: MetricKey;
@@ -56,7 +62,9 @@ export default function ControlsPanel({
   state,
   onStateChange,
   budget,
-  onBudgetChange,
+  budgetSpec,
+  onBudgetSpecChange,
+  asOf,
   activeMetric,
   stops,
   metricKey,
@@ -100,7 +108,7 @@ export default function ControlsPanel({
         {regions.length > 0 && (
           <RegionPicker regions={regions} state={state} onStateChange={onStateChange} />
         )}
-        <BudgetInput budget={budget} onChange={onBudgetChange} />
+        <BudgetInput spec={budgetSpec} onChange={onBudgetSpecChange} />
       </div>
 
       <div className="panel__section work">
@@ -163,14 +171,15 @@ export default function ControlsPanel({
       <div className="panel__section">
         <span className="section-label">Shade map by</span>
         <MetricSwitcher active={metricKey} onChange={onMetricChange} />
-        <Legend metric={activeMetric} stops={stops} budget={budget} />
+        <Legend metric={activeMetric} stops={stops} budget={budget} asOf={asOf} />
         <TopMovers records={records} onZipChosen={onZipChosen} />
       </div>
 
       <p className="panel-foot">
-        Hover a ZIP for quick stats, click or tap for details · {minutes}-min drive-time overlay
+        Hover a ZIP for quick stats, click or tap for details · {minutes}-min{" "}
+        {{ drive: "drive-time", walk: "walking", cycle: "cycling" }[mode]} overlay
       </p>
-      <AboutPanel onShowIntro={onShowIntro} />
+      <AboutPanel onShowIntro={onShowIntro} asOf={asOf} />
     </div>
   );
 }

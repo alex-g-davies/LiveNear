@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { parseAppUrl, serializeAppUrl } from "../lib/urlState";
+import { DEFAULT_BUDGET_SPEC } from "../lib/affordability";
+import { budgetSpecFromUrl, parseAppUrl, serializeAppUrl } from "../lib/urlState";
 import { DEFAULT_MINUTES, DEFAULT_WORK } from "../config";
 
 const DEFAULTS = {
   state: "WA",
   zip: null,
-  budget: 0,
+  budget: DEFAULT_BUDGET_SPEC,
   work: DEFAULT_WORK,
   work2: null,
   minutes: DEFAULT_MINUTES,
@@ -19,7 +20,7 @@ describe("urlState (009 R5)", () => {
     const input = {
       state: "CO",
       zip: "80302",
-      budget: 600000,
+      budget: { ...DEFAULT_BUDGET_SPEC, price: 600000 },
       work: { lat: 39.7392, lon: -104.9903 },
       work2: { lat: 39.9, lon: -105.1 },
       minutes: 45,
@@ -49,7 +50,7 @@ describe("urlState (009 R5)", () => {
 
   it("drops invalid params silently", () => {
     const parsed = parseAppUrl(
-      "?state=Colorado&zip=1234&budget=-5&lat=99&lon=-104&min=37&metric=bogus",
+      "?state=Colorado&zip=1234&budget=-5&lat=99&lon=-104&min=37&metric=bogus&pay=0&down=120&rate=abc",
     );
     expect(parsed).toEqual({});
   });
@@ -77,5 +78,49 @@ describe("urlState (009 R5)", () => {
 
   it("keeps leading-zero ZIPs", () => {
     expect(parseAppUrl("?zip=05001").zip).toBe("05001");
+  });
+});
+
+describe("urlState payment-mode budget (020 R3)", () => {
+  it("serializes payment mode as pay, with assumptions only when non-default", () => {
+    const spec = { ...DEFAULT_BUDGET_SPEC, mode: "payment" as const, payment: 3000 };
+    expect(serializeAppUrl({ ...DEFAULTS, budget: spec })).toBe("?pay=3000");
+    expect(serializeAppUrl({ ...DEFAULTS, budget: { ...spec, downPct: 10, ratePct: 7 } })).toBe(
+      "?pay=3000&down=10&rate=7",
+    );
+  });
+
+  it("uses only the active mode's value, so a stale price never leaks", () => {
+    const both = { ...DEFAULT_BUDGET_SPEC, price: 800000, payment: 3000 };
+    expect(serializeAppUrl({ ...DEFAULTS, budget: both })).toBe("?budget=800000");
+    expect(serializeAppUrl({ ...DEFAULTS, budget: { ...both, mode: "payment" } })).toBe(
+      "?pay=3000",
+    );
+    // Payment mode with nothing typed is not a shareable budget.
+    expect(
+      serializeAppUrl({ ...DEFAULTS, budget: { ...both, mode: "payment", payment: 0 } }),
+    ).toBe("");
+  });
+
+  it("parses pay/down/rate within range and opens payment mode", () => {
+    const parsed = parseAppUrl("?pay=3000&down=10&rate=7");
+    expect(parsed).toEqual({ pay: 3000, down: 10, rate: 7 });
+    expect(budgetSpecFromUrl(parsed)).toEqual({
+      mode: "payment",
+      price: 0,
+      payment: 3000,
+      downPct: 10,
+      ratePct: 7,
+    });
+  });
+
+  it("falls back to price mode and defaults without pay", () => {
+    expect(budgetSpecFromUrl(parseAppUrl("?budget=600000"))).toEqual({
+      ...DEFAULT_BUDGET_SPEC,
+      price: 600000,
+    });
+    expect(budgetSpecFromUrl(parseAppUrl(""))).toEqual(DEFAULT_BUDGET_SPEC);
+    // Assumptions alone don't switch modes but are kept for when the user does.
+    expect(budgetSpecFromUrl(parseAppUrl("?rate=5"))).toEqual({ ...DEFAULT_BUDGET_SPEC, ratePct: 5 });
   });
 });
