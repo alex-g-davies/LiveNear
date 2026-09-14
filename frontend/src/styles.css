@@ -249,6 +249,73 @@ body,
   color: var(--ink);
 }
 
+/* Budget mode toggle (020 R2): the shared segmented control, pulled tight
+   under the section label so the field below reads as its continuation. */
+.switcher--tight {
+  margin: 0 0 8px;
+}
+
+.budget-input__unit {
+  font-size: var(--fs-hint);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Down payment + rate assumptions: two compact labeled fields in one row. */
+.budget-input__assumptions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.budget-input__assumption {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px; /* touch target (010 R5) */
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+}
+
+.budget-input__assumption input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-size: var(--fs-control);
+  color: var(--ink);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.budget-input__assumption input::-webkit-outer-spin-button,
+.budget-input__assumption input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* The derived max price is the budget every layer uses — say so plainly. */
+.budget-input__derived {
+  margin: 8px 0 0;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.budget-input__derived strong {
+  color: var(--ink);
+}
+
+.budget-input__assumes {
+  color: var(--muted);
+}
+
+/* Onboarding nudge under the field, shown only while no budget is set. */
 .budget-input__hint {
   display: block;
   margin-top: 5px;
@@ -549,6 +616,18 @@ body,
   border-radius: 3px;
   border: 1px solid rgba(0, 0, 0, 0.08);
   flex: none;
+}
+
+/* Data vintage under the legend (review): the values are a monthly
+   snapshot, and the map must never read as live pricing. */
+.legend-vintage {
+  margin: 8px 0 0;
+  font-size: var(--fs-hint);
+  color: var(--muted);
+}
+
+.about__vintage {
+  color: var(--muted);
 }
 
 .legend-swatch--faded {

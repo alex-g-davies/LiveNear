@@ -47,6 +47,12 @@ describe("AboutPanel (012 R5)", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
+  it("credits the data vintage next to Zillow when known (review)", () => {
+    render(<AboutPanel asOf="2026-04-30" />);
+    fireEvent.click(screen.getByRole("button", { name: /About & data/ }));
+    expect(screen.getByRole("dialog")).toHaveTextContent(/values as of Apr 2026/);
+  });
+
   it("hides the intro link when no handler is wired", () => {
     render(<AboutPanel />);
     fireEvent.click(screen.getByRole("button", { name: /About & data/ }));

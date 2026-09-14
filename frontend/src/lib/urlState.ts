@@ -4,8 +4,10 @@
 
 import {
   COMMUTE_STEPS,
+  DEFAULT_DOWN_PCT,
   DEFAULT_MINUTES,
   DEFAULT_MODE,
+  DEFAULT_RATE_PCT,
   DEFAULT_STATE,
   DEFAULT_WORK,
   METRICS,
@@ -14,11 +16,17 @@ import {
   type TravelMode,
   type WorkLocation,
 } from "../config";
+import { type BudgetSpec, DEFAULT_BUDGET_SPEC } from "./affordability";
 
 export interface UrlState {
   state?: string;
   zip?: string;
+  /** Price-mode budget in dollars. */
   budget?: number;
+  /** Payment-mode budget (020 R3): monthly payment + optional assumptions. */
+  pay?: number;
+  down?: number;
+  rate?: number;
   work?: WorkLocation;
   /** Second workplace (016 R6). */
   work2?: WorkLocation;
@@ -41,6 +49,13 @@ export function parseAppUrl(search: string): UrlState {
 
   const budget = Number(params.get("budget"));
   if (Number.isFinite(budget) && budget > 0) out.budget = Math.round(budget);
+
+  const pay = Number(params.get("pay"));
+  if (params.has("pay") && Number.isFinite(pay) && pay > 0) out.pay = Math.round(pay);
+  const down = Number(params.get("down"));
+  if (params.has("down") && Number.isFinite(down) && down >= 0 && down <= 99) out.down = down;
+  const rate = Number(params.get("rate"));
+  if (params.has("rate") && Number.isFinite(rate) && rate >= 0 && rate <= 30) out.rate = rate;
 
   const lat = Number(params.get("lat"));
   const lon = Number(params.get("lon"));
@@ -80,10 +95,23 @@ export function parseAppUrl(search: string): UrlState {
   return out;
 }
 
+/** The budget control's initial state from a parsed URL (020 R3): a `pay`
+ * param opens payment mode; otherwise price mode with any `budget`. Both
+ * typed values are kept so toggling modes never loses either. */
+export function budgetSpecFromUrl(url: UrlState): BudgetSpec {
+  return {
+    mode: url.pay ? "payment" : "price",
+    price: url.budget ?? DEFAULT_BUDGET_SPEC.price,
+    payment: url.pay ?? DEFAULT_BUDGET_SPEC.payment,
+    downPct: url.down ?? DEFAULT_BUDGET_SPEC.downPct,
+    ratePct: url.rate ?? DEFAULT_BUDGET_SPEC.ratePct,
+  };
+}
+
 export interface AppUrlInput {
   state: string;
   zip: string | null;
-  budget: number;
+  budget: BudgetSpec;
   work: WorkLocation;
   work2: WorkLocation | null;
   minutes: number;
@@ -96,7 +124,13 @@ export function serializeAppUrl(s: AppUrlInput): string {
   const params = new URLSearchParams();
   if (s.state !== DEFAULT_STATE) params.set("state", s.state);
   if (s.zip) params.set("zip", s.zip);
-  if (s.budget > 0) params.set("budget", String(s.budget));
+  if (s.budget.mode === "payment" && s.budget.payment > 0) {
+    params.set("pay", String(s.budget.payment));
+    if (s.budget.downPct !== DEFAULT_DOWN_PCT) params.set("down", String(s.budget.downPct));
+    if (s.budget.ratePct !== DEFAULT_RATE_PCT) params.set("rate", String(s.budget.ratePct));
+  } else if (s.budget.mode === "price" && s.budget.price > 0) {
+    params.set("budget", String(s.budget.price));
+  }
   if (s.work.lat !== DEFAULT_WORK.lat || s.work.lon !== DEFAULT_WORK.lon) {
     params.set("lat", s.work.lat.toFixed(4));
     params.set("lon", s.work.lon.toFixed(4));

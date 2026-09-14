@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { BRAND_NAME } from "../config";
+import { formatMonthYear } from "../lib/format";
 
 const SOURCES: { name: string; role: string; href: string }[] = [
   { name: "Zillow ZHVI", role: "median home values + history", href: "https://www.zillow.com/research/data/" },
@@ -15,11 +16,15 @@ const SOURCES: { name: string; role: string; href: string }[] = [
 interface Props {
   /** Reopens the welcome modal (017 R1). */
   onShowIntro?: () => void;
+  /** ISO vintage of the loaded housing values (`as_of`), shown next to the
+   * Zillow credit; omitted/unparseable hides it. */
+  asOf?: string | null;
 }
 
 /** About & data popover (012 R5): every source credited in one place, plus
  * the estimates-not-advice disclaimer. */
-export default function AboutPanel({ onShowIntro }: Props) {
+export default function AboutPanel({ onShowIntro, asOf }: Props) {
+  const vintage = formatMonthYear(asOf);
   const [open, setOpen] = useState(false);
   // Keyboard users land inside the dialog instead of on the panel behind it.
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -74,6 +79,9 @@ export default function AboutPanel({ onShowIntro }: Props) {
                     {s.name}
                   </a>{" "}
                   — {s.role}
+                  {vintage && s.name === "Zillow ZHVI" && (
+                    <span className="about__vintage"> (values as of {vintage})</span>
+                  )}
                 </li>
               ))}
             </ul>

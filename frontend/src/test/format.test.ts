@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   departLabel,
   formatBudgetInput,
+  formatMonthYear,
+  formatMonthly,
   formatPct,
   formatPpsf,
   formatSqMi,
@@ -53,6 +55,15 @@ describe("format", () => {
   it("formats minute ranges, collapsing equal endpoints (013 R1)", () => {
     expect(rangeLabel(55, 73)).toBe("55–73 min");
     expect(rangeLabel(85, 85)).toBe("~85 min");
+  });
+
+  it("formats monthly amounts and data vintages (020 / review)", () => {
+    expect(formatMonthly(3180)).toBe("$3,180/mo");
+    expect(formatMonthYear("2026-04-30")).toBe("Apr 2026");
+    expect(formatMonthYear("2025-12")).toBe("Dec 2025");
+    expect(formatMonthYear("")).toBe("");
+    expect(formatMonthYear(null)).toBe("");
+    expect(formatMonthYear("2026-13-01")).toBe("");
   });
 
   it("formats departure labels as weekday + 12h time (011)", () => {

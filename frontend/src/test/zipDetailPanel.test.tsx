@@ -116,6 +116,20 @@ describe("ZipDetailPanel (009 R2/R9)", () => {
     expect(screen.getByText("Under budget by $62,500")).toBeInTheDocument();
   });
 
+  it("echoes the ZIP's monthly payment in payment mode only (020 R4)", () => {
+    const spec = { mode: "payment" as const, price: 0, payment: 5000, downPct: 20, ratePct: 6.5 };
+    renderPanel({ budget: 1000000, budgetSpec: spec, context: EMPTY_CONTEXT });
+    // 937,500 × 0.0063064 ≈ 5,912/mo under the same assumptions.
+    expect(screen.getByText(/Under budget by \$62,500 · ≈ \$5,912\/mo/)).toBeInTheDocument();
+  });
+
+  it("omits the monthly echo in price mode", () => {
+    const spec = { mode: "price" as const, price: 1000000, payment: 0, downPct: 20, ratePct: 6.5 };
+    renderPanel({ budget: 1000000, budgetSpec: spec, context: EMPTY_CONTEXT });
+    expect(screen.getByText("Under budget by $62,500")).toBeInTheDocument();
+    expect(screen.queryByText(/\/mo/)).toBeNull();
+  });
+
   it("degrades to dashes without a record (R9)", () => {
     renderPanel({ zip: "99999", record: undefined, budget: 500000, context: EMPTY_CONTEXT });
     expect(screen.getByText("ZIP 99999")).toBeInTheDocument(); // no name -> ZIP label

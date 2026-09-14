@@ -24,13 +24,14 @@ import { NOTICE_ISOCHRONE, useIsochrone } from "./hooks/useIsochrone";
 import { useReverseGeocode } from "./hooks/useReverseGeocode";
 import { useMapData } from "./hooks/useMapData";
 import { useWikiSummary } from "./hooks/useWikiSummary";
+import { type BudgetSpec, effectiveBudget } from "./lib/affordability";
 import { metricValuesFromFeatures, resolveStops } from "./lib/colorScale";
 import { departLabel, rangeLabel } from "./lib/format";
 import { centroidsByZip, scenariosContaining } from "./lib/geo";
 import { intersectIsochrones } from "./lib/intersect";
 import { computeMatches } from "./lib/matches";
 import { regionForPoint } from "./lib/locateRegion";
-import { parseAppUrl, serializeAppUrl } from "./lib/urlState";
+import { budgetSpecFromUrl, parseAppUrl, serializeAppUrl } from "./lib/urlState";
 import { deltaPct, percentileRank, stateMedian } from "./lib/zipStats";
 
 // Parsed once at startup (009 R5): seeds the initial state so a deep-linked
@@ -65,7 +66,12 @@ function checklistCompleted(): boolean {
 }
 
 export default function App() {
-  const [budget, setBudget] = useState(INITIAL_URL.budget ?? 0);
+  // Budget as typed (price or monthly payment, 020); `budget` below is the
+  // dollar figure every consumer has always received.
+  const [budgetSpec, setBudgetSpec] = useState<BudgetSpec>(() =>
+    budgetSpecFromUrl(INITIAL_URL),
+  );
+  const budget = useMemo(() => effectiveBudget(budgetSpec), [budgetSpec]);
   const [metricKey, setMetricKey] = useState<MetricKey>(INITIAL_URL.metric ?? "value");
   const [minutes, setMinutes] = useState<number>(INITIAL_URL.minutes ?? DEFAULT_MINUTES);
   const [mode, setMode] = useState<TravelMode>(INITIAL_URL.tmode ?? DEFAULT_MODE);
@@ -122,7 +128,7 @@ export default function App() {
   }, []);
 
   const activeMetric = METRICS.find((m) => m.key === metricKey) ?? METRICS[0];
-  const { geojson, records, loading, error, notices } = useMapData(stateCode);
+  const { geojson, records, loading, error, notices, asOf } = useMapData(stateCode);
 
   // Per-pin reach overlays (016 R2); server caches stay per-location.
   const iso1 = useIsochrone(work, minutes, mode);
@@ -234,9 +240,17 @@ export default function App() {
       // SCENARIO_STYLES is ordered outer (widest) -> inner; the innermost band
       // containing the ZIP center is the strongest guarantee.
       const best = [...SCENARIO_STYLES].reverse().find((s) => contained.has(s.key));
-      commuteReach = best
-        ? `Within a ${minutes}-min drive of work in typical ${best.label.toLowerCase()} — bad days run longer`
-        : `Beyond a ${minutes}-min drive of work in typical traffic`;
+      // Walk/cycle reach is time-invariant (013 R2): no traffic framing.
+      const trip = { drive: "drive", walk: "walk", cycle: "ride" }[mode];
+      if (mode === "drive") {
+        commuteReach = best
+          ? `Within a ${minutes}-min drive of work in typical ${best.label.toLowerCase()} — bad days run longer`
+          : `Beyond a ${minutes}-min drive of work in typical traffic`;
+      } else {
+        commuteReach = best
+          ? `Within a ${minutes}-min ${trip} of work`
+          : `Beyond a ${minutes}-min ${trip} of work`;
+      }
     }
     // Mode-aware estimate lines (013 R3; compact A/B form in dual, 016 R4).
     const verb = { drive: "Drive", walk: "Walk", cycle: "Cycle" }[mode];
@@ -332,7 +346,7 @@ export default function App() {
       const qs = serializeAppUrl({
         state: stateCode,
         zip: selectedZip,
-        budget,
+        budget: budgetSpec,
         work,
         work2,
         minutes,
@@ -342,7 +356,7 @@ export default function App() {
       window.history.replaceState(null, "", `${window.location.pathname}${qs}`);
     }, 300);
     return () => window.clearTimeout(t);
-  }, [stateCode, selectedZip, budget, work, work2, minutes, metricKey, mode]);
+  }, [stateCode, selectedZip, budgetSpec, work, work2, minutes, metricKey, mode]);
 
   // Seed labels for the pin-address lines (015 R1): an address search already
   // knows its place_name — show it instantly; drags clear it so the reverse
@@ -439,6 +453,7 @@ export default function App() {
           metroLabel={region?.name ?? stateCode}
           stateCode={stateCode}
           budget={budget}
+          budgetSpec={budgetSpec}
           context={zipContext}
           estimating={commuteLoading}
           wiki={wiki}
@@ -454,7 +469,9 @@ export default function App() {
         state={stateCode}
         onStateChange={handleStateChange}
         budget={budget}
-        onBudgetChange={setBudget}
+        budgetSpec={budgetSpec}
+        onBudgetSpecChange={setBudgetSpec}
+        asOf={asOf}
         activeMetric={activeMetric}
         stops={stops}
         metricKey={metricKey}
@@ -509,7 +526,11 @@ export default function App() {
         </div>
       )}
       {showWelcome && (
-        <WelcomeModal onClose={handleWelcomeClose} budget={budget} onBudgetChange={setBudget} />
+        <WelcomeModal
+          onClose={handleWelcomeClose}
+          budgetSpec={budgetSpec}
+          onBudgetChange={setBudgetSpec}
+        />
       )}
       <Toasts
         messages={[

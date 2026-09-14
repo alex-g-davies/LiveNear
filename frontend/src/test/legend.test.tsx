@@ -27,6 +27,17 @@ describe("Legend (R2/002)", () => {
     expect(screen.getByText("Over budget")).toBeInTheDocument();
   });
 
+  it("states the data vintage when known, and stays silent otherwise (review)", () => {
+    const { rerender } = render(
+      <Legend metric={VALUE} stops={VALUE_STOPS} budget={0} asOf="2026-04-30" />,
+    );
+    expect(screen.getByText(/Values as of Apr 2026/)).toBeInTheDocument();
+    rerender(<Legend metric={VALUE} stops={VALUE_STOPS} budget={0} asOf={null} />);
+    expect(screen.queryByText(/Values as of/)).not.toBeInTheDocument();
+    rerender(<Legend metric={VALUE} stops={VALUE_STOPS} budget={0} asOf="garbage" />);
+    expect(screen.queryByText(/Values as of/)).not.toBeInTheDocument();
+  });
+
   it("formats boundaries with the metric's formatter (percent for YoY)", () => {
     const { container } = render(<Legend metric={YOY} stops={YOY.fixedStops!} budget={0} />);
     expect(screen.getByText("YoY change")).toBeInTheDocument();

@@ -1,0 +1,88 @@
+# Spec 020 — Monthly-Payment Budget
+
+Status: Draft
+Owner: <you>
+Related: 001 R4 (budget de-emphasis — the pipeline this feeds), 009 R5
+(URL state), 014 (price-to-income — the ratio this complements), 015 R2
+(budget input polish), 019 (matches shortlist — consumes the derived
+budget unchanged). Named as the candidate follow-up in 014 and 019.
+
+## Overview
+
+The budget is a purchase price, but most people know their monthly
+ceiling, not a sticker price. This spec lets the user state the budget
+as a monthly payment — with a down-payment percentage and an interest
+rate — and converts it to a maximum home price with the standard
+amortization formula plus a flat tax-and-insurance allowance. The
+derived price feeds the existing pipeline (opacity, hatch, legend,
+matches, "under/over budget" badge) unchanged, so the feature is a
+pure client-side input mode: no backend changes, no new dependencies,
+no additional Mapbox spend.
+
+## Requirements
+
+- **R1 — Conversion math.** A pure function maps (monthly payment,
+  down-payment %, annual rate %, term years, annual tax+insurance % of
+  price) to a maximum price: `price = payment / (L·A + T/12)` where
+  `L = 1 − down/100` is the financed fraction, `A = r / (1 − (1+r)^−n)`
+  is the per-dollar monthly amortization factor (`r` = monthly rate,
+  `n` = months; `A = 1/n` when the rate is zero), and `T` is the annual
+  tax+insurance fraction. The inverse (monthly payment for a price)
+  exists for display. Defaults: 30-year term, 20 % down, 6.5 % rate,
+  1.5 % tax+insurance, all overridable except term and tax+insurance
+  (kept as documented constants for the MVP). Results round to the
+  nearest $1,000; non-positive payments yield 0 (no budget).
+- **R2 — Input mode.** The budget control gains a two-way toggle,
+  "Home price" | "Monthly payment". Price mode is today's input,
+  untouched. Payment mode shows a monthly-payment input plus compact
+  down-payment (%) and rate (%) fields, and a live line "≈ max price
+  $X · assumes 30-yr, 1.5 %/yr tax + insurance". The derived price
+  becomes the app's budget for every existing consumer.
+- **R3 — URL state.** Payment mode round-trips as `pay=`, with `down=`
+  and `rate=` present only when they differ from the defaults; price
+  mode keeps `budget=`. A URL carrying `pay` opens in payment mode.
+  Invalid values (non-numeric, out of range: down 0–99, rate 0–30) are
+  dropped silently like every other param.
+- **R4 — Detail-panel echo.** In payment mode the ZIP detail panel's
+  budget badge appends the ZIP's estimated monthly payment under the
+  same assumptions (e.g. "Under budget by $40,000 · ≈ $3,180/mo"), so
+  the user can compare in the unit they think in.
+
+## Non-functional / Constraints
+
+- The math lives in `frontend/src/lib/affordability.ts` with unit tests
+  against hand-checked values; components stay thin.
+- No backend changes; `budget` reaching every existing consumer is
+  still a number of dollars.
+- The toggle follows the existing segmented-control (`.switcher`) and
+  touch-target rules (010 R5).
+
+## Acceptance Criteria
+
+- [ ] Payment mode, $3,000/mo, 20 % down, 6.5 % → max price $476,000
+      (hand-checked: A = 0.0063205, L·A + T/12 = 0.0063064,
+      3000 / 0.0063064 = 475,706 → nearest $1k); the map hatches ZIPs
+      above it and the matches list respects it exactly as a typed
+      price would.
+- [ ] Changing the rate or down payment re-derives the price live;
+      switching back to price mode restores the previously typed price.
+- [ ] `?pay=3000&rate=7` opens in payment mode with those values and
+      the derived budget applied; `?budget=600000` still works.
+- [ ] Clicking a ZIP in payment mode shows the ≈ $/mo echo on the
+      badge; in price mode it does not.
+- [ ] `npm run test` green, including new unit tests for the math and
+      component tests for the toggle and URL codec.
+
+## Out of Scope (explicit)
+
+- Income-based (DTI) budgeting, PMI, HOA dues, per-state property-tax
+  rates — the allowance is one documented national constant.
+- Rate lookups or live mortgage data.
+- Persisting assumptions beyond the URL.
+
+## Verification notes
+
+R1 → affordability unit tests (hand-checked values, zero rate, zero
+payment, inverse round-trip); R2/R4 → budgetInput + zipDetailPanel
+component tests + a manual walk; R3 → urlState tests. The human
+verifies; the implementing agent does not self-certify done.

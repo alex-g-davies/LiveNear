@@ -171,6 +171,15 @@ export const METRICS: MetricDef[] = [
 export const OVER_BUDGET_OPACITY = 0.15;
 export const IN_BUDGET_OPACITY = 0.9;
 
+// Monthly-payment budget assumptions (020 R1). Term and the tax + insurance
+// allowance are fixed national constants for the MVP; down payment and rate
+// are user-overridable defaults. 1.5 %/yr ≈ the U.S. median property-tax
+// rate plus typical homeowners insurance.
+export const MORTGAGE_TERM_YEARS = 30;
+export const TAX_INSURANCE_PCT = 1.5;
+export const DEFAULT_DOWN_PCT = 20;
+export const DEFAULT_RATE_PCT = 6.5;
+
 // Selectable commute times (min). Mapbox isochrones cap at 60.
 export const COMMUTE_STEPS = [15, 30, 45, 60] as const;
 export const DEFAULT_MINUTES = 30;
