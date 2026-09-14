@@ -49,15 +49,26 @@ jobs:
       - uses: actions/checkout@v5
       - name: Build image
         run: docker build -f backend/Dockerfile -t livenear:ci .
-      - name: Smoke test (fixture mode, no token)
+      - name: Smoke test (fixture mode via USE_FIXTURE, no token)
         run: |
-          docker run -d --rm --name livenear -p 8000:8000 livenear:ci
+          docker run -d --rm --name livenear -p 8000:8000 -e USE_FIXTURE=true livenear:ci
           for i in $(seq 1 30); do
             if curl -fsS http://localhost:8000/api/health > /dev/null; then break; fi
             sleep 1
           done
-          curl -fsS http://localhost:8000/api/health
+          curl -fsS http://localhost:8000/api/health | grep -q '"isochrone":"fixture"'
           curl -fsS http://localhost:8000/api/zips.geojson?state=WA -o /dev/null
           curl -fsS http://localhost:8000/api/isochrone?minutes=30 -o /dev/null
           curl -fsS http://localhost:8000/ | grep -qi "<!doctype html"
           docker stop livenear
+      - name: Smoke test (production guard, spec 021 — no token -> 503, not fixture)
+        run: |
+          docker run -d --rm --name livenear-guard -p 8001:8000 livenear:ci
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8001/api/health > /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://localhost:8001/api/health | grep -q '"isochrone":"unavailable"'
+          code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8001/api/isochrone?minutes=30")
+          test "$code" = "503"
+          docker stop livenear-guard

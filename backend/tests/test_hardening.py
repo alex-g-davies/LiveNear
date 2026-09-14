@@ -165,6 +165,16 @@ def test_health_reports_states(client):
     body = r.json()
     assert body["status"] == "ok"
     assert body["states"] == 2
+    assert body["isochrone"] == "live"  # conftest client carries a token
+
+
+def test_health_reports_isochrone_mode(make_client):
+    """021 R2: the probe distinguishes a live token, dev fixture mode, and a
+    production deploy that is missing its token."""
+    dev = make_client(mapbox_token="")
+    assert dev.get("/api/health").json()["isochrone"] == "fixture"
+    prod = make_client(mapbox_token="", static_dir="/app/static")
+    assert prod.get("/api/health").json()["isochrone"] == "unavailable"
 
 
 def test_health_503_without_region_index(client, tmp_path, monkeypatch):

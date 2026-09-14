@@ -1,0 +1,67 @@
+# Spec 021 — Production token guard (no silent fixture mode)
+
+Status: Draft
+Owner: <you>
+Related: 004-backend-hardening (health probe), 006-deployment (Render
+secrets, CI smoke test)
+
+## Overview
+
+A missing `MAPBOX_TOKEN` in production must be loud, not invisible. Today
+the backend treats a blank token as "fixture mode" everywhere, so a freshly
+created Render service (dashboard secrets are per service and do not carry
+over) serves the committed Seattle polygon for every pin, every time, every
+mode — the map shows one static "Midday" ring that ignores the pin, and
+`/api/health` says everything is fine. This spec confines fixture mode to
+local dev and explicit opt-in, and makes the token's absence observable.
+
+## Context
+
+- Incident (2026-09-14): the service was recreated as `livenear` to get a
+  clean URL. The new service had no `MAPBOX_TOKEN`; `/api/isochrone`
+  returned the fixture (200) for Seattle and Spokane alike while geocode and
+  commute returned 503 "no token configured". Diagnosis took a live-API
+  byte comparison against the fixture file.
+- `serve_fixture` in `config.py` is the single switch; `STATIC_DIR` is only
+  ever set in the production image (006 R2), so it is a reliable "this is a
+  deploy, not a laptop" signal without adding a new env var.
+- The frontend already renders a 503 from `/api/isochrone` honestly
+  ("Commute layer unavailable" toast, 005), so failing is strictly better
+  UX than a fake contour.
+
+## Requirements
+
+- **R1 — No fixture in production.** `serve_fixture` is true only when
+  `USE_FIXTURE=true`, or when the token is blank AND `STATIC_DIR` is unset.
+  With `STATIC_DIR` set and no token, `/api/isochrone` returns 503
+  `isochrone unavailable (no token configured)` — matching the geocode and
+  commute endpoints — and makes no upstream call.
+- **R2 — Health reports the mode.** `/api/health` gains
+  `"isochrone": "live" | "fixture" | "unavailable"` so one curl tells an
+  operator whether the deploy has its token.
+- **R3 — Startup warning.** When the token is blank the app logs a WARNING
+  at startup naming the consequence (fixture served in dev / commute
+  endpoints disabled in production).
+- **R4 — CI and docs follow.** The Docker smoke test opts in with
+  `USE_FIXTURE=true` and asserts `"isochrone":"fixture"`; a second run with
+  no env asserts the guard (`"unavailable"`, isochrone 503). README,
+  `render.yaml`, and `.env.example` describe the new URL, the per-service
+  secret, and the health check to run after any redeploy.
+
+## Non-functional / Constraints
+
+- Local dev without a token is unchanged: fixture isochrone, no Mapbox calls.
+- No new environment variables; no frontend change required.
+- The token still never leaves the backend (001 R5).
+
+## Acceptance Criteria
+
+- [ ] R1: `pytest` — production settings (`static_dir` set, blank token)
+      yield 503 from `/api/isochrone` with no upstream request; the same
+      settings plus `use_fixture=True` yield the single fixture band.
+- [ ] R2: `/api/health` returns `"isochrone": "live"` with a token,
+      `"fixture"` in dev without one, `"unavailable"` in production without
+      one (unit tests + CI smoke).
+- [ ] R3: starting the backend with a blank token prints the WARNING.
+- [ ] R4: CI docker job passes both smoke runs; README/render.yaml name
+      livenear.onrender.com and the health check.

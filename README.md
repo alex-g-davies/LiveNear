@@ -1,8 +1,8 @@
 # LiveNear
 
-**Live at [tradespace-x5xj.onrender.com](https://tradespace-x5xj.onrender.com/)**
-*(formerly "tradespace" — only the onrender.com subdomain keeps the old name;
-Render subdomains are fixed at service creation)*
+**Live at [livenear.onrender.com](https://livenear.onrender.com/)**
+*(formerly "tradespace"; the original `tradespace-x5xj` Render service is
+suspended — the app was recreated as a new service to get the clean URL)*
 
 Decide where you could live by overlaying **housing cost** and **commute
 time**, nationwide. The map shades every ZIP in a selected state by median
@@ -92,7 +92,8 @@ samples — fan out concurrently on a small thread pool, `app/fanout.py`):
 ### Configuration
 
 Copy `backend/.env.example` to `backend/.env` and set values (`.env` is
-gitignored). Highlights: `MAPBOX_TOKEN` (blank = fixture mode),
+gitignored). Highlights: `MAPBOX_TOKEN` (blank = fixture mode in local dev;
+blank in production disables the commute layer — see Deployment),
 `MAPBOX_DAILY_CALL_BUDGET` (hard daily cap on upstream Mapbox calls),
 `RATE_LIMIT_UPSTREAM`/`RATE_LIMIT_DATA`, `LOG_FORMAT=json` for cloud logs,
 and `CENSUS_API_KEY` (data builds only).
@@ -150,10 +151,13 @@ Sources (free / aggregate):
 - **GeoNames** postal data — primary place name per ZIP. © GeoNames,
   licensed CC BY 4.0 (geonames.org). Refresh via `--enrich-names`.
 
-The committed `backend/data/isochrone_fixture.json` is a single drive-time
-polygon served only in **fixture mode** (no `MAPBOX_TOKEN`) as one "typical"
-band. With a token, `/api/isochrone` returns three live traffic-aware bands
-(off-peak / midday / rush hour) for the selected time.
+The committed `backend/data/isochrone_fixture.json` is a single Seattle
+drive-time polygon served only in **fixture mode** — no `MAPBOX_TOKEN` in
+local dev, or `USE_FIXTURE=true` anywhere — as one "typical" band. With a
+token, `/api/isochrone` returns three live traffic-aware bands (off-peak /
+midday / rush hour) for the selected time. In production (`STATIC_DIR` set)
+a missing token is never papered over with the fixture: the endpoint returns
+503 and `/api/health` reports `"isochrone": "unavailable"` (spec 021).
 
 ## Deployment (spec [`006`](specs/006-deployment)) — live on Render
 
@@ -164,7 +168,7 @@ the FastAPI app (`STATIC_DIR`), so production needs no CORS and the relative
 Render (Starter plan) with health checks and autodeploy from `main`;
 [CI](.github/workflows/ci.yml) gates every push with lint, tests, and a
 Docker smoke run in fixture mode. Production:
-**https://tradespace-x5xj.onrender.com** (`MAPBOX_TOKEN` lives only in the
+**https://livenear.onrender.com** (`MAPBOX_TOKEN` lives only in the
 Render dashboard).
 
 ```powershell
@@ -176,7 +180,10 @@ docker run --rm -p 8000:8000 -e MAPBOX_TOKEN=$env:MAPBOX_TOKEN livenear
 
 To reproduce the setup from scratch: create a Render **Blueprint** pointing
 at the repo (`render.yaml` is picked up automatically) and set `MAPBOX_TOKEN`
-in the dashboard. **Mapbox spend guardrails:** Mapbox offers no hard billing
+in the dashboard — dashboard secrets are per service, so a recreated service
+starts without it. Verify with `curl https://<host>/api/health`:
+`"isochrone": "live"` means the token is in place, `"unavailable"` means it
+is not (spec 021). **Mapbox spend guardrails:** Mapbox offers no hard billing
 cap, so the backend's own protections are the real ceiling — per-IP rate
 limits, ~500 m isochrone-origin snapping, and the `MAPBOX_DAILY_CALL_BUDGET`
 breaker (spec 004) keep worst-case usage inside the free tier. Watch the
