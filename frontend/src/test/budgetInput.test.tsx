@@ -102,4 +102,21 @@ describe("BudgetInput payment mode (020 R2)", () => {
     expect(screen.getByText(/Enter a monthly payment/)).toBeInTheDocument();
     expect(screen.queryByText(/max price/)).toBeNull();
   });
+
+  it("shows the hint only while no budget is set, in either mode (new-user onboarding)", () => {
+    const hint = "Areas over budget fade";
+    const { rerender } = render(<BudgetInput spec={PRICE} onChange={() => {}} hint={hint} />);
+    expect(screen.getByText(hint)).toBeInTheDocument();
+    rerender(<BudgetInput spec={{ ...PRICE, price: 800000 }} onChange={() => {}} hint={hint} />);
+    expect(screen.queryByText(hint)).toBeNull();
+    rerender(<BudgetInput spec={{ ...PAYMENT, payment: 0 }} onChange={() => {}} hint={hint} />);
+    expect(screen.getByText(hint)).toBeInTheDocument();
+    rerender(<BudgetInput spec={PAYMENT} onChange={() => {}} hint={hint} />);
+    expect(screen.queryByText(hint)).toBeNull();
+  });
+
+  it("renders a custom label when given", () => {
+    render(<BudgetInput spec={PRICE} onChange={() => {}} label="Your budget (optional)" />);
+    expect(screen.getByText("Your budget (optional)")).toBeInTheDocument();
+  });
 });

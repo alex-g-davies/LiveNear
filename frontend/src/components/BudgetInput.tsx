@@ -7,6 +7,10 @@ import { formatBudgetInput, formatUsd } from "../lib/format";
 interface Props {
   spec: BudgetSpec;
   onChange: (spec: BudgetSpec) => void;
+  /** Overrides the "Budget" label (the welcome modal asks a fuller question). */
+  label?: string;
+  /** Muted nudge under the field, shown only while no budget is set. */
+  hint?: string;
 }
 
 // Short enough to sit side by side in the 240 px panel without ellipsis;
@@ -35,7 +39,7 @@ function parsePct(raw: string, lo: number, hi: number): number {
  * assumptions and shows the max price they support — which is what every
  * downstream consumer receives as "the budget".
  */
-export default function BudgetInput({ spec, onChange }: Props) {
+export default function BudgetInput({ spec, onChange, label, hint }: Props) {
   const setPrice = (e: ChangeEvent<HTMLInputElement>) =>
     onChange({ ...spec, price: parseDollars(e.target.value) });
   const setPayment = (e: ChangeEvent<HTMLInputElement>) =>
@@ -46,10 +50,11 @@ export default function BudgetInput({ spec, onChange }: Props) {
     onChange({ ...spec, ratePct: parsePct(e.target.value, 0, 30) });
 
   const derived = maxPriceForPayment(spec.payment, spec.downPct, spec.ratePct);
+  const unset = spec.mode === "price" ? spec.price === 0 : spec.payment === 0;
 
   return (
     <div className="budget-input">
-      <span className="budget-input__label">Budget</span>
+      <span className="budget-input__label">{label ?? "Budget"}</span>
       <div className="switcher switcher--tight" role="group" aria-label="Budget as">
         {MODES.map((m) => (
           <button
@@ -138,6 +143,7 @@ export default function BudgetInput({ spec, onChange }: Props) {
           </p>
         </>
       )}
+      {hint && unset && <span className="budget-input__hint">{hint}</span>}
     </div>
   );
 }

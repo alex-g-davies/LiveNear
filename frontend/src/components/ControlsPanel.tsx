@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import type { CommuteVariation, RegionInfo, ZipValue } from "../api/client";
 import { BRAND_NAME } from "../config";
@@ -54,6 +54,8 @@ interface Props {
   onZipChosen: (zip: string) => void;
   /** Reopens the welcome modal from the About panel (017 R1). */
   onShowIntro?: () => void;
+  /** First-visit getting-started checklist (new-user onboarding); null hides it. */
+  firstRun?: ReactNode;
 }
 
 /** Floating panel: title, region picker, budget, work controls, switcher, legend. */
@@ -88,6 +90,7 @@ export default function ControlsPanel({
   records,
   onZipChosen,
   onShowIntro,
+  firstRun,
 }: Props) {
   // Mobile-only collapse (015 R5); the toggle is display:none on desktop.
   const [collapsed, setCollapsed] = useState(false);
@@ -103,12 +106,17 @@ export default function ControlsPanel({
         {collapsed ? "▲" : "▼"}
       </button>
       <img src="/brand/logo.png" alt={BRAND_NAME} className="panel-logo" />
+      {firstRun}
 
       <div className="panel__section">
         {regions.length > 0 && (
           <RegionPicker regions={regions} state={state} onStateChange={onStateChange} />
         )}
-        <BudgetInput spec={budgetSpec} onChange={onBudgetSpecChange} />
+        <BudgetInput
+          spec={budgetSpec}
+          onChange={onBudgetSpecChange}
+          hint="Set one to fade areas over budget and focus your matches"
+        />
       </div>
 
       <div className="panel__section work">

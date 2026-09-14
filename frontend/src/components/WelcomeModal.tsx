@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 
 import { BRAND_NAME } from "../config";
+import type { BudgetSpec } from "../lib/affordability";
+import BudgetInput from "./BudgetInput";
 
 const HOW_TOS: { icon: string; text: string }[] = [
   { icon: "💰", text: "Set a budget — areas you can't afford fade out." },
@@ -13,12 +15,18 @@ const HOW_TOS: { icon: string; text: string }[] = [
 
 interface Props {
   onClose: () => void;
+  /** Optional budget capture (new-user onboarding): when wired, a first-timer
+   * can set the budget here — as a price or a monthly payment (020) — and
+   * land on an already-personalized map instead of having to re-find the
+   * field in the panel. */
+  budgetSpec?: BudgetSpec;
+  onBudgetChange?: (spec: BudgetSpec) => void;
 }
 
 /** First-visit welcome modal (017 R1): what the site is and the three moves
  * that matter. App owns visibility + the localStorage dismissal flag; the
  * About panel's "How it works" link reopens it. */
-export default function WelcomeModal({ onClose }: Props) {
+export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange }: Props) {
   // Keyboard users land inside the dialog instead of on the map behind it.
   const ctaRef = useRef<HTMLButtonElement>(null);
   useEffect(() => ctaRef.current?.focus(), []);
@@ -61,9 +69,19 @@ export default function WelcomeModal({ onClose }: Props) {
             </li>
           ))}
         </ul>
+        {onBudgetChange && budgetSpec && (
+          <BudgetInput
+            spec={budgetSpec}
+            onChange={onBudgetChange}
+            label="Your budget (optional)"
+          />
+        )}
         <button type="button" ref={ctaRef} className="welcome__cta" onClick={onClose}>
           Explore the map
         </button>
+        <p className="welcome__reopen">
+          Reopen this intro anytime via ⓘ About &amp; data → “How it works”.
+        </p>
       </div>
     </div>
   );
