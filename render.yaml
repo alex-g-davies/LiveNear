@@ -1,8 +1,9 @@
 # Render blueprint (spec 006 R4): one Docker web service, single origin.
 # MAPBOX_TOKEN is set in the Render dashboard (sync: false) — never here.
-# NOTE: the live service was renamed tradespace -> livenear in the dashboard
-# (018); its onrender.com subdomain keeps the original tradespace-x5xj slug —
-# Render never changes a subdomain after creation.
+# NOTE: the service was recreated as "livenear" (livenear.onrender.com) to get
+# a clean URL; the original tradespace-x5xj service is suspended. Dashboard
+# secrets (MAPBOX_TOKEN) do not carry over — set it on any new service and
+# confirm /api/health reports "isochrone": "live" (spec 021).
 services:
   - type: web
     name: livenear

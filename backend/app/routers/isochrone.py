@@ -72,6 +72,11 @@ def get_isochrone(
 
     if settings.serve_fixture:
         return JSONResponse(content=_load_fixture(settings, work_lat, work_lon, mins))
+    if not settings.mapbox_token.strip():
+        # Production with no token (021 R1): fail loudly rather than serve a
+        # static polygon that masquerades as a live contour for every pin. The
+        # frontend's "Commute layer unavailable" toast covers the 503.
+        raise HTTPException(status_code=503, detail="isochrone unavailable (no token configured)")
 
     try:
         if mode == "drive":

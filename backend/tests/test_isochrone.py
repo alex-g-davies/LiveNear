@@ -103,6 +103,24 @@ def test_fixture_mode_single_band_no_token(make_client):
     assert "fill" not in fc["features"][0]["properties"]  # styling stripped
 
 
+def test_production_without_token_returns_503_not_fixture(make_client, httpx_mock):
+    """021 R1: with STATIC_DIR set (production) and no token, the endpoint must
+    fail loudly — never serve the static Seattle polygon as if it were live."""
+    client = make_client(mapbox_token="", static_dir="/app/static")
+    r = client.get("/api/isochrone", params={"minutes": 30})
+    assert r.status_code == 503
+    assert "no token" in r.json()["detail"]
+    assert httpx_mock.get_requests() == []  # nothing went upstream either
+
+
+def test_production_use_fixture_override_still_serves_fixture(make_client):
+    """USE_FIXTURE=true is the explicit opt-in (CI's Docker smoke test)."""
+    client = make_client(mapbox_token="", static_dir="/app/static", use_fixture=True)
+    r = client.get("/api/isochrone", params={"minutes": 30})
+    assert r.status_code == 200
+    assert [f["properties"]["scenario"] for f in r.json()["features"]] == ["typical"]
+
+
 def test_live_mode_returns_three_variation_bands(make_client, httpx_mock):
     httpx_mock.add_response(json=_SQUARE, is_reusable=True)
     client = make_client(mapbox_token=TOKEN)

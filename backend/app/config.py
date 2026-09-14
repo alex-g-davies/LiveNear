@@ -18,8 +18,10 @@ DATA_DIR = BACKEND_DIR / "data"
 class Settings(BaseSettings):
     """Settings loaded from environment / .env.
 
-    `mapbox_token` is optional: when blank we serve the committed isochrone
-    fixture instead of calling Mapbox (fixture-first mode).
+    `mapbox_token` is optional in LOCAL DEV: when blank we serve the committed
+    isochrone fixture instead of calling Mapbox (fixture-first mode). In
+    production (STATIC_DIR set) a blank token disables the commute endpoints
+    instead — see `serve_fixture` (spec 021).
     """
 
     mapbox_token: str = ""
@@ -56,8 +58,21 @@ class Settings(BaseSettings):
     @property
     def serve_fixture(self) -> bool:
         """True when the isochrone endpoint should serve the committed fixture
-        rather than calling Mapbox: either explicitly forced, or no token set."""
-        return self.use_fixture or not self.mapbox_token.strip()
+        rather than calling Mapbox: forced via USE_FIXTURE, or no token set in
+        local dev (no STATIC_DIR). In production a missing token must NOT be
+        papered over with a static Seattle polygon that ignores the pin
+        (021 R1) — the endpoint returns 503 and /api/health reports it."""
+        if self.use_fixture:
+            return True
+        return not self.mapbox_token.strip() and not self.static_dir.strip()
+
+    @property
+    def isochrone_mode(self) -> str:
+        """'live' (token set), 'fixture' (committed polygon), or 'unavailable'
+        (production with no token) — surfaced by /api/health (021 R2)."""
+        if self.serve_fixture:
+            return "fixture"
+        return "live" if self.mapbox_token.strip() else "unavailable"
 
 
 @lru_cache
