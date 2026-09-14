@@ -7,7 +7,8 @@ Render subdomains are fixed at service creation)*
 Decide where you could live by overlaying **housing cost** and **commute
 time**, nationwide. The map shades every ZIP in a selected state by median
 home value (or YoY change, $/sqft, or a price-to-income affordability
-multiple), hatches ZIPs over your budget, and overlays live traffic-aware
+multiple), hatches ZIPs over your budget — stated as a **home price or a
+monthly payment** (down payment + rate → max price) — and overlays live traffic-aware
 commute contours — driving, cycling, or walking — around a work pin you can
 drag or set by address search; add a **second workplace** and the map shows
 only where *both* can commute. A **"Your matches"** panel ranks the ZIPs
@@ -17,7 +18,8 @@ affordability multiple, state percentile context, routed rush-hour commute
 ranges (e.g. "55–73 min"), and a Wikipedia area summary — pin one ZIP to
 compare it against another, jump around via the top YoY movers list, and
 share any view as a URL. First-time visitors are geolocated to their own
-state (with a clean fallback).
+state (with a clean fallback). The legend states the **data vintage** (the
+ZHVI `as_of` month) so a snapshot is never mistaken for live pricing.
 
 Built spec-by-spec (see [`specs/`](specs/)): Seattle MVP
 ([`001`](specs/001-mvp)) → metric enrichment ([`002`](specs/002-data-enrichment))
@@ -37,7 +39,8 @@ Built spec-by-spec (see [`specs/`](specs/)): Seattle MVP
 ([`016`](specs/016-dual-workplaces)) → orientation & clarity
 ([`017`](specs/017-orientation-and-clarity)) → LiveNear rebrand
 ([`018`](specs/018-livenear-rebrand)) → matches shortlist
-([`019`](specs/019-matches-shortlist)).
+([`019`](specs/019-matches-shortlist)) → monthly-payment budget
+([`020`](specs/020-monthly-payment-budget)).
 
 The map is the product: a FastAPI backend serves preprocessed aggregate data
 and proxies the (token-bearing) Mapbox calls; a React + MapLibre frontend
@@ -71,7 +74,9 @@ cd backend
 .\.venv\Scripts\python.exe -m ruff check . ; .\.venv\Scripts\python.exe -m ruff format .
 ```
 
-Endpoints (rate-limited per IP; data responses carry strong ETags + gzip):
+Endpoints (rate-limited per IP; data responses carry strong ETags + gzip;
+the multi-call Mapbox proxies — three isochrone scenarios, six commute
+samples — fan out concurrently on a small thread pool, `app/fanout.py`):
 
 | Method/Path             | Purpose                                                       |
 | ----------------------- | ------------------------------------------------------------- |

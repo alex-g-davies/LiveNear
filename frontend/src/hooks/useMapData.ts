@@ -10,6 +10,10 @@ export interface MapData {
   error: string | null;
   /** Non-blocking degradations to surface as toasts (005 R2). */
   notices: string[];
+  /** Vintage of the loaded state's values (ISO date from the payload's
+   * `as_of`); null until the records arrive. Surfaced in the legend and
+   * About so nobody mistakes a months-old snapshot for live prices. */
+  asOf: string | null;
 }
 
 const EMPTY: Map<string, ZipValue> = new Map();
@@ -28,6 +32,7 @@ export function useMapData(state: string): MapData {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [recordsFailed, setRecordsFailed] = useState(false);
+  const [asOf, setAsOf] = useState<string | null>(null);
 
   // Choropleth geometry — refetched when the selected state changes.
   useEffect(() => {
@@ -49,6 +54,7 @@ export function useMapData(state: string): MapData {
       .then((h) => {
         if (cancelled) return;
         setRecords(new Map(h.zips.map((z) => [z.zip, z])));
+        setAsOf(h.as_of || null);
         setRecordsFailed(false);
       })
       .catch(() => !cancelled && setRecordsFailed(true));
@@ -60,5 +66,5 @@ export function useMapData(state: string): MapData {
   const notices: string[] = [];
   if (recordsFailed) notices.push(NOTICE_RECORDS);
 
-  return { geojson, records, loading, error, notices };
+  return { geojson, records, loading, error, notices, asOf };
 }
