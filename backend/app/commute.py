@@ -14,12 +14,14 @@ from __future__ import annotations
 import datetime
 import logging
 import time
+from functools import partial
 from typing import Any
 
 import httpx
 
 from . import tzlookup, usage
 from .bounded_cache import BoundedCache
+from .fanout import run_parallel
 from .isochrone import next_departure, snap_origin
 
 logger = logging.getLogger(__name__)
@@ -82,26 +84,36 @@ def _route_minutes(
     return round(body["routes"][0]["duration"] / 60)
 
 
-def _leg(
-    token: str,
-    profile: str,
-    from_lat: float,
-    from_lon: float,
-    to_lat: float,
-    to_lon: float,
-    departures: list[str | None],
-) -> tuple[int, int] | None:
-    """Sampled minutes for one direction -> (min, max); None when every sample
-    lacks a route. A partially failing window still yields a (narrower) range."""
-    samples = [
-        m
-        for depart in departures
-        if (m := _route_minutes(token, profile, from_lat, from_lon, to_lat, to_lon, depart))
-        is not None
-    ]
-    if not samples:
-        return None
-    return min(samples), max(samples)
+# (from_lat, from_lon, to_lat, to_lon, departures)
+Leg = tuple[float, float, float, float, list[str | None]]
+
+
+def _leg_ranges(token: str, profile: str, legs: list[Leg]) -> list[tuple[int, int] | None]:
+    """Sampled minutes per leg -> (min, max), or None when every sample of that
+    leg lacks a route. A partially failing window still yields a (narrower)
+    range. Every sample of every leg is fetched concurrently (020 follow-up)
+    so a drive estimate costs one round trip instead of six; an upstream HTTP
+    error on any sample propagates as before."""
+    tasks = []
+    spans: list[tuple[int, int]] = []
+    for from_lat, from_lon, to_lat, to_lon, departures in legs:
+        start = len(tasks)
+        for depart in departures:
+            tasks.append(
+                partial(_route_minutes, token, profile, from_lat, from_lon, to_lat, to_lon, depart)
+            )
+        spans.append((start, len(tasks)))
+    results = run_parallel(tasks)
+    out: list[tuple[int, int] | None] = []
+    for start, end in spans:
+        samples: list[int] = []
+        for r in results[start:end]:
+            if isinstance(r, BaseException):
+                raise r
+            if r is not None:
+                samples.append(r)
+        out.append((min(samples), max(samples)) if samples else None)
+    return out
 
 
 def fetch_commute(
@@ -147,8 +159,14 @@ def fetch_commute(
         pm_departs = [None]
 
     logger.info("Fetching commute estimate: mode=%s", mode)  # no coordinates, no token
-    am = _leg(token, profile, from_lat, from_lon, to_lat, to_lon, am_departs)
-    pm = _leg(token, profile, to_lat, to_lon, from_lat, from_lon, pm_departs)
+    am, pm = _leg_ranges(
+        token,
+        profile,
+        [
+            (from_lat, from_lon, to_lat, to_lon, am_departs),
+            (to_lat, to_lon, from_lat, from_lon, pm_departs),
+        ],
+    )
 
     payload: dict[str, Any] | None = None
     if am is not None and pm is not None:

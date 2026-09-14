@@ -12,6 +12,7 @@ import datetime
 import logging
 import math
 import time
+from functools import partial
 from typing import Any
 
 import httpx
@@ -19,6 +20,7 @@ from shapely.geometry import mapping, shape
 
 from . import tzlookup, usage
 from .bounded_cache import BoundedCache
+from .fanout import run_parallel
 
 logger = logging.getLogger(__name__)
 
@@ -272,14 +274,27 @@ def fetch_variation(
     now = now or datetime.datetime.now(tzlookup.tz_for(lat, lon))
     logger.info("Fetching commute variation: %s min from work location", minutes)
 
-    # Fetch the succeeding scenarios in outer->inner order.
-    fetched: list[tuple[str, str, dict[str, Any]]] = []  # (scenario, label, feature)
-    for scenario, hour, label in SCENARIOS:
-        try:
-            raw = _fetch_contour(
-                token, lat, lon, minutes, "driving-traffic", next_departure(hour, now)
+    # Fetch every scenario concurrently (020 follow-up: one round trip, not
+    # three), keeping outer->inner order for the nesting clip below.
+    results = run_parallel(
+        [
+            partial(
+                _fetch_contour,
+                token,
+                lat,
+                lon,
+                minutes,
+                "driving-traffic",
+                next_departure(hour, now),
             )
-        except httpx.HTTPError:
+            for _, hour, _ in SCENARIOS
+        ]
+    )
+    fetched: list[tuple[str, str, dict[str, Any]]] = []  # (scenario, label, feature)
+    for (scenario, _, label), raw in zip(SCENARIOS, results, strict=True):
+        if isinstance(raw, BaseException):
+            if not isinstance(raw, httpx.HTTPError):
+                raise raw
             logger.warning("Isochrone scenario %s failed", scenario)
             continue
         cleaned = strip_mapbox_props(raw, minutes)
