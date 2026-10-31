@@ -1,0 +1,13 @@
+rules:
+  - id: a
+    kind: traffic_insurance_tax
+    effective_from: 2024-01-01
+    effective_to: 2026-01-01
+    params: {ev: 1, phev: 1, hybrid: 1, ice: 1}
+    source_url: fixture
+  - id: b
+    kind: traffic_insurance_tax
+    effective_from: 2025-06-01
+    effective_to: null
+    params: {ev: 2, phev: 2, hybrid: 2, ice: 2}
+    source_url: fixture

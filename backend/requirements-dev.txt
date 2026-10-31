@@ -7,3 +7,8 @@ ruff>=0.4
 
 # Data preprocessing (scripts/build_data.py only; not needed to run the app)
 pandas>=2.2
+
+# Cars module (spec 022): property tests + offline market-model fit
+hypothesis>=6.100
+scipy>=1.12
+statsmodels>=0.14

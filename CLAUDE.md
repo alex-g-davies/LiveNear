@@ -30,9 +30,38 @@ optimization, and forecasting.
 
 ```
 backend/      FastAPI app, isochrone proxy, data loading, tests
-frontend/     React + Vite SPA, MapLibre map
+  app/cars/   Norway car TCO module (spec 022): engine/, market/, ingest/, rules/
+frontend/     React + Vite SPA, MapLibre map; src/cars/ for the car screens
 specs/        One spec per feature (the source of truth for what to build)
 ```
+
+## Cars module (spec 022)
+
+A second product surface at `/cars`: total cost of owning a car in Norway
+for newcomers. Rules that apply inside `backend/app/cars/` and
+`frontend/src/cars/`, on top of everything else in this file:
+
+- **Engine purity.** `app/cars/engine` and `app/cars/market` do no I/O,
+  read no clock and touch no network; dates, rules and seeds are inputs.
+- **Money is integer øre** in the engine and stored data; floats only inside
+  the Monte Carlo arrays. Round for display only.
+- **No silent defaults.** Every default is `status: estimate` with a written
+  `basis`; tax rules live only in `app/cars/rules/tax_rules.yaml` with
+  effective dates and source URLs.
+- **Tests before formulas.** Add or update a golden case
+  (`scenarios/golden/`, worked in `docs/cars/golden/`) or a property test
+  before changing a line item.
+- **Data terms.** Check and record terms in `docs/cars/sources.md` before
+  automating any source. FINN.no is never scraped (see that file); used-car
+  listings arrive as owner-collected CSV until FINN consents in writing.
+  Listings and raw snapshots go to the owner's private R2 bucket, never
+  this public repo; only derived bundles are committed under
+  `backend/data/cars/`.
+- **No personal data server-side.** Profiles, selections and overrides live
+  in the browser and the URL; scenario runs are stateless.
+- Commands (from `backend/`): engine CLI
+  `python -m app.cars.engine.cli scenarios/example.yaml`; ingestion
+  `python -m app.cars.ingest.runner --help` (needs `requirements-ingest.txt`).
 
 ## Commands
 

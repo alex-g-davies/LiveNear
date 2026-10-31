@@ -1,0 +1,290 @@
+name: g1_used_cash
+worked_in: docs/cars/golden/g1_used_cash.md
+inputs:
+  seed: 1
+  draws: 200
+  user:
+    start_date: '2027-01-01'
+    exit_odds:
+      p12: 50
+      p24: 0
+      p36: 50
+      p48: 0
+    km_per_year: 12000
+    charging_mix:
+      home_pct: 100
+      work_free_pct: 0
+      public_pct: 0
+    pay_mode: loan
+    return_on_cash_pct: 0
+    down_payment_nok: 0
+    insurance:
+      age_band: 30-39
+      claims_free_years: 5
+      has_claims_free_letter: false
+    limits:
+      modes:
+      - new
+      - lease
+      - used_1_3
+      - used_5_plus
+  market:
+    tax_rules: tests/cars/fixtures/tax_rules_fixture.yaml
+    charging:
+      home:
+        value: 100
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      public:
+        value: 500
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    used_price_drift:
+      value: 0
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+    rental_per_month:
+      value_nok: 0
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+    materiality_threshold:
+      value: 0.05
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+  options:
+  - id: used-cash
+    label: used-cash
+    vehicle:
+      variant_id: fx-ev
+      make: Fixture
+      model: EV
+      trim_group: Base
+      model_year: 2023
+      energy_type: ev
+      drive: rwd
+      battery_kwh: 60
+      heat_pump: true
+      auto_precondition: true
+      efficiency_wh_per_km:
+        value: 200
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      winter_factor:
+        value: 1.0
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      tyre_set:
+        value_nok: 10000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      tyre_life_km:
+        value: 1000000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      service_per_year:
+        value_nok: 1200
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      fun_score:
+        value: 5
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      new_price:
+        value_nok: 400000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    deal:
+      mode: used_1_3
+      price:
+        value_nok: 200000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      age_months_at_purchase: 36
+      km_at_purchase: 40000
+      seller_type: dealer
+      purchase_date: '2027-01-01'
+      delivery_months:
+        value: 0
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      exit_friction_pct:
+        value: 5
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    insurance:
+      annual:
+        value_nok: 12000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    resale:
+      p50_nok:
+      - 200000
+      - 198333.33
+      - 196666.67
+      - 195000.0
+      - 193333.33
+      - 191666.67
+      - 190000.0
+      - 188333.33
+      - 186666.67
+      - 185000.0
+      - 183333.33
+      - 181666.67
+      - 180000
+      - 178500.0
+      - 177000.0
+      - 175500.0
+      - 174000.0
+      - 172500.0
+      - 171000.0
+      - 169500.0
+      - 168000.0
+      - 166500.0
+      - 165000.0
+      - 163500.0
+      - 162000
+      - 160650.0
+      - 159300.0
+      - 157950.0
+      - 156600.0
+      - 155250.0
+      - 153900.0
+      - 152550.0
+      - 151200.0
+      - 149850.0
+      - 148500.0
+      - 147150.0
+      - 145800
+      - 144585.0
+      - 143370.0
+      - 142155.0
+      - 140940.0
+      - 139725.0
+      - 138510.0
+      - 137295.0
+      - 136080.0
+      - 134865.0
+      - 133650.0
+      - 132435.0
+      - 131220
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220.0
+      - 131220
+      log_sigma:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      source:
+        value: explicit fixture path
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+        kind: str
+expected:
+  option: used-cash
+  cash_up_front_ore: 21500000
+  tco_ore:
+    12: 6325000
+    36: 13425000
+  npc_ore:
+    12: 6325000
+    36: 13425000
+  per_month_ore:
+    12: 527083
+    36: 372917
+  per_km_ore:
+    12: 527
+    36: 373
+  expected_tco_ore: 9875000
+  display_36_ore:
+    value_lost: 6149000
+    financing: 0
+    insurance: 3600000
+    fees_and_taxes: 1596000
+    energy: 720000
+    tyres: 1000000
+    service: 360000
+    opportunity_cost: 0

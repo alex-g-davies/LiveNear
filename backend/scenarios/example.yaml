@@ -1,0 +1,194 @@
+# Example scenario for the cars engine CLI (spec 022 R3).
+#
+#   python -m app.cars.engine.cli scenarios/example.yaml
+#
+# Every number here is a PLACEHOLDER flagged `status: estimate` with a basis,
+# so results show Estimate until the owner replaces them with their own
+# situation, real quotes and fitted market paths. Money is NOK (value_nok);
+# the loader converts to øre. Copy this file to scenarios/owner.yaml and edit.
+
+seed: 42
+draws: 2000
+
+user:
+  start_date: 2026-12-01
+  exit_odds: {p12: 15, p24: 35, p36: 35, p48: 15}
+  km_per_year: 12000
+  charging_mix: {home_pct: 70, work_free_pct: 20, public_pct: 10}
+  municipality: Oslo
+  pay_mode: loan
+  return_on_cash_pct: 4
+  down_payment_nok: 100000
+  insurance: {age_band: "30-39", claims_free_years: 0, has_claims_free_letter: true}
+  limits:
+    max_price_nok: 550000
+    must_haves: [heat_pump]
+    modes: [new, lease, used_1_3, used_5_plus]
+  fun_weight: 50
+
+market:
+  tax_rules: ../app/cars/rules/tax_rules.yaml
+  charging:
+    home:
+      value: 150            # øre per kWh incl. grid fee and VAT
+      range: [100, 230]
+      source: "Placeholder: typical Oslo household price 2025/26 incl. nettleie"
+      as_of: 2026-10-31
+      status: estimate
+      basis: "Owner to replace with their own contract; SSB electricity price series feeds this later"
+    public:
+      value: 550
+      range: [450, 750]
+      source: "Placeholder: typical fast-charging price per kWh"
+      as_of: 2026-10-31
+      status: estimate
+      basis: "Owner to replace with the operators on their routes"
+  used_price_drift:
+    value: 0                # annual log-drift of used prices, percent
+    range: [-6, 2]
+    source: "Placeholder until 12 weekly snapshots exist"
+    as_of: 2026-10-31
+    status: estimate
+    basis: "Build spec: default 0 with a plausible range setting the slider ends"
+  rental_per_month:
+    value_nok: 0
+    source: "Owner input: cost of a month without the car"
+    as_of: 2026-10-31
+    status: estimate
+    basis: "Zero until the owner states their rental cost"
+  materiality_threshold:
+    value: 0.05
+    source: "Engine config"
+    as_of: 2026-10-31
+    status: estimate
+    basis: "An input is material when 5 % or more of expected TCO flows through it"
+
+options:
+  - id: m3-rwd-2022-used-dealer
+    label: "Tesla Model 3 RWD 2022, used from a dealer"
+    vehicle: &m3
+      variant_id: tesla-model3-rwd-lfp
+      make: Tesla
+      model: Model 3
+      trim_group: RWD
+      model_year: 2022
+      energy_type: ev
+      drive: rwd
+      body: sedan
+      battery_kwh: 60
+      power_kw: 208
+      heat_pump: true
+      auto_precondition: true
+      efficiency_wh_per_km: {value: 150, source: "Placeholder real-world mild-weather use", as_of: 2026-10-31, status: estimate, basis: "Owner/NAF El Prix to confirm"}
+      winter_factor: {value: 1.25, source: "Placeholder winter uplift", as_of: 2026-10-31, status: estimate, basis: "NAF El Prix winter test to confirm"}
+      tyre_set: {value_nok: 12000, source: "Placeholder winter set on rims, 18 in", as_of: 2026-10-31, status: estimate, basis: "Typical price for this size; owner to check"}
+      tyre_life_km: {value: 40000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Mixed summer/winter wear assumption"}
+      service_per_year: {value_nok: 2500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "EV service is light; brake fluid, cabin filter, inspection"}
+      fun_score: {value: 7.5, source: "Owner weighting", as_of: 2026-10-31, status: estimate, basis: "Owner to set"}
+      new_price: {value_nok: 419900, source: "Placeholder 2022 list price", as_of: 2022-06-01, status: estimate, basis: "Owner's new-price history CSV replaces this"}
+    deal:
+      mode: used_1_3
+      price: {value_nok: 289000, source: "Placeholder dealer asking price", as_of: 2026-10-31, status: estimate, basis: "Cohort value from the market model replaces this"}
+      age_months_at_purchase: 48
+      km_at_purchase: 55000
+      seller_type: dealer
+      purchase_date: 2026-12-01
+      delivery_months: {value: 0, source: "In stock", as_of: 2026-10-31}
+      loan:
+        annual_rate_pct: {value: 6.9, range: [5.5, 8.5], source: "Placeholder car-loan rate", as_of: 2026-10-31, status: estimate, basis: "Owner enters the bank's quoted nominal rate"}
+        term_months: 60
+        establishment_fee: {value_nok: 2500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical etableringsgebyr"}
+        monthly_fee: {value_nok: 50, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical termingebyr"}
+      exit_friction_pct: {value: 8, source: "Placeholder dealer trade-in discount", as_of: 2026-10-31, status: estimate, basis: "Private sale is cheaper but slower"}
+    resale:
+      retention: {annual: 0.86, floor_nok: 60000, base_log_sigma: 0.07, log_sigma_per_year: 0.08, source: "Placeholder geometric retention", as_of: 2026-10-31, status: estimate, basis: "Replaced by the fitted cohort path in M2"}
+
+  - id: m3-rwd-lease-36
+    label: "Tesla Model 3 RWD new, 36-month lease"
+    vehicle:
+      <<: *m3
+      model_year: 2026
+    deal:
+      mode: lease
+      term_months: 36
+      monthly: {value_nok: 5990, source: "Placeholder lease offer", as_of: 2026-10-31, status: estimate, basis: "Owner's lease quotes CSV replaces this"}
+      upfront: {value_nok: 60000, source: "Placeholder startleie", as_of: 2026-10-31, status: estimate, basis: "Owner's lease quotes CSV replaces this"}
+      fees: {value_nok: 5000, source: "Placeholder establishment fee", as_of: 2026-10-31, status: estimate, basis: "Owner's lease quotes CSV replaces this"}
+      km_cap_per_year: {value: 15000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical cap"}
+      excess_km_fee: {value_nok: 1.5, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical per-km charge"}
+      includes: []
+      early_exit:
+        kind: default_estimate
+        recovery_pct: {value: 60, source: "Build spec default rule", as_of: 2026-10-31, status: estimate, basis: "Lessee owes remaining payments less what the lessor recovers by re-leasing"}
+      end_of_lease_fee: {value_nok: 3000, source: "Placeholder return inspection allowance", as_of: 2026-10-31, status: estimate, basis: "Typical wear allowance"}
+      delivery_months: {value: 1, source: "Placeholder delivery time", as_of: 2026-10-31, status: estimate, basis: "Owner to confirm with the dealer"}
+
+  - id: r5-52-new
+    label: "Renault 5 52 kWh, buy new"
+    vehicle:
+      variant_id: renault-5-52
+      make: Renault
+      model: "5"
+      trim_group: 52 kWh
+      model_year: 2026
+      energy_type: ev
+      drive: fwd
+      body: hatchback
+      battery_kwh: 52
+      power_kw: 110
+      heat_pump: true
+      auto_precondition: true
+      efficiency_wh_per_km: {value: 160, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "NAF El Prix to confirm"}
+      winter_factor: {value: 1.3, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Smaller battery, larger winter uplift"}
+      tyre_set: {value_nok: 9000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical price for 18 in"}
+      tyre_life_km: {value: 40000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Assumption"}
+      service_per_year: {value_nok: 3000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer service plan"}
+      fun_score: {value: 7.0, source: "Owner weighting", as_of: 2026-10-31, status: estimate, basis: "Owner to set"}
+      new_price: {value_nok: 329900, source: "Placeholder list price", as_of: 2026-10-31, status: estimate, basis: "Brand price list ingestion replaces this"}
+    deal:
+      mode: new
+      price: {value_nok: 329900, source: "Placeholder list price", as_of: 2026-10-31, status: estimate, basis: "Brand price list ingestion replaces this"}
+      fees: {value_nok: 12000, source: "Placeholder delivery and registration fees", as_of: 2026-10-31, status: estimate, basis: "Typical leveringsomkostninger"}
+      delivery_months: {value: 2, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer to confirm"}
+      registered_on: 2027-02-01
+      loan:
+        annual_rate_pct: {value: 6.4, range: [5.0, 8.0], source: "Placeholder new-car loan rate", as_of: 2026-10-31, status: estimate, basis: "Owner enters the bank's quoted rate"}
+        term_months: 60
+        establishment_fee: {value_nok: 2500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical"}
+        monthly_fee: {value_nok: 50, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical"}
+      exit_friction_pct: {value: 8, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer trade-in discount"}
+    resale:
+      retention: {annual: 0.80, floor_nok: 50000, base_log_sigma: 0.08, log_sigma_per_year: 0.10, source: "Placeholder geometric retention, new car", as_of: 2026-10-31, status: estimate, basis: "Replaced by the fitted retention curve in M2"}
+
+  - id: ioniq5-2021-used-private
+    label: "Hyundai Ioniq 5 LR RWD 2021, used from a private seller"
+    vehicle:
+      variant_id: hyundai-ioniq5-lr-rwd-73
+      make: Hyundai
+      model: Ioniq 5
+      trim_group: Long Range RWD
+      model_year: 2021
+      energy_type: ev
+      drive: rwd
+      body: crossover
+      battery_kwh: 72.6
+      power_kw: 160
+      heat_pump: true
+      auto_precondition: false
+      efficiency_wh_per_km: {value: 175, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "NAF El Prix to confirm"}
+      winter_factor: {value: 1.25, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Assumption"}
+      tyre_set: {value_nok: 13000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "19 in"}
+      tyre_life_km: {value: 40000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Assumption"}
+      service_per_year: {value_nok: 3500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer service"}
+      fun_score: {value: 6.5, source: "Owner weighting", as_of: 2026-10-31, status: estimate, basis: "Owner to set"}
+    deal:
+      mode: used_5_plus
+      price: {value_nok: 219000, source: "Placeholder private asking price", as_of: 2026-10-31, status: estimate, basis: "Cohort value replaces this"}
+      age_months_at_purchase: 62
+      km_at_purchase: 90000
+      seller_type: private
+      purchase_date: 2026-12-01
+      delivery_months: {value: 0, source: "Available now", as_of: 2026-10-31}
+      exit_friction_pct: {value: 4, source: "Placeholder private-sale friction", as_of: 2026-10-31, status: estimate, basis: "Advertising, time, haggling"}
+    resale:
+      retention: {annual: 0.88, floor_nok: 50000, base_log_sigma: 0.09, log_sigma_per_year: 0.08, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Older cars lose value more slowly in absolute terms"}

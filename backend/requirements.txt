@@ -7,3 +7,6 @@ pydantic-settings>=2.2
 tzdata>=2024.1  # IANA tz database for zoneinfo (Windows has none built in)
 shapely>=2.0  # runtime: clip commute bands so they nest (app/isochrone.py)
 slowapi>=0.1.9  # per-IP rate limiting on the Mapbox proxy endpoints (spec 004)
+numpy>=1.26  # cars module (spec 022): Monte Carlo bands in the scenario engine
+pyyaml>=6.0  # cars module: rules/tax_rules.yaml and scenario YAML
+boto3>=1.34  # cars module: optional R2 (S3-compatible) listings/raw snapshot storage
