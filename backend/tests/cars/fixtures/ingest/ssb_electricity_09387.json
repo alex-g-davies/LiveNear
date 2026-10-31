@@ -1,0 +1,15 @@
+{
+ "version": "2.0",
+ "class": "dataset",
+ "label": "09387: Kraftpris, nettleie og avgifter for husholdninger, etter statistikkvariabel og kvartal",
+ "source": "Statistisk sentralbyrå",
+ "updated": "2026-10-20T06:00:00Z",
+ "id": ["ContentsCode", "Tid"],
+ "size": [1, 1],
+ "dimension": {
+  "ContentsCode": {"label": "statistikkvariabel", "category": {"index": {"KraftprisNettleieAvg": 0}, "label": {"KraftprisNettleieAvg": "Kraftpris, nettleie og avgifter (øre/kWh)"}, "unit": {"KraftprisNettleieAvg": {"base": "øre/kWh", "decimals": 1}}}},
+  "Tid": {"label": "kvartal", "category": {"index": {"2026K3": 0}, "label": {"2026K3": "2026K3"}}}
+ },
+ "value": [148.6],
+ "role": {"time": ["Tid"], "metric": ["ContentsCode"]}
+}

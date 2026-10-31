@@ -1,0 +1,30 @@
+{
+ "meta": {"schema": "https://json-schema.org/draft/2020-12/schema#", "id": "fixture", "prepared": "2026-10-30T07:00:00", "test": false, "sender": {"id": "NB"}},
+ "data": {
+  "dataSets": [
+   {
+    "action": "Information",
+    "series": {
+     "0:0:0:0": {
+      "attributes": [0, null, null],
+      "observations": {"0": [4.25]}
+     }
+    }
+   }
+  ],
+  "structure": {
+   "name": "Interest rates",
+   "dimensions": {
+    "series": [
+     {"id": "FREQ", "name": "Frequency", "values": [{"id": "B", "name": "Business"}]},
+     {"id": "INSTRUMENT_TYPE", "name": "Instrument", "values": [{"id": "KPRA", "name": "Key policy rate"}]},
+     {"id": "TENOR", "name": "Tenor", "values": [{"id": "SD", "name": "Sight deposit"}]},
+     {"id": "DECIMALS", "name": "Decimals", "values": [{"id": "R", "name": "Rounded"}]}
+    ],
+    "observation": [
+     {"id": "TIME_PERIOD", "name": "Time period", "role": "time", "values": [{"id": "2026-10-29", "name": "2026-10-29"}]}
+    ]
+   }
+  }
+ }
+}

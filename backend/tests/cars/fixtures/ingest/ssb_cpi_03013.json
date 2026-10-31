@@ -1,0 +1,16 @@
+{
+ "version": "2.0",
+ "class": "dataset",
+ "label": "03013: Konsumprisindeks, etter konsumgruppe, statistikkvariabel og måned",
+ "source": "Statistisk sentralbyrå",
+ "updated": "2026-10-10T06:00:00Z",
+ "id": ["Konsumgrp", "ContentsCode", "Tid"],
+ "size": [1, 1, 2],
+ "dimension": {
+  "Konsumgrp": {"label": "konsumgruppe", "category": {"index": {"TOTAL": 0}, "label": {"TOTAL": "Totalindeks"}}},
+  "ContentsCode": {"label": "statistikkvariabel", "category": {"index": {"KpiIndMnd": 0}, "label": {"KpiIndMnd": "Konsumprisindeks (2015=100)"}, "unit": {"KpiIndMnd": {"base": "indeks", "decimals": 1}}}},
+  "Tid": {"label": "måned", "category": {"index": {"2026M08": 0, "2026M09": 1}, "label": {"2026M08": "2026M08", "2026M09": "2026M09"}}}
+ },
+ "value": [137.4, 137.9],
+ "role": {"time": ["Tid"], "metric": ["ContentsCode"]}
+}

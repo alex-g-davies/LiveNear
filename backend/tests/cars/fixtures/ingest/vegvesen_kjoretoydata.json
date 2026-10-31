@@ -1,0 +1,27 @@
+{
+ "kjoretoydataListe": [
+  {
+   "kjoretoyId": {"kjennemerke": "EL12345", "understellsnummer": "FIXTUREVIN0000001"},
+   "forstegangsregistrering": {"registrertForstegangNorgeDato": "2021-08-17"},
+   "registrering": {"registreringsstatus": {"kodeVerdi": "REGISTRERT", "kodeBeskrivelse": "Registrert"}},
+   "godkjenning": {
+    "forstegangsGodkjenning": {"forstegangRegistrertDato": "2021-08-17"},
+    "tekniskGodkjenning": {
+     "tekniskeData": {
+      "generelt": {"merke": [{"merke": "TESLA", "merkeKode": "1310"}], "handelsbetegnelse": ["MODEL 3"]},
+      "motorOgDrivverk": {
+       "motor": [
+        {
+         "drivstoff": [{"drivstoffKode": {"kodeVerdi": "5", "kodeNavn": "Elektrisk", "kodeBeskrivelse": "Elektrisk"}}],
+         "maksNettoEffekt": 208.0
+        }
+       ]
+      },
+      "vekter": {"egenvekt": 1752, "tillattTotalvekt": 2149}
+     }
+    }
+   }
+  }
+ ],
+ "feilmelding": null
+}
