@@ -1,0 +1,332 @@
+[
+ {
+  "variant_id": "tesla-model3-rwd",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "tesla-model3-rwd.2021.new_price",
+   "value": 39990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-rwd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "tesla-model3-rwd.2022.new_price",
+   "value": 41990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-rwd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "tesla-model3-rwd.2023.new_price",
+   "value": 38990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-rwd-highland",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "tesla-model3-rwd-highland.2024.new_price",
+   "value": 39990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-rwd-highland",
+  "model_year": 2025,
+  "price_ore": {
+   "id": "tesla-model3-rwd-highland.2025.new_price",
+   "value": 38990000,
+   "source": "New-price history CSV",
+   "as_of": "2025-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2025-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-rwd-highland",
+  "model_year": 2026,
+  "price_ore": {
+   "id": "tesla-model3-rwd-highland.2026.new_price",
+   "value": 38990000,
+   "source": "New-price history CSV",
+   "as_of": "2026-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2026-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-lr-awd",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "tesla-model3-lr-awd.2019.new_price",
+   "value": 48990000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-model3-lr-awd",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "tesla-model3-lr-awd.2020.new_price",
+   "value": 47990000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "tesla-modely-lr-awd.2022.new_price",
+   "value": 54990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "tesla-modely-lr-awd.2023.new_price",
+   "value": 49990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "tesla-modely-lr-awd.2024.new_price",
+   "value": 47990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "hyundai-ioniq5-lr-rwd",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "hyundai-ioniq5-lr-rwd.2021.new_price",
+   "value": 43990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "hyundai-ioniq5-lr-rwd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "hyundai-ioniq5-lr-rwd.2022.new_price",
+   "value": 45990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "hyundai-ioniq5-lr-rwd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "hyundai-ioniq5-lr-rwd.2023.new_price",
+   "value": 46990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-enyaq-80-rwd",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "skoda-enyaq-80-rwd.2021.new_price",
+   "value": 42990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-enyaq-80-rwd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "skoda-enyaq-80-rwd.2022.new_price",
+   "value": 44990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-enyaq-80-rwd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "skoda-enyaq-80-rwd.2023.new_price",
+   "value": 45990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id4-pro-rwd",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "vw-id4-pro-rwd.2021.new_price",
+   "value": 42990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id4-pro-rwd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "vw-id4-pro-rwd.2022.new_price",
+   "value": 44990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id4-pro-rwd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "vw-id4-pro-rwd.2023.new_price",
+   "value": 45990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "hyundai-kona-64",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "hyundai-kona-64.2019.new_price",
+   "value": 34990000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "hyundai-kona-64",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "hyundai-kona-64.2020.new_price",
+   "value": 35990000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ }
+]

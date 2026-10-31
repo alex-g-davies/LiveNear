@@ -1,0 +1,176 @@
+[
+ {
+  "offer_id": "m3h-36-15k",
+  "variant_id": "tesla-model3-rwd-highland",
+  "model_year": 2026,
+  "term_months": 36,
+  "monthly_ore": {
+   "id": "m3h-36-15k.monthly",
+   "value": 599000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "m3h-36-15k.upfront",
+   "value": 6000000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "fees_ore": {
+   "id": "m3h-36-15k.fees",
+   "value": 500000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "m3h-36-15k.km_cap",
+   "value": 15000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "m3h-36-15k.excess_km_fee",
+   "value": 150,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "m3h-36-15k.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-10-31",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "m3h-36-15k.end_fee",
+   "value": 300000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "m3h-36-15k.delivery_months",
+   "value": 1,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "source": "Placeholder lease offer",
+  "as_of": "2026-10-31",
+  "status": "estimate"
+ },
+ {
+  "offer_id": "my-36-15k",
+  "variant_id": "tesla-modely-lr-awd",
+  "model_year": 2024,
+  "term_months": 36,
+  "monthly_ore": {
+   "id": "my-36-15k.monthly",
+   "value": 699000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "my-36-15k.upfront",
+   "value": 7000000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "fees_ore": {
+   "id": "my-36-15k.fees",
+   "value": 500000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "my-36-15k.km_cap",
+   "value": 15000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "my-36-15k.excess_km_fee",
+   "value": 150,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "my-36-15k.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-10-31",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "my-36-15k.end_fee",
+   "value": 300000,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "my-36-15k.delivery_months",
+   "value": 1,
+   "source": "Placeholder lease offer",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner's lease quotes CSV replaces this",
+   "range": null
+  },
+  "source": "Placeholder lease offer",
+  "as_of": "2026-10-31",
+  "status": "estimate"
+ }
+]

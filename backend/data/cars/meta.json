@@ -1,0 +1,39 @@
+{
+ "bundle_as_of": "2026-10-31",
+ "schema_version": 1,
+ "sources": [
+  {
+   "name": "seed catalogue",
+   "last_fetch": "2026-10-31",
+   "rows": 8,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  },
+  {
+   "name": "new-price history CSV",
+   "last_fetch": "2026-10-31",
+   "rows": 22,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  },
+  {
+   "name": "lease quotes CSV",
+   "last_fetch": "2026-10-31",
+   "rows": 2,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  },
+  {
+   "name": "listings CSV",
+   "last_fetch": null,
+   "rows": 0,
+   "quarantined": 0,
+   "status": "disabled",
+   "note": "no listings fitted yet"
+  }
+ ],
+ "note": "Priors only: no listings fitted yet. Replace by running the bundle builder with the owner's listings CSV."
+}

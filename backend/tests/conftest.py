@@ -12,9 +12,11 @@ from app import commute as commute_module
 from app import data_loader, usage
 from app import geocode as geo_module
 from app import isochrone as iso_module
+from app.cars import data_bundle as cars_bundle
 from app.config import Settings, get_settings
 from app.main import app
 from app.ratelimit import limiter
+from app.routers import cars as cars_router
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -39,12 +41,16 @@ def _clear_caches():
     commute_module.clear_cache()
     usage.reset()
     limiter.reset()
+    cars_router.clear_cache()
+    cars_bundle.clear_cache()
     yield
     iso_module.clear_cache()
     geo_module.clear_cache()
     commute_module.clear_cache()
     usage.reset()
     limiter.reset()
+    cars_router.clear_cache()
+    cars_bundle.clear_cache()
 
 
 @pytest.fixture(autouse=True)

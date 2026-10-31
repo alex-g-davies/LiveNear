@@ -1,0 +1,142 @@
+{
+ "as_of": "2026-10-31",
+ "version": "priors-v0",
+ "segments": {
+  "ev-mid": {
+   "a": 0.553,
+   "b": -0.11,
+   "c": -0.08,
+   "sigma_resid": 0.1,
+   "sigma_per_year": 0.08,
+   "beta_logkm": -0.08
+  },
+  "ev-suv": {
+   "a": 0.553,
+   "b": -0.1,
+   "c": -0.08,
+   "sigma_resid": 0.1,
+   "sigma_per_year": 0.08,
+   "beta_logkm": -0.08
+  },
+  "ev-small": {
+   "a": 0.553,
+   "b": -0.12,
+   "c": -0.08,
+   "sigma_resid": 0.12,
+   "sigma_per_year": 0.09,
+   "beta_logkm": -0.08
+  }
+ },
+ "variants": {
+  "tesla-model3-rwd": {
+   "segment": "ev-mid",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2021": 39990000,
+    "2022": 41990000,
+    "2023": 38990000
+   },
+   "cohorts": {}
+  },
+  "tesla-model3-rwd-highland": {
+   "segment": "ev-mid",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2024": 39990000,
+    "2025": 38990000,
+    "2026": 38990000
+   },
+   "cohorts": {}
+  },
+  "tesla-model3-lr-awd": {
+   "segment": "ev-mid",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2019": 48990000,
+    "2020": 47990000
+   },
+   "cohorts": {}
+  },
+  "tesla-modely-lr-awd": {
+   "segment": "ev-suv",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2022": 54990000,
+    "2023": 49990000,
+    "2024": 47990000
+   },
+   "cohorts": {}
+  },
+  "hyundai-ioniq5-lr-rwd": {
+   "segment": "ev-mid",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2021": 43990000,
+    "2022": 45990000,
+    "2023": 46990000
+   },
+   "cohorts": {}
+  },
+  "skoda-enyaq-80-rwd": {
+   "segment": "ev-mid",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2021": 42990000,
+    "2022": 44990000,
+    "2023": 45990000
+   },
+   "cohorts": {}
+  },
+  "vw-id4-pro-rwd": {
+   "segment": "ev-mid",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2021": 42990000,
+    "2022": 44990000,
+    "2023": 45990000
+   },
+   "cohorts": {}
+  },
+  "hyundai-kona-64": {
+   "segment": "ev-small",
+   "shift": 0.0,
+   "new_price_by_year": {
+    "2019": 34990000,
+    "2020": 35990000
+   },
+   "cohorts": {}
+  }
+ },
+ "dealer_premium": {
+  "id": "market.dealer_premium",
+  "value": "0.06",
+  "source": "Placeholder delta (log points)",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Dealer asking vs private asking; fitted from listings later",
+  "range": null
+ },
+ "used_price_drift": {
+  "id": "market.used_price_drift",
+  "value": "0",
+  "source": "Placeholder until 12 weekly snapshots exist",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Build spec: default 0, plausible range sets the slider ends",
+  "range": {
+   "low": "-6",
+   "high": "2"
+  }
+ },
+ "ask_to_sale_discount": {
+  "id": "market.ask_to_sale_discount",
+  "value": "0",
+  "source": "Placeholder until removed listings are tracked",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Needs weekly snapshots of the same ads",
+  "range": null
+ },
+ "status": "estimate",
+ "note": "Priors only: no listings fitted yet. Replace by running the bundle builder with the owner's listings CSV."
+}

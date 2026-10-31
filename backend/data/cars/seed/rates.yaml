@@ -1,0 +1,15 @@
+# Market rates and policy defaults (spec 022 R9). PLACEHOLDERS flagged
+# estimate until the Norges Bank / SSB sources and the owner's quotes land.
+as_of: 2026-10-31
+car_loan_rate_pct: {value: 6.9, range: [5.5, 8.5], source: "Placeholder: typical Norwegian car-loan nominal rate", status: estimate, basis: "Owner enters the bank's quoted rate; monthly refresh planned"}
+home_ore_per_kwh: {value: 150, range: [100, 230], source: "Placeholder: Oslo household price incl. grid fee and VAT", status: estimate, basis: "SSB electricity price series will feed this"}
+public_ore_per_kwh: {value: 550, range: [450, 750], source: "Placeholder: fast-charging price", status: estimate, basis: "Operators on the owner's routes"}
+new_car_fees_nok: {value: 12000, source: "Placeholder delivery and registration fees", status: estimate, basis: "Typical leveringsomkostninger"}
+loan_establishment_fee_nok: {value: 2500, source: "Placeholder", status: estimate, basis: "Typical etableringsgebyr"}
+loan_monthly_fee_nok: {value: 50, source: "Placeholder", status: estimate, basis: "Typical termingebyr"}
+dealer_exit_friction_pct: {value: 8, source: "Placeholder", status: estimate, basis: "Dealer trade-in discount vs private sale"}
+private_exit_friction_pct: {value: 3, source: "Placeholder", status: estimate, basis: "Advertising, time and haggling"}
+dealer_margin_pct: {value: 6, source: "Placeholder", status: estimate, basis: "Dealer asking premium over private asking (market model delta replaces it)"}
+new_car_delivery_months: {value: 2, source: "Placeholder", status: estimate, basis: "Dealer to confirm per model"}
+rental_per_month_nok: {value: 0, source: "Owner input", status: estimate, basis: "Zero until the owner states a rental cost"}
+materiality_threshold: {value: 0.05, source: "Engine config", status: estimate, basis: "5 % of expected TCO"}

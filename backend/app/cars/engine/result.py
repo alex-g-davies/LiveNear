@@ -60,6 +60,7 @@ class MeasureResult(BaseModel):
 
 class InputView(BaseModel):
     id: str
+    label: str
     value: str
     source: str
     as_of: date
@@ -198,6 +199,7 @@ def build_option_result(
         inputs.append(
             InputView(
                 id=rec.id,
+                label=input_label(rec.id),
                 value=_fmt(rec.value),
                 source=rec.source,
                 as_of=rec.as_of,
@@ -239,6 +241,56 @@ def build_option_result(
         resale_p50=list(option.resale.p50_ore) if option.resale else None,
     )
     return result, s, det, sim
+
+
+INPUT_LABELS = {
+    "price": "Purchase price",
+    "fees": "Fees",
+    "delivery_months": "Months until delivery",
+    "loan_rate": "Loan rate",
+    "loan_establishment_fee": "Loan establishment fee",
+    "loan_monthly_fee": "Loan monthly fee",
+    "exit_friction_pct": "Cost to exit (% of value)",
+    "insurance_annual": "Insurance (per year)",
+    "efficiency": "Energy use (Wh/km)",
+    "winter_factor": "Winter factor",
+    "tyre_set": "Winter tyres",
+    "tyre_life_km": "Tyre life (km)",
+    "service_per_year": "Service (per year)",
+    "fun_score": "Fun score",
+    "new_price": "New price",
+    "resale_path": "Resale value path",
+    "resale_retention": "Resale value path",
+    "lease_monthly": "Lease monthly payment",
+    "lease_upfront": "Lease upfront rent",
+    "lease_fees": "Lease fees",
+    "lease_km_cap": "Lease km cap",
+    "lease_excess_km_fee": "Excess km fee",
+    "lease_end_fee": "End-of-lease fee",
+    "early_exit_pct": "Early-exit charge (%)",
+    "early_exit_recovery": "Early-exit recovery (%)",
+    "early_exit_table": "Early-exit table",
+    "charging_home": "Home charging price",
+    "charging_public": "Public charging price",
+    "used_price_drift": "Used-car price drift",
+    "rental_per_month": "Rental while waiting",
+    "materiality_threshold": "Materiality threshold",
+}
+
+
+def input_label(input_id: str) -> str:
+    """Human label for an input id: the last dotted segment, mapped or humanised."""
+    tail = input_id.rsplit(".", 1)[-1]
+    if tail in INPUT_LABELS:
+        return INPUT_LABELS[tail]
+    for key, label in INPUT_LABELS.items():
+        if tail.endswith(key):
+            return label
+    if tail.startswith("traffic_tax"):
+        return "Traffic insurance tax rule"
+    if tail.startswith("re_registration"):
+        return "Re-registration fee rule"
+    return tail.replace("_", " ").capitalize()
 
 
 def _fmt(v: object) -> str:

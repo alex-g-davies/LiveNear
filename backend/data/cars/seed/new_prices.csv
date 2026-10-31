@@ -1,0 +1,23 @@
+variant_id,model_year,list_price_nok_incl_vat,valid_from,source_url,status,basis
+tesla-model3-rwd,2021,399900,2021-01-01,,estimate,Placeholder; owner's new-price history CSV replaces this
+tesla-model3-rwd,2022,419900,2022-01-01,,estimate,Placeholder
+tesla-model3-rwd,2023,389900,2023-01-01,,estimate,Placeholder
+tesla-model3-rwd-highland,2024,399900,2024-01-01,,estimate,Placeholder
+tesla-model3-rwd-highland,2025,389900,2025-01-01,,estimate,Placeholder
+tesla-model3-rwd-highland,2026,389900,2026-01-01,,estimate,Placeholder
+tesla-model3-lr-awd,2019,489900,2019-01-01,,estimate,Placeholder
+tesla-model3-lr-awd,2020,479900,2020-01-01,,estimate,Placeholder
+tesla-modely-lr-awd,2022,549900,2022-01-01,,estimate,Placeholder
+tesla-modely-lr-awd,2023,499900,2023-01-01,,estimate,Placeholder
+tesla-modely-lr-awd,2024,479900,2024-01-01,,estimate,Placeholder
+hyundai-ioniq5-lr-rwd,2021,439900,2021-01-01,,estimate,Placeholder
+hyundai-ioniq5-lr-rwd,2022,459900,2022-01-01,,estimate,Placeholder
+hyundai-ioniq5-lr-rwd,2023,469900,2023-01-01,,estimate,Placeholder
+skoda-enyaq-80-rwd,2021,429900,2021-01-01,,estimate,Placeholder
+skoda-enyaq-80-rwd,2022,449900,2022-01-01,,estimate,Placeholder
+skoda-enyaq-80-rwd,2023,459900,2023-01-01,,estimate,Placeholder
+vw-id4-pro-rwd,2021,429900,2021-01-01,,estimate,Placeholder
+vw-id4-pro-rwd,2022,449900,2022-01-01,,estimate,Placeholder
+vw-id4-pro-rwd,2023,459900,2023-01-01,,estimate,Placeholder
+hyundai-kona-64,2019,349900,2019-01-01,,estimate,Placeholder
+hyundai-kona-64,2020,359900,2020-01-01,,estimate,Placeholder
