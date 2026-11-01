@@ -304,3 +304,43 @@ export async function postScenario(
   });
   return readJson<ScenarioResponse>(res, "/cars/scenarios");
 }
+
+// ---- Sources (spec 023 R5: pending tax rules for the checklist) -------------
+
+export interface SourceHealthOut {
+  name: string;
+  last_fetch: string | null;
+  rows: number;
+  quarantined: number;
+  status: "ok" | "stale" | "failed" | "manual" | "disabled";
+  note: string;
+}
+
+export interface PendingRuleOut {
+  id: string;
+  kind?: string;
+  effective_from?: string;
+  [key: string]: unknown;
+}
+
+export interface SourcesResponse {
+  bundle_as_of: string;
+  listings_mode: ListingsMode;
+  sources: SourceHealthOut[];
+  pending_rules: PendingRuleOut[];
+  unverified_rules: string[];
+}
+
+export async function getSources(signal?: AbortSignal): Promise<SourcesResponse> {
+  if (isMockMode()) {
+    return {
+      bundle_as_of: "2026-10-31",
+      listings_mode: "fixture",
+      sources: [],
+      pending_rules: [{ id: "ev_vat_2027_proposed", kind: "ev_vat", effective_from: "2027-01-01" }],
+      unverified_rules: [],
+    };
+  }
+  const res = await fetch(`${CARS_BASE}/sources`, { signal });
+  return readJson<SourcesResponse>(res, "/cars/sources");
+}

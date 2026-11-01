@@ -4,7 +4,7 @@
 // variants and model-year ranges straight from GET /vehicles.
 
 import { useMemo, useState, type ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import type { VehicleOut } from "../api";
 import { MODE_LABELS } from "../lib/measures";
@@ -447,6 +447,16 @@ export default function Situation() {
                 }
               />
             </label>
+            <label className="cars-field">
+              <span className="cars-field__label">When did/will you arrive in Norway?</span>
+              <input
+                type="date"
+                className="cars-input"
+                value={profile.arrival_date ?? ""}
+                onChange={(e) => updateProfile({ arrival_date: e.target.value || null })}
+              />
+              <span className="cars-hint">Optional; sets the deadlines on the checklist.</span>
+            </label>
           </div>
           <fieldset className="cars-fieldset">
             <legend className="cars-legend-label">Must have</legend>
@@ -612,6 +622,9 @@ export default function Situation() {
         <button type="button" className="cars-btn" onClick={onSave}>
           Save draft
         </button>
+        <Link to="/cars/market" className="cars-btn cars-btn--outline">
+          Browse the market
+        </Link>
         <button
           type="button"
           className="cars-btn cars-btn--primary"

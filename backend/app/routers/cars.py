@@ -22,7 +22,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from ..bounded_cache import BoundedCache
 from ..cars import data_bundle
 from ..cars.bundle_schema import ListingsMode
-from ..cars.data_bundle import Bundle, BundleError
+from ..cars.data_bundle import Bundle, BundleError, Listing
 from ..cars.engine.overrides import WhatIf, apply_input_overrides, apply_what_if
 from ..cars.engine.run import run_scenario
 from ..cars.rules import load_tax_rules, pending_rules
@@ -32,6 +32,8 @@ from ..cars.schemas import (
     CohortsResponse,
     ListingOut,
     ListingsResponse,
+    MarketPoint,
+    MarketPointsResponse,
     OptionSummary,
     ScenarioRequest,
     ScenarioResponse,
@@ -196,6 +198,69 @@ def listings(
         for x in b.listings_for(cohort_id)
     ]
     return ListingsResponse(cohort_id=cohort_id, listings_mode=mode, listings=rows)
+
+
+@router.get("/market/points", response_model=MarketPointsResponse)
+@limiter.limit(DATA_LIMIT)
+def market_points(
+    request: Request,
+    cfg: Settings = Depends(get_settings),
+    make: str | None = Query(default=None),
+    year_from: int = Query(default=2010, ge=2010, le=2030),
+    year_to: int = Query(default=2030, ge=2010, le=2030),
+    max_price_nok: int | None = Query(default=None, ge=0),
+    energy_type: list[str] | None = Query(default=None),
+    must_have: list[str] | None = Query(default=None),
+) -> MarketPointsResponse:
+    """One dot per listing for the market map (spec 023 R1): the latest
+    snapshot of each listing, kept only while it is still `listed`. Same
+    filters as /market/cohorts; here `must_have` filters rows out. In
+    `unavailable` mode the list is empty (the screen falls back to cohort
+    points), never a 503."""
+    b = _bundle(cfg)
+    by_id = {v.variant_id: v for v in b.vehicles}
+    latest: dict[str, Listing] = {}
+    for x in b.listings:
+        cur = latest.get(x.listing_id)
+        if cur is None or x.snapshot_date > cur.snapshot_date:
+            latest[x.listing_id] = x
+    out: list[MarketPoint] = []
+    for x in latest.values():
+        if x.status != "listed":
+            continue
+        v = by_id.get(x.variant_id)
+        if v is None:
+            continue
+        if make and v.make.lower() != make.lower():
+            continue
+        if not (year_from <= x.model_year <= year_to):
+            continue
+        if max_price_nok is not None and x.ask_ore > max_price_nok * 100:
+            continue
+        if energy_type and v.energy_type not in energy_type:
+            continue
+        if must_have and not _meets(v, must_have):
+            continue
+        out.append(
+            MarketPoint(
+                listing_id=x.listing_id,
+                variant_id=x.variant_id,
+                cohort_id=f"{x.variant_id}:{x.model_year}",
+                model_year=x.model_year,
+                ask_ore=x.ask_ore,
+                km=x.km,
+                seller_type=x.seller_type,
+                first_reg_month=x.first_reg_month,
+                snapshot_date=x.snapshot_date,
+            )
+        )
+    out.sort(key=lambda p: (p.variant_id, p.model_year, p.listing_id))
+    return MarketPointsResponse(
+        bundle_as_of=b.meta.bundle_as_of,
+        listings_mode=b.listings_mode,
+        n_points=len(out),
+        points=out,
+    )
 
 
 def _request_key(req: ScenarioRequest, start: date, bundle_as_of: date) -> str:

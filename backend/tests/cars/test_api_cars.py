@@ -202,3 +202,76 @@ def test_ranking_follows_measure(client, measure):
     r = client.post("/api/cars/scenarios", json=_req(measure=measure, draws=200)).json()
     exp = [o["result"]["measures"][measure]["expected"]["p50"] for o in r["options"]]
     assert exp == sorted(exp) and r["ranking_measure"] == measure
+
+
+# ---- spec 023 R1: market points -------------------------------------------
+
+IDENTIFYING_KEYS = {"url", "ad_id_or_url", "reg_number", "vin", "dealer_name", "location"}
+
+
+def _keys(obj, acc: set[str]) -> set[str]:
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            acc.add(k)
+            _keys(v, acc)
+    elif isinstance(obj, list):
+        for v in obj:
+            _keys(v, acc)
+    return acc
+
+
+def test_market_points_shape_and_privacy(client):
+    r = client.get("/api/cars/market/points")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["listings_mode"] in ("fixture", "unavailable")
+    assert data["n_points"] == len(data["points"])
+    assert not (_keys(data, set()) & IDENTIFYING_KEYS)
+    if data["listings_mode"] == "fixture":
+        assert data["n_points"] > 0
+        for p in data["points"]:
+            assert re.fullmatch(r"[0-9a-f]{16}", p["listing_id"])
+            assert p["cohort_id"] == f"{p['variant_id']}:{p['model_year']}"
+            assert p["ask_ore"] > 0 and p["km"] >= 0
+            assert p["seller_type"] in ("dealer", "private")
+        # one row per listing, latest snapshot only
+        ids = [p["listing_id"] for p in data["points"]]
+        assert len(ids) == len(set(ids))
+        cohort_ids = {
+            c["cohort_id"] for c in client.get("/api/cars/market/cohorts").json()["cohorts"]
+        }
+        assert {p["cohort_id"] for p in data["points"]} <= cohort_ids
+
+
+def test_market_points_filters(client):
+    base = client.get("/api/cars/market/points").json()
+    if base["listings_mode"] != "fixture":
+        pytest.skip("fixture listings not available")
+    tesla = client.get("/api/cars/market/points", params={"make": "tesla"}).json()
+    assert tesla["n_points"] > 0 and all(
+        p["variant_id"].startswith("tesla-") for p in tesla["points"]
+    )
+    years = client.get(
+        "/api/cars/market/points", params={"year_from": 2022, "year_to": 2022}
+    ).json()
+    assert years["n_points"] > 0 and all(p["model_year"] == 2022 for p in years["points"])
+    cheap = client.get("/api/cars/market/points", params={"max_price_nok": 250_000}).json()
+    assert all(p["ask_ore"] <= 25_000_000 for p in cheap["points"])
+    assert cheap["n_points"] < base["n_points"]
+    awd = client.get("/api/cars/market/points", params={"must_have": ["awd"]}).json()
+    vehicles = {v["variant_id"]: v for v in client.get("/api/cars/vehicles").json()}
+    assert awd["n_points"] < base["n_points"]
+    assert all(vehicles[p["variant_id"]]["drive"] == "awd" for p in awd["points"])
+    none = client.get("/api/cars/market/points", params={"energy_type": ["ice"]}).json()
+    assert none["n_points"] == 0
+
+
+def test_market_points_unavailable_mode_is_empty_not_503(make_client):
+    data_bundle.clear_cache()
+    prod = make_client(static_dir="/nonexistent-static")
+    try:
+        r = prod.get("/api/cars/market/points")
+        assert r.status_code == 200
+        assert r.json()["listings_mode"] == "unavailable" and r.json()["points"] == []
+    finally:
+        data_bundle.clear_cache()

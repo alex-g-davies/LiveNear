@@ -176,12 +176,13 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
   const scenario = useScenario(request);
   const vehicles = useVehicles();
 
-  // Default selection until the Market screen exists: the first four variants
-  // over their full model-year range, applied once when the catalogue lands
-  // and the user has picked nothing.
+  // Default selection for a first visit: the first four variants over their
+  // full model-year range, applied once when the catalogue lands while the
+  // user is on the Situation form and has picked nothing. On Market and
+  // Compare an empty selection stays empty (023 R3: Clear means clear).
   const defaulted = useRef(false);
   useEffect(() => {
-    if (defaulted.current || !vehicles.data) return;
+    if (defaulted.current || !vehicles.data || !onForm) return;
     defaulted.current = true;
     if (state.selection.length > 0) return;
     const first = vehicles.data.slice(0, 4).map<SelectionItem>((v) => ({
@@ -190,7 +191,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       year_to: Math.max(...v.model_years),
     }));
     if (first.length) setState((s) => (s.selection.length ? s : { ...s, selection: first }));
-  }, [vehicles.data, state.selection.length]);
+  }, [vehicles.data, state.selection.length, onForm]);
 
   const api = useMemo<CarStateApi>(
     () => ({

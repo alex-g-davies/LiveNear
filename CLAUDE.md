@@ -30,12 +30,12 @@ optimization, and forecasting.
 
 ```
 backend/      FastAPI app, isochrone proxy, data loading, tests
-  app/cars/   Norway car TCO module (spec 022): engine/, market/, ingest/, rules/
+  app/cars/   Norway car TCO module (specs 022, 023): engine/, market/, ingest/, rules/
 frontend/     React + Vite SPA, MapLibre map; src/cars/ for the car screens
 specs/        One spec per feature (the source of truth for what to build)
 ```
 
-## Cars module (spec 022)
+## Cars module (specs 022, 023)
 
 A second product surface at `/cars`: total cost of owning a car in Norway
 for newcomers. Rules that apply inside `backend/app/cars/` and
