@@ -24,7 +24,7 @@ from decimal import Decimal
 
 from ..bundle_schema import MarketModelParams
 from ..engine.models import MONTHS, In, ResalePath
-from .schema import KM_OFFSET
+from .constants import KM_OFFSET
 
 
 def _log_r(seg, shift: float, age_years: float, km: float) -> float:

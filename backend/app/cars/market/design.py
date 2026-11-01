@@ -7,7 +7,7 @@ import math
 
 import numpy as np
 
-from .schema import KM_OFFSET
+from .constants import KM_OFFSET
 
 
 def logkm(km: np.ndarray | float | int) -> np.ndarray:
