@@ -10,16 +10,18 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from .cars import data_bundle
+from .cars.data_bundle import BundleError
 from .config import Settings, get_settings
 from .data_loader import DataLoadError, get_data_store, load_regions
 from .logging_setup import setup_logging
 from .ratelimit import client_ip, limiter
-from .routers import commute, geocode, housing, isochrone
+from .routers import cars, commute, geocode, housing, isochrone
 
 settings = get_settings()
 setup_logging(settings.log_format)
@@ -48,7 +50,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],  # POST: stateless cars scenario runs (022 R10)
     allow_headers=["*"],
 )
 app.add_middleware(GZipMiddleware, minimum_size=500)
@@ -83,6 +85,7 @@ app.include_router(housing.router)
 app.include_router(isochrone.router)
 app.include_router(geocode.router)
 app.include_router(commute.router)
+app.include_router(cars.router)
 
 
 @app.get(HEALTH_PATH)
@@ -99,12 +102,23 @@ def health(cfg: Settings = Depends(get_settings)) -> JSONResponse:
         regions = []
     if not regions:
         return JSONResponse(status_code=503, content={"status": "unavailable"})
+    # Cars bundle (022 R9): report its vintage and where listings come from, so
+    # a deploy without R2 credentials is visible from one curl, never papered over.
+    try:
+        bundle = data_bundle.get_bundle(production=bool(cfg.static_dir.strip()))
+        cars_info = {
+            "bundle_as_of": bundle.meta.bundle_as_of.isoformat(),
+            "listings": bundle.listings_mode,
+        }
+    except BundleError as exc:
+        cars_info = {"bundle_as_of": None, "listings": "unavailable", "error": str(exc)}
     return JSONResponse(
         content={
             "status": "ok",
             "version": app.version,
             "states": len(regions),
             "isochrone": cfg.isochrone_mode,
+            "cars": cars_info,
         }
     )
 
@@ -113,4 +127,14 @@ def health(cfg: Settings = Depends(get_settings)) -> JSONResponse:
 # the built SPA; mounted last so /api/* keeps routing to the API. Local dev
 # leaves it unset and runs the Vite dev server instead.
 if settings.static_dir and Path(settings.static_dir).is_dir():
-    app.mount("/", StaticFiles(directory=settings.static_dir, html=True), name="spa")
+    _static_root = Path(settings.static_dir)
+    _index = _static_root / "index.html"
+
+    @app.get("/cars", include_in_schema=False)
+    @app.get("/cars/{rest:path}", include_in_schema=False)
+    def spa_cars(rest: str = "") -> FileResponse:
+        """Client-side routes under /cars (022 R1): a hard reload of a deep
+        link must serve the SPA shell, not a 404 from the static mount."""
+        return FileResponse(_index)
+
+    app.mount("/", StaticFiles(directory=_static_root, html=True), name="spa")

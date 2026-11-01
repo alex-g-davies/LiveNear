@@ -1,0 +1,122 @@
+{
+ "as_of": "2026-10-31",
+ "car_loan_rate_pct": {
+  "id": "rates.car_loan_rate_pct",
+  "value": "6.9",
+  "source": "Placeholder: typical Norwegian car-loan nominal rate",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Owner enters the bank's quoted rate; monthly refresh planned",
+  "range": {
+   "low": "5.5",
+   "high": "8.5"
+  }
+ },
+ "home_ore_per_kwh": {
+  "id": "rates.home_ore_per_kwh",
+  "value": 150,
+  "source": "Placeholder: Oslo household price incl. grid fee and VAT",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "SSB electricity price series will feed this",
+  "range": {
+   "low": "100",
+   "high": "230"
+  }
+ },
+ "public_ore_per_kwh": {
+  "id": "rates.public_ore_per_kwh",
+  "value": 550,
+  "source": "Placeholder: fast-charging price",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Operators on the owner's routes",
+  "range": {
+   "low": "450",
+   "high": "750"
+  }
+ },
+ "cpi_index": null,
+ "policy_rate_pct": null,
+ "new_car_fees_ore": {
+  "id": "rates.new_car_fees",
+  "value": 1200000,
+  "source": "Placeholder delivery and registration fees",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Typical leveringsomkostninger",
+  "range": null
+ },
+ "loan_establishment_fee_ore": {
+  "id": "rates.loan_establishment_fee",
+  "value": 250000,
+  "source": "Placeholder",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Typical etableringsgebyr",
+  "range": null
+ },
+ "loan_monthly_fee_ore": {
+  "id": "rates.loan_monthly_fee",
+  "value": 5000,
+  "source": "Placeholder",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Typical termingebyr",
+  "range": null
+ },
+ "dealer_exit_friction_pct": {
+  "id": "rates.dealer_exit_friction_pct",
+  "value": "8",
+  "source": "Placeholder",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Dealer trade-in discount vs private sale",
+  "range": null
+ },
+ "private_exit_friction_pct": {
+  "id": "rates.private_exit_friction_pct",
+  "value": "3",
+  "source": "Placeholder",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Advertising, time and haggling",
+  "range": null
+ },
+ "dealer_margin_pct": {
+  "id": "rates.dealer_margin_pct",
+  "value": "6",
+  "source": "Placeholder",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Dealer asking premium over private asking (market model delta replaces it)",
+  "range": null
+ },
+ "new_car_delivery_months": {
+  "id": "rates.new_car_delivery_months",
+  "value": 2,
+  "source": "Placeholder",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Dealer to confirm per model",
+  "range": null
+ },
+ "rental_per_month_ore": {
+  "id": "rates.rental_per_month",
+  "value": 0,
+  "source": "Owner input",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Zero until the owner states a rental cost",
+  "range": null
+ },
+ "materiality_threshold": {
+  "id": "rates.materiality_threshold",
+  "value": "0.05",
+  "source": "Engine config",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "5 % of expected TCO",
+  "range": null
+ }
+}

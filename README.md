@@ -189,6 +189,36 @@ limits, ~500 m isochrone-origin snapping, and the `MAPBOX_DAILY_CALL_BUDGET`
 breaker (spec 004) keep worst-case usage inside the free tier. Watch the
 Mapbox Statistics page early on; rotate the token if it ever leaks.
 
+## Cars: Norway car total-cost-of-ownership (spec [`022`](specs/022-car-tco))
+
+A second surface at `/cars` for people moving to Norway: which car, got
+which way (buy new, lease, used 1–3 years, used 5+ years), costs least for
+the time they will actually keep it, with P10–P90 bands and a source, date
+and Live/Estimate status on every number. Nothing personal is stored
+server-side: your situation lives in the browser and in the share URL.
+
+```powershell
+cd backend
+# Engine CLI on a scenario YAML (copy scenarios/example.yaml to scenarios/owner.yaml and edit):
+.\.venv\Scripts\python.exe -m app.cars.engine.cli scenarios/example.yaml --exit 36
+# Golden cases and property tests:
+.\.venv\Scripts\python.exe -m pytest tests/cars
+```
+
+- Engine conventions and dated decisions: [`backend/docs/cars/decisions.md`](backend/docs/cars/decisions.md).
+- Data sources, terms decisions and the CSV contracts for hand-collected
+  listings, new-price history and lease quotes: [`backend/docs/cars/sources.md`](backend/docs/cars/sources.md).
+- Tax rules with effective dates: [`backend/app/cars/rules/tax_rules.yaml`](backend/app/cars/rules/tax_rules.yaml)
+  (values marked `unverified` show as Estimate until checked against Skatteetaten).
+- **FINN.no is not scraped.** Its robots.txt and terms forbid automated
+  collection without written consent; a consent request is drafted in
+  [`backend/docs/cars/finn-consent-request.md`](backend/docs/cars/finn-consent-request.md).
+
+Sources used by the cars module (attribution): Statens vegvesen vehicle API
+(NLOD), Norges Bank and Statistics Norway open APIs (NLOD), Skatteetaten
+published rates, NAF El Prix test results (cited per article), and the
+owner's own hand-collected listings and quotes (private, not redistributed).
+
 ## License & data attribution
 
 Code is licensed under **AGPL-3.0** (see [LICENSE](LICENSE)): you may use and

@@ -1,0 +1,26 @@
+# Zero-tax rules: isolates opportunity cost and discounting (golden case G4).
+rules:
+  - id: zero_traffic_tax
+    kind: traffic_insurance_tax
+    effective_from: 2020-01-01
+    effective_to: null
+    params: {ev: 0, phev: 0, hybrid: 0, ice: 0}
+    source_url: fixture
+    status: live
+  - id: zero_re_registration
+    kind: re_registration_fee
+    effective_from: 2020-01-01
+    effective_to: null
+    params:
+      age_bands_ore:
+        - {min_years: 0, ore: 0}
+      ev_factor: "1"
+    source_url: fixture
+    status: live
+  - id: fx_ev_vat
+    kind: ev_vat
+    effective_from: 2023-01-01
+    effective_to: null
+    params: {rate_pct: 25, threshold_ore: 50000000}
+    source_url: fixture
+    status: live

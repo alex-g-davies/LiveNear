@@ -1,0 +1,790 @@
+[
+ {
+  "variant_id": "tesla-model3-rwd",
+  "make": "Tesla",
+  "model": "Model 3",
+  "trim_group": "RWD",
+  "segment": "ev-mid",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "sedan",
+  "battery_kwh": "60",
+  "power_kw": 208,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "235/45 R18",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "tesla-model3-rwd.efficiency",
+   "value": 150,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Real-world mild-weather use; NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "tesla-model3-rwd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "tesla-model3-rwd.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "tesla-model3-rwd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "tesla-model3-rwd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "tesla-model3-rwd.fun_score",
+   "value": "7.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 491,
+  "accel_0_100_s": "6.1"
+ },
+ {
+  "variant_id": "tesla-model3-rwd-highland",
+  "make": "Tesla",
+  "model": "Model 3",
+  "trim_group": "RWD (Highland)",
+  "segment": "ev-mid",
+  "model_years": [
+   2024,
+   2025,
+   2026
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "sedan",
+  "battery_kwh": "60",
+  "power_kw": 208,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "235/45 R18",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "tesla-model3-rwd-highland.efficiency",
+   "value": 145,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Facelift is slightly more efficient; NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "tesla-model3-rwd-highland.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "tesla-model3-rwd-highland.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "tesla-model3-rwd-highland.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "tesla-model3-rwd-highland.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "tesla-model3-rwd-highland.fun_score",
+   "value": "7.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 513,
+  "accel_0_100_s": "6.1"
+ },
+ {
+  "variant_id": "tesla-model3-lr-awd",
+  "make": "Tesla",
+  "model": "Model 3",
+  "trim_group": "Long Range AWD",
+  "segment": "ev-mid",
+  "model_years": [
+   2019,
+   2020
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "sedan",
+  "battery_kwh": "75",
+  "power_kw": 258,
+  "heat_pump": false,
+  "auto_precondition": true,
+  "tyre_size": "235/45 R18",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "tesla-model3-lr-awd.efficiency",
+   "value": 160,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Pre-heat-pump cars use more in winter",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "tesla-model3-lr-awd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "tesla-model3-lr-awd.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "tesla-model3-lr-awd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "tesla-model3-lr-awd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "tesla-model3-lr-awd.fun_score",
+   "value": "8.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 560,
+  "accel_0_100_s": "4.6"
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd",
+  "make": "Tesla",
+  "model": "Model Y",
+  "trim_group": "Long Range AWD",
+  "segment": "ev-suv",
+  "model_years": [
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "crossover",
+  "battery_kwh": "75",
+  "power_kw": 258,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "255/45 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "tesla-modely-lr-awd.efficiency",
+   "value": 170,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "tesla-modely-lr-awd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "tesla-modely-lr-awd.tyre_set",
+   "value": 1400000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "tesla-modely-lr-awd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "tesla-modely-lr-awd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "tesla-modely-lr-awd.fun_score",
+   "value": "7.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 533,
+  "accel_0_100_s": "5.0"
+ },
+ {
+  "variant_id": "hyundai-ioniq5-lr-rwd",
+  "make": "Hyundai",
+  "model": "Ioniq 5",
+  "trim_group": "Long Range RWD",
+  "segment": "ev-mid",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "crossover",
+  "battery_kwh": "72.6",
+  "power_kw": 160,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "235/55 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "hyundai-ioniq5-lr-rwd.efficiency",
+   "value": 175,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "hyundai-ioniq5-lr-rwd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "hyundai-ioniq5-lr-rwd.tyre_set",
+   "value": 1300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "hyundai-ioniq5-lr-rwd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "hyundai-ioniq5-lr-rwd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "hyundai-ioniq5-lr-rwd.fun_score",
+   "value": "6.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 481,
+  "accel_0_100_s": "7.4"
+ },
+ {
+  "variant_id": "skoda-enyaq-80-rwd",
+  "make": "Skoda",
+  "model": "Enyaq",
+  "trim_group": "80 RWD",
+  "segment": "ev-mid",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "crossover",
+  "battery_kwh": "77",
+  "power_kw": 150,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "235/50 R20",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "skoda-enyaq-80-rwd.efficiency",
+   "value": 180,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "skoda-enyaq-80-rwd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "skoda-enyaq-80-rwd.tyre_set",
+   "value": 1300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 to 20 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "skoda-enyaq-80-rwd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "skoda-enyaq-80-rwd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "skoda-enyaq-80-rwd.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 534,
+  "accel_0_100_s": "8.5"
+ },
+ {
+  "variant_id": "vw-id4-pro-rwd",
+  "make": "Volkswagen",
+  "model": "ID.4",
+  "trim_group": "Pro RWD",
+  "segment": "ev-mid",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "crossover",
+  "battery_kwh": "77",
+  "power_kw": 150,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "235/55 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "vw-id4-pro-rwd.efficiency",
+   "value": 180,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "vw-id4-pro-rwd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "vw-id4-pro-rwd.tyre_set",
+   "value": 1300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "vw-id4-pro-rwd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "vw-id4-pro-rwd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "vw-id4-pro-rwd.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 520,
+  "accel_0_100_s": "8.5"
+ },
+ {
+  "variant_id": "hyundai-kona-64",
+  "make": "Hyundai",
+  "model": "Kona Electric",
+  "trim_group": "64 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2019,
+   2020
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "crossover",
+  "battery_kwh": "64",
+  "power_kw": 150,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "215/55 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "hyundai-kona-64.efficiency",
+   "value": 155,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "hyundai-kona-64.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "hyundai-kona-64.tyre_set",
+   "value": 900000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "hyundai-kona-64.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "hyundai-kona-64.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "hyundai-kona-64.fun_score",
+   "value": "5.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 449,
+  "accel_0_100_s": "7.6"
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd-juniper",
+  "make": "Tesla",
+  "model": "Model Y",
+  "trim_group": "Long Range AWD (2025 facelift)",
+  "segment": "ev-suv",
+  "model_years": [
+   2025,
+   2026
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "crossover",
+  "battery_kwh": "75",
+  "power_kw": null,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "255/45 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "tesla-modely-lr-awd-juniper.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Facelift is slightly more efficient than the 2022-2024 car; NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "tesla-modely-lr-awd-juniper.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "tesla-modely-lr-awd-juniper.tyre_set",
+   "value": 1400000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "tesla-modely-lr-awd-juniper.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "tesla-modely-lr-awd-juniper.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "tesla-modely-lr-awd-juniper.fun_score",
+   "value": "7.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 586,
+  "accel_0_100_s": "4.8"
+ },
+ {
+  "variant_id": "mg-mg4-64",
+  "make": "MG",
+  "model": "MG4",
+  "trim_group": "64 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2023,
+   2024,
+   2025,
+   2026
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "hatchback",
+  "battery_kwh": "64",
+  "power_kw": 150,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "235/45 R18",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "mg-mg4-64.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "mg-mg4-64.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "mg-mg4-64.tyre_set",
+   "value": 1000000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 to 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "mg-mg4-64.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "mg-mg4-64.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 7,
+  "warranty_km": 150000,
+  "fun_score": {
+   "id": "mg-mg4-64.fun_score",
+   "value": "6.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 435,
+  "accel_0_100_s": "7.9"
+ }
+]

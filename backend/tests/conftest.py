@@ -12,9 +12,11 @@ from app import commute as commute_module
 from app import data_loader, usage
 from app import geocode as geo_module
 from app import isochrone as iso_module
+from app.cars import data_bundle as cars_bundle
 from app.config import Settings, get_settings
 from app.main import app
 from app.ratelimit import limiter
+from app.routers import cars as cars_router
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -33,18 +35,33 @@ def _make_settings(**overrides) -> Settings:
 
 
 @pytest.fixture(autouse=True)
+def _no_real_r2_env(monkeypatch, tmp_path):
+    """The cars R2 helpers fall back to backend/.env; tests must never read the
+    owner's real credentials or touch the bucket."""
+    from app.cars.ingest import r2
+
+    monkeypatch.setattr(r2, "ENV_FILE", tmp_path / "no-such.env")
+    for k in r2.REQUIRED:
+        monkeypatch.delenv(k, raising=False)
+
+
+@pytest.fixture(autouse=True)
 def _clear_caches():
     iso_module.clear_cache()
     geo_module.clear_cache()
     commute_module.clear_cache()
     usage.reset()
     limiter.reset()
+    cars_router.clear_cache()
+    cars_bundle.clear_cache()
     yield
     iso_module.clear_cache()
     geo_module.clear_cache()
     commute_module.clear_cache()
     usage.reset()
     limiter.reset()
+    cars_router.clear_cache()
+    cars_bundle.clear_cache()
 
 
 @pytest.fixture(autouse=True)

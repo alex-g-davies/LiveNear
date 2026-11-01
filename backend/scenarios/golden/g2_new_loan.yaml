@@ -1,0 +1,294 @@
+name: g2_new_loan
+worked_in: docs/cars/golden/g2_new_loan.md
+inputs:
+  seed: 1
+  draws: 200
+  user:
+    start_date: '2027-01-01'
+    exit_odds:
+      p12: 100
+      p24: 0
+      p36: 0
+      p48: 0
+    km_per_year: 12000
+    charging_mix:
+      home_pct: 100
+      work_free_pct: 0
+      public_pct: 0
+    pay_mode: loan
+    return_on_cash_pct: 0
+    down_payment_nok: 200000
+    insurance:
+      age_band: 30-39
+      claims_free_years: 5
+      has_claims_free_letter: false
+    limits:
+      modes:
+      - new
+      - lease
+      - used_1_3
+      - used_5_plus
+  market:
+    tax_rules: tests/cars/fixtures/tax_rules_fixture.yaml
+    charging:
+      home:
+        value: 100
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      public:
+        value: 500
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    used_price_drift:
+      value: 0
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+    rental_per_month:
+      value_nok: 0
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+    materiality_threshold:
+      value: 0.05
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+  options:
+  - id: new-loan
+    label: new-loan
+    vehicle:
+      variant_id: fx-ev
+      make: Fixture
+      model: EV
+      trim_group: Base
+      model_year: 2023
+      energy_type: ev
+      drive: rwd
+      battery_kwh: 60
+      heat_pump: true
+      auto_precondition: true
+      efficiency_wh_per_km:
+        value: 200
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      winter_factor:
+        value: 1.0
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      tyre_set:
+        value_nok: 10000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      tyre_life_km:
+        value: 1000000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      service_per_year:
+        value_nok: 1200
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      fun_score:
+        value: 5
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      new_price:
+        value_nok: 400000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    deal:
+      mode: new
+      price:
+        value_nok: 300000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      fees:
+        value_nok: 0
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      delivery_months:
+        value: 0
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      registered_on: '2027-01-01'
+      loan:
+        annual_rate_pct:
+          value: 12
+          source: golden fixture
+          as_of: '2026-10-31'
+          status: live
+        term_months: 12
+        establishment_fee:
+          value_nok: 0
+          source: golden fixture
+          as_of: '2026-10-31'
+          status: live
+        monthly_fee:
+          value_nok: 0
+          source: golden fixture
+          as_of: '2026-10-31'
+          status: live
+      exit_friction_pct:
+        value: 0
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    insurance:
+      annual:
+        value_nok: 12000
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+    resale:
+      p50_nok:
+      - 300000
+      - 297500.0
+      - 295000.0
+      - 292500.0
+      - 290000.0
+      - 287500.0
+      - 285000.0
+      - 282500.0
+      - 280000.0
+      - 277500.0
+      - 275000.0
+      - 272500.0
+      - 270000
+      - 267750.0
+      - 265500.0
+      - 263250.0
+      - 261000.0
+      - 258750.0
+      - 256500.0
+      - 254250.0
+      - 252000.0
+      - 249750.0
+      - 247500.0
+      - 245250.0
+      - 243000
+      - 240975.0
+      - 238950.0
+      - 236925.0
+      - 234900.0
+      - 232875.0
+      - 230850.0
+      - 228825.0
+      - 226800.0
+      - 224775.0
+      - 222750.0
+      - 220725.0
+      - 218700
+      - 216877.5
+      - 215055.0
+      - 213232.5
+      - 211410.0
+      - 209587.5
+      - 207765.0
+      - 205942.5
+      - 204120.0
+      - 202297.5
+      - 200475.0
+      - 198652.5
+      - 196830
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830.0
+      - 196830
+      log_sigma:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      source:
+        value: explicit fixture path
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+        kind: str
+expected:
+  option: new-loan
+  loan_payment_ore: 888488
+  loan_total_interest_ore: 661853
+  cash_up_front_ore: 21000000
+  tco_ore:
+    12: 6586853
+  display_12_ore:
+    value_lost: 3000000
+    financing: 661853

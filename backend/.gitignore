@@ -8,3 +8,13 @@ __pycache__/
 
 # Raw source data (large; preprocessed outputs in data/ are committed instead)
 scripts/raw/
+
+# Cars module (spec 022): ingestion outputs and private inputs never enter the
+# public repo (listings, raw snapshots, quarantine). Only the derived bundle
+# under data/cars/*.json and the synthetic fixture are committed.
+data/cars/private/
+data/cars/raw/
+data/cars/store/
+data/cars/quarantine/
+data/cars/run_report.json
+scenarios/owner*.yaml

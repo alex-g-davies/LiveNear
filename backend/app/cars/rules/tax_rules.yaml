@@ -1,0 +1,113 @@
+# Norwegian car tax rules used by the cost engine (spec 022 R6).
+#
+# The ONLY place these numbers live. Each rule has an effective window
+# [effective_from, effective_to) and a source URL. `status`:
+#   live        value checked against the cited official source on `checked_on`
+#   estimate    a modelled or rounded value, flagged Estimate in results
+#   unverified  placeholder awaiting a check against the official page; the
+#               engine treats it as an estimate so every result that uses it
+#               shows Estimate until it is verified (build spec: no silent
+#               defaults, don't invent data).
+#
+# Amounts are øre (1 NOK = 100 øre).
+
+rules:
+  # --- Trafikkforsikringsavgift: a daily tax collected with the insurance --
+  - id: traffic_tax_2025
+    kind: traffic_insurance_tax
+    effective_from: 2025-01-01
+    effective_to: 2026-01-01
+    params:            # øre per day by energy type
+      ev: 1034
+      phev: 1034
+      hybrid: 1034
+      ice: 1034
+    source_url: https://www.skatteetaten.no/satser/trafikkforsikringsavgift/
+    status: unverified
+    note: >-
+      Placeholder: 2025 passenger-car rate recalled as roughly kr 10.34/day for
+      petrol, diesel (with particle filter) and electric; diesel without a
+      factory filter is higher. Verify every figure on the Skatteetaten page
+      before marking live.
+  - id: traffic_tax_2026
+    kind: traffic_insurance_tax
+    effective_from: 2026-01-01
+    effective_to: null
+    params:
+      ev: 1060
+      phev: 1060
+      hybrid: 1060
+      ice: 1060
+    source_url: https://www.skatteetaten.no/satser/trafikkforsikringsavgift/
+    status: unverified
+    note: >-
+      Placeholder pending the 2026 rates (state budget). Replace with the
+      published figures and set status live.
+
+  # --- Omregistreringsavgift: paid by the buyer of a used car ---------------
+  - id: re_registration_2025
+    kind: re_registration_fee
+    effective_from: 2025-01-01
+    effective_to: 2026-01-01
+    params:
+      # Passenger cars over 1 200 kg (every EV in the catalogue); bands by
+      # vehicle age in whole years at purchase.
+      age_bands_ore:
+        - {min_years: 0, ore: 734300}
+        - {min_years: 4, ore: 443400}
+        - {min_years: 12, ore: 170000}
+      ev_factor: "1"
+    source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
+    status: unverified
+    note: >-
+      0-3 and 4-11 year bands are the fees dealers still quoted on a minority
+      of October 2026 listings (7 343 / 4 434 kr), read as the 2025 rates;
+      the 12+ band is a recalled placeholder. Verify on the Skatteetaten
+      rate table before marking live.
+  - id: re_registration_2026
+    kind: re_registration_fee
+    effective_from: 2026-01-01
+    effective_to: null
+    params:
+      age_bands_ore:
+        - {min_years: 0, ore: 750500}
+        - {min_years: 4, ore: 453200}
+        - {min_years: 12, ore: 170000}
+      ev_factor: "1"
+    source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
+    status: unverified
+    note: >-
+      0-3 and 4-11 year bands observed on 2 000+ dealer listings in October
+      2026 (7 505 kr for 2024 model years, 4 532 kr for 2019-2022); the 12+
+      band is a recalled placeholder. Verify bands and weight classes on the
+      Skatteetaten rate table before marking live.
+
+  # --- VAT on new electric cars --------------------------------------------
+  - id: ev_vat_2023
+    kind: ev_vat
+    effective_from: 2023-01-01
+    effective_to: null
+    params:
+      rate_pct: 25
+      threshold_ore: 50000000   # 25 % VAT on the part of the price above 500 000 NOK
+    source_url: https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/kjop-og-salg-av-elbil/
+    status: live
+    checked_on: 2026-10-31
+    note: >-
+      From 1 January 2023 the VAT exemption for electric cars applies to the
+      first 500 000 NOK of the purchase price; 25 % VAT applies above it.
+
+# Reported but NOT applied until an official source is cited (spec 022 R6).
+pending:
+  - id: ev_vat_2027_proposed
+    kind: ev_vat
+    effective_from: 2027-01-01
+    params:
+      rate_pct: 25
+      threshold_ore: 15000000
+    source_url: ""
+    status: unverified
+    note: >-
+      A single secondary source reports the EV VAT threshold dropping to
+      150 000 NOK from 1 January 2027. Not encoded as a rule until the state
+      budget text or Skatteetaten page is cited here.

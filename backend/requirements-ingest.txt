@@ -1,0 +1,8 @@
+# Cars module (spec 022) ingestion extras. NOT installed in the web image:
+# the weekly ingest job (laptop or GitHub Actions) installs these on top of
+# requirements-dev.txt. Playwright also needs: python -m playwright install chromium
+-r requirements-dev.txt
+
+selectolax>=0.3.21
+pdfplumber>=0.11
+playwright>=1.44

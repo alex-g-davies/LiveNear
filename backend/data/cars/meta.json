@@ -1,0 +1,39 @@
+{
+ "bundle_as_of": "2026-10-31",
+ "schema_version": 1,
+ "sources": [
+  {
+   "name": "seed catalogue",
+   "last_fetch": "2026-10-31",
+   "rows": 10,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  },
+  {
+   "name": "new-price history CSV",
+   "last_fetch": "2026-10-31",
+   "rows": 28,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  },
+  {
+   "name": "lease quotes CSV",
+   "last_fetch": "2026-10-31",
+   "rows": 6,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  },
+  {
+   "name": "listings CSV",
+   "last_fetch": null,
+   "rows": 971,
+   "quarantined": 0,
+   "status": "manual",
+   "note": ""
+  }
+ ],
+ "note": "segment ev-suv: 3 fitted cohort(s) < 4, prior pseudo-observations added; drift and ask-to-sale kept at the priors: 1 weekly snapshot(s) < 8"
+}

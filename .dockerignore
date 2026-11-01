@@ -21,3 +21,9 @@ frontend/dist
 **/.env
 **/.env.*
 !**/.env.example
+
+# Cars module private data (spec 022): never in the image.
+backend/data/cars/private
+backend/data/cars/raw
+backend/data/cars/store
+backend/data/cars/quarantine

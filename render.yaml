@@ -23,3 +23,14 @@ services:
         value: 20/minute
       - key: LOG_FORMAT
         value: json
+      # Cars module (spec 022): private listings bucket; set in the dashboard.
+      - key: CARS_R2_ACCOUNT_ID
+        sync: false
+      - key: CARS_R2_ACCESS_KEY_ID
+        sync: false
+      - key: CARS_R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: CARS_R2_BUCKET
+        sync: false
+      - key: CARS_HASH_SALT
+        sync: false

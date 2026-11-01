@@ -1,0 +1,265 @@
+# Spec 022 — Norway car total-cost-of-ownership module (engine, market model, core screens)
+
+Status: Draft
+Owner: <you>
+Related: 006-deployment (single container, committed data), 004-backend-hardening
+(rate limits, health probe), 009-zip-explorer (shareable URL state), 021-production-token-guard
+(fixture vs live reporting). Source documents: the owner's MVP build spec
+(Claude Doc "Norway car TCO app — MVP build spec") and the six wireframes
+("Norway car TCO app — wireframes": Main, Market, Results, ResultsCurves,
+Detail, Checklist).
+
+## Overview
+
+A second product surface inside LiveNear, at `/cars`, for people moving to
+Norway: which car, got which way (buy new, lease, used 1–3 years, used 5+
+years), costs least for the time they will actually keep it, and how sure
+that answer is. Every number shows its source, its date and whether it is an
+estimate. Decision support, not financial advice.
+
+This spec covers milestones M0–M3 of the owner's build spec: the skeleton,
+the pure cost engine, the market model v1 with its ingestion core, and the
+four core screens (Your situation, Compare table, Compare curves, Option
+detail). The market map, the newcomer checklist, automated price-list and
+lease pulls, the quarantine review view and the weekly unattended run are
+follow-up specs (023+).
+
+## Context
+
+- LiveNear has no database, no accounts and persists no personal data
+  (CLAUDE.md). The car module keeps that: a user's situation, selection,
+  overrides and checklist ticks live in the browser (`localStorage`) and in
+  one compact URL parameter, exactly as the map's share links do (009 R5).
+  Scenario runs are stateless requests.
+- Data follows the housing convention (001, 007): derived, small, versioned
+  artefacts are committed under `backend/data/cars/` and shipped in the
+  image. Private inputs (hand-collected listings, raw fetched pages) never
+  enter the public repo; they live in the owner's Cloudflare R2 bucket and
+  are read at startup when credentials are present, with a synthetic fixture
+  otherwise (same shape as the isochrone fixture, 021).
+- FINN.no's `robots.txt` ("Crawling FINN.no is prohibited unless you have
+  written permission", checked 2026-10-31) and user terms §6 forbid
+  automated or systematic collection without explicit written consent. The
+  module builds **no FINN scraper** and uses no third-party scraping service
+  for FINN. Used-car data enters through a CSV importer (hand-collected by
+  the owner) until FINN grants consent in writing; the request is drafted in
+  `backend/docs/cars/finn-consent-request.md`. This keeps CLAUDE.md's hard
+  constraint intact.
+- Stack additions are deliberate and small: `numpy` + `pyyaml` (+ optional
+  `boto3`) in the web image; `statsmodels`, `scipy`, `pandas`, `hypothesis`
+  for the offline fit and tests; `playwright`, `selectolax`, `pdfplumber`
+  for ingestion only. Frontend adds `react-router-dom` and five d3
+  micro-packages (scale, shape, array, brush, selection) for the charts;
+  no UI kit, no query library.
+
+## Requirements
+
+### Skeleton and state
+
+- **R1 — Module layout and routing.** Backend code lives in
+  `backend/app/cars/` (`engine/`, `market/`, `ingest/`, `rules/`,
+  `schemas.py`, `data_bundle.py`) with one router at `/api/cars/*`
+  registered before the SPA mount. Frontend code lives in
+  `frontend/src/cars/` with routes `/cars` (situation), `/cars/compare`,
+  `/cars/compare/curves`, `/cars/option/:optionId`; `/` stays the map. The
+  backend serves `index.html` for any non-`/api` path so deep links reload.
+  CLAUDE.md and README gain a Cars section (commands, data rules,
+  attribution); the existing hard constraints are unchanged.
+- **R2 — Browser-held profile.** The profile (exit odds over 1/2/3/4+
+  years, km per year, charging mix, home municipality, cash or loan, return
+  on cash, down payment, insurance profile, limits, fun weight, preferred
+  cost measure), the market selection and any overrides are typed, saved
+  under `livenear.cars.*` in `localStorage`, and round-trip through a single
+  URL parameter `c` (base64url JSON, defaults omitted). No request stores
+  them server-side; no cookie or identifier is set.
+
+### Engine
+
+- **R3 — Line items and measures.** A pure package (no I/O, no clock, no
+  network; dates and seeds are inputs) computes, per option, a monthly
+  schedule from month 0 to 60: cash flows (purchase or down payment, fees,
+  upfront rent, re-registration, winter tyres, delay cost at month 0; loan
+  or lease payments, insurance, traffic-insurance tax, energy, tyres by km,
+  service thereafter) and exit terms as functions of the exit month (resale
+  value, loan payoff, lease early-exit charge, excess-km fee, exit
+  friction). From these it derives all five measures at every month:
+  total cost of ownership, net present cost, net cost per month (default),
+  cash up front and cost per km, following the build spec's formulas
+  (opportunity cost only in undiscounted measures). Expected value of each
+  measure is Σ p(t)·measure(t) over the user's exit odds, computed per
+  measure; best and worst are the extremes over exit points with p(t) > 0.
+  Deterministic amounts are integer øre; rounding happens only for display.
+- **R4 — Uncertainty bands.** 2,000 seeded Monte Carlo draws per option,
+  drawing resale from the market model's predictive distribution and
+  insurance, loan rate and charging prices from ranges in the inputs,
+  report P10/P50/P90 for every measure at every month. The same seed gives
+  byte-identical results; adding an option does not change another
+  option's draws. Ten options run in under 2 s on a laptop. With all ranges
+  collapsed, the P50 path equals the integer deterministic path exactly.
+- **R5 — Provenance and status.** Every input carries id, value, source,
+  as-of date, status (Live or Estimate) and, for defaults, a written basis.
+  Every line item lists the input ids it used. An option is Live only when
+  every input above a materiality threshold (share of expected TCO flowing
+  through items that used it) is Live. No silent defaults: every default is
+  Estimate with its basis in the inputs file.
+- **R6 — Tax rules file.** Traffic-insurance tax, re-registration fee and
+  the EV VAT rule live only in `backend/app/cars/rules/tax_rules.yaml`, each
+  entry with `effective_from`, `effective_to`, parameters and `source_url`.
+  Lookup by date selects exactly one rule or raises. Months beyond the last
+  dated rule carry it forward flagged Estimate. The reported EV VAT
+  threshold change for 2027 is recorded as `status: unverified` and not
+  applied until an official source is cited.
+
+### Market model and ingestion
+
+- **R7 — Market model v1.** Cohort = variant (trim group from Vegvesen
+  battery, drive and power) × model year, with hand-maintained mid-year
+  splits. Per-cohort robust log-price regression on log km, slopes shrunk
+  toward the segment mean in proportion to sample size (empirical Bayes,
+  statsmodels), global dealer / fleet / warranty terms (fixed, documented
+  priors flagged Estimate where unidentifiable). Cohorts with fewer than 5
+  listings are Estimate. Predictive intervals are for a single car. Retention
+  curves r(age, km) per model pooled by segment come from cohort values
+  divided by the owner-supplied new-price history (CPI and VAT adjusted);
+  market drift defaults to 0 with a cited range until 12 weekly snapshots
+  exist. A backtest (fit to week w, predict last ask of listings removed
+  after w; leave-one-out CV until the removed set reaches 100) reports MAPE
+  by segment and age plus 80 % interval coverage with a Wilson interval, and
+  fails the build only when the coverage interval's upper bound is below
+  70 %. The report renders for at least 4 models.
+- **R8 — Ingestion core.** One runner (`python -m app.cars.ingest.runner`)
+  walks fetch → parse → validate → reconcile → store for each enabled
+  source: the listings CSV importer (column contract in the README), Statens
+  vegvesen vehicle API (cached), Norges Bank and SSB open APIs, the Tesla
+  configurator (Playwright; never from the web container), and manual lease
+  quotes. Every raw response is stored with URL, timestamp and sha256 (to
+  R2 under `raw/<source>/<date>/` when configured, else a gitignored local
+  folder). Rows failing validation go to a quarantine file, never into the
+  store; health checks fail the run on zero rows or an empty-rate jump; a
+  2 % sample is queued for spot checks. Registration numbers and VINs are
+  hashed before storage. Terms decisions per source, with dates, are logged
+  in `backend/docs/cars/sources.md`. No FINN adapter exists.
+- **R9 — Data bundle and fixture mode.** The fit writes a small derived
+  bundle (`vehicles`, `cohorts`, `retention`, `new_prices`, `lease_offers`,
+  `rates`, `meta` with as-of dates) to `backend/data/cars/`, loaded once at
+  startup and cached. Listings behind a cohort point load from R2 when
+  `CARS_R2_*` are set, otherwise from a committed synthetic fixture; the
+  health probe reports `cars: {bundle_as_of, listings: "r2" | "fixture" |
+  "unavailable"}`. Production without R2 credentials is reported, not
+  papered over.
+
+### API and screens
+
+- **R10 — API.** JSON over HTTP with Pydantic models (OpenAPI):
+  `GET /api/cars/vehicles`, `GET /api/cars/market/cohorts` (filters: make,
+  year range, max price, energy type, must-haves), `GET
+  /api/cars/market/cohorts/{id}/listings`, `POST /api/cars/scenarios`
+  (profile + selection + overrides + seed → per option and month P10/P50/P90
+  for every measure, expected/best/worst, line items at each exit, inputs
+  with provenance, status, options ruled out by limits with reasons,
+  sensitivity of the top option), `GET /api/cars/sources`. GETs use the
+  data rate limit; the scenario POST has its own (`CARS_SCENARIO_LIMIT`,
+  default 30/minute). No response contains a registration number, VIN or
+  secret. What-if overrides are request data only.
+- **R11 — Core screens.** Behaviour per the wireframes and build spec:
+  - *Your situation*: four exit-odds percentages that must sum to 100 % (stacked
+    bar; Continue blocked otherwise); limits are filters, never weighted.
+  - *Compare — table*: one row per car × way to get it, ranked by the expected
+    value of the selected measure; range bar from best to worst exit with the
+    expected mark; fun score column; Live/Estimate badge per option; ruled-out
+    options listed with reasons; sensitivity panel for the top option.
+  - *Compare — curves*: x = years of ownership 0.5–5, y = selected measure;
+    colour = car, line style = way to get it; P10–P90 bands toggleable; end
+    labels with collision avoidance; exit-marker slider driving a ranking;
+    what-if sliders (return on cash, loan rate, km per year, used-price
+    drift, cash or loan) rerun with overrides, Save writes them to the
+    profile, Reset restores it.
+  - *Option detail*: tiles for expected, best exit, worst exit, cash up front;
+    cost-by-exit chart against the best lease and best new option for the same
+    model; line items as bars; inputs table with value, source, date, status
+    and Override.
+  - Shared: measure selector in both Compare views and Detail; NOK with a
+    space thousands separator and `kr`; units on every header and axis;
+    tooltips give source and date; works at phone width; every control is a
+    real labelled input; contrast ≥ 4.5:1.
+- **R12 — Tests.** At least six golden cases (new cash, new loan, lease,
+  lease early exit, used 1–3 years from a dealer, used 5+ years private,
+  excess km) as YAML input plus expected output with a worked example each,
+  matching to the øre; the loan schedule matches a published amortisation
+  example; Hypothesis properties: cumulative cash flows never fall;
+  TCO excluding early-exit charges never falls when resale is
+  non-increasing; more km never lowers TCO; a higher return on cash never
+  lowers the TCO of a cash purchase; net present cost equals TCO when r = 0
+  and opportunity cost is off; expected lies between best and worst;
+  P10 ≤ P50 ≤ P90; same seed, same bytes; Σ display items = TCO. Market
+  tests recover known parameters from synthetic data and hit ≈ 80 % coverage.
+  Ingestion tests run parsers on stored fixtures and each validation rule
+  on a failing fixture. Frontend tests cover the profile codec, the exit-odds
+  gate, the measure switch, override and Save/Reset request bodies, NOK
+  formatting and a flow across the four screens over a mocked API.
+
+## Non-functional / Constraints
+
+- No secrets in the frontend bundle; R2 credentials only in the backend
+  environment (Render dashboard, GitHub Actions secrets).
+- Web image stays small: no statsmodels, pandas or Playwright at runtime.
+- Engine purity: `app/cars/engine` and `app/cars/market` import no I/O,
+  clock or network modules; seeds are passed in.
+- Money is integer øre in the engine and in stored data; floats appear only
+  inside the Monte Carlo arrays and are converted back once.
+- Tests before formulas: a golden case or property is added before a line
+  item changes.
+- Ask the owner before any paid service, hosted dependency or account.
+- Norwegian UI is out of scope; English copy, nb-NO number formatting.
+
+## Acceptance Criteria
+
+- [ ] R1: `/cars` and its sub-routes render inside the deployed SPA and
+      survive a hard reload; `/` is unchanged; `pytest` and `npm run test`
+      pass in CI with no changes to the existing jobs.
+- [ ] R2: a profile encoded in `?c=` reproduces the same screens in a fresh
+      tab; the backend logs and responses contain no profile fields.
+- [ ] R3: `python -m app.cars.engine.cli backend/scenarios/<owner>.yaml`
+      prints ranked options and line items; golden cases match to the øre.
+- [ ] R4: scenario POST for 10 options × 2,000 draws completes in < 2 s on
+      the fixture bundle; seed test passes; collapsed-range equality holds.
+- [ ] R5: every input in the detail inputs table shows source, date and
+      status; an option becomes Estimate when a material input is Estimate.
+- [ ] R6: rule lookup tests pass; the 2027 VAT entry is `unverified` and not
+      applied.
+- [ ] R7: `backend/docs/cars/backtest.md` renders for ≥ 4 models with MAPE
+      and coverage; thin cohorts are flagged; the coverage gate test exists.
+- [ ] R8: an ingest run against the fixture CSV stores validated rows,
+      quarantines the failing fixture rows, and fails loudly on an empty
+      source; no module under `ingest/sources/` references finn.no.
+- [ ] R9: `/api/health` reports `cars.bundle_as_of` and `listings` mode;
+      without R2 the listings endpoint serves the fixture in dev and reports
+      `unavailable` in production.
+- [ ] R10: OpenAPI lists the endpoints; responses never contain a
+      registration number or VIN (test).
+- [ ] R11: the owner enters their situation, sees ranked options and curves,
+      switches measure, moves every what-if slider, saves, resets, overrides
+      an input and sees the rank update; phone-width layout stacks.
+- [ ] R12: all listed tests exist and pass.
+
+## Out of Scope (explicit)
+
+- Market map screen with box-select, newcomer checklist screen, quarantine
+  review UI, automated brand price lists and lease portals, the weekly
+  GitHub Actions ingest PR, validation sign-off (follow-up specs 023+).
+- Any FINN automation, including hosted scraping services.
+- Accounts, payments, native apps, insurer or lender integrations,
+  Norwegian UI, market model v2 (hierarchical Bayesian).
+
+## Verification notes
+
+- R3/R4/R5/R6/R12 → `backend/tests/cars/test_engine_*.py`,
+  `test_rules.py`, golden YAML under `backend/scenarios/`.
+- R7 → `backend/tests/cars/test_market_*.py`, `backtest.md` artefact.
+- R8/R9 → `backend/tests/cars/test_ingest_*.py`, `test_bundle.py`,
+  `test_api_cars.py` (health, fixture vs R2 modes).
+- R10 → `test_api_cars.py` (schema, limits, no identifiers).
+- R1/R2/R11 → `frontend/src/test/cars/*.test.tsx` plus the manual
+  walkthrough in R11's acceptance line.
+
+The human verifies; the implementing agent does not self-certify done.
