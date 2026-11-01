@@ -4,6 +4,8 @@ listings (spec 022 R8, R9).
 Configuration from the environment only (never logged):
   CARS_R2_ACCOUNT_ID, CARS_R2_ACCESS_KEY_ID, CARS_R2_SECRET_ACCESS_KEY,
   CARS_R2_BUCKET.  Endpoint: https://<account>.r2.cloudflarestorage.com
+Locally, values missing from the process environment are read from
+backend/.env (gitignored). CLI: `python scripts/cars_r2.py --help`.
 
 Tests inject a fake client through the `client=` argument or by
 monkeypatching `_client`; nothing here touches the network at import time.
@@ -22,8 +24,25 @@ ENV_BUCKET = "CARS_R2_BUCKET"
 REQUIRED = (ENV_ACCOUNT, ENV_KEY_ID, ENV_SECRET, ENV_BUCKET)
 
 
+ENV_FILE = Path(__file__).resolve().parents[3] / ".env"
+
+
+def environ() -> dict[str, str]:
+    """The process environment, with any CARS_R2_* / CARS_HASH_SALT values
+    missing from it filled from backend/.env (local dev; Render and GitHub
+    Actions set real environment variables). Real env always wins."""
+    e = dict(os.environ)
+    if ENV_FILE.exists() and not all(str(e.get(k, "")).strip() for k in REQUIRED):
+        from dotenv import dotenv_values
+
+        for k, v in dotenv_values(ENV_FILE).items():
+            if k.startswith("CARS_") and v and not str(e.get(k, "")).strip():
+                e[k] = v
+    return e
+
+
 def configured(env: dict[str, str] | None = None) -> bool:
-    e = env if env is not None else os.environ
+    e = env if env is not None else environ()
     return all(str(e.get(k, "")).strip() for k in REQUIRED)
 
 
@@ -32,14 +51,14 @@ def endpoint_url(account_id: str) -> str:
 
 
 def bucket(env: dict[str, str] | None = None) -> str:
-    e = env if env is not None else os.environ
+    e = env if env is not None else environ()
     return str(e.get(ENV_BUCKET, "")).strip()
 
 
 def _client(env: dict[str, str] | None = None) -> Any:
     """A boto3 S3 client for R2. Raises RuntimeError when not configured so
     callers can report "unavailable" instead of failing silently."""
-    e = env if env is not None else os.environ
+    e = env if env is not None else environ()
     if not configured(e):
         missing = [k for k in REQUIRED if not str(e.get(k, "")).strip()]
         raise RuntimeError(f"R2 not configured: missing {', '.join(missing)}")

@@ -146,12 +146,13 @@ def parse_listings_csv(text: str, vehicles: list[VariantRecord]) -> list[Listing
 def _load_listings(
     vehicles: list[VariantRecord], production: bool
 ) -> tuple[list[Listing], ListingsMode]:
-    bucket = os.getenv("CARS_R2_BUCKET", "").strip()
-    if bucket:
+    from .ingest.r2 import configured, environ
+
+    if configured():
         try:
             from .ingest.r2 import download_text
 
-            text = download_text(os.getenv("CARS_R2_LISTINGS_KEY", "listings/listings.csv"))
+            text = download_text(environ().get("CARS_R2_LISTINGS_KEY") or "listings/listings.csv")
             return parse_listings_csv(text, vehicles), "r2"
         except Exception as exc:  # noqa: BLE001 - report, never crash startup
             logger.warning("cars: R2 listings unavailable (%s)", exc)

@@ -35,6 +35,17 @@ def _make_settings(**overrides) -> Settings:
 
 
 @pytest.fixture(autouse=True)
+def _no_real_r2_env(monkeypatch, tmp_path):
+    """The cars R2 helpers fall back to backend/.env; tests must never read the
+    owner's real credentials or touch the bucket."""
+    from app.cars.ingest import r2
+
+    monkeypatch.setattr(r2, "ENV_FILE", tmp_path / "no-such.env")
+    for k in r2.REQUIRED:
+        monkeypatch.delenv(k, raising=False)
+
+
+@pytest.fixture(autouse=True)
 def _clear_caches():
     iso_module.clear_cache()
     geo_module.clear_cache()
