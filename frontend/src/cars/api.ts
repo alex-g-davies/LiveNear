@@ -82,6 +82,8 @@ export interface LineItemView {
 
 export interface InputView {
   id: string;
+  /** Readable name from the API; screens show this, never the id. */
+  label: string;
   value: string;
   source: string;
   as_of: string;
@@ -110,6 +112,8 @@ export interface OptionResult {
   fun_score: string;
   status: Status;
   material_estimates: string[];
+  /** Readable labels for `material_estimates`, same order. */
+  material_estimate_labels: string[];
   cash_up_front: number;
   km_at: number[];
   measures: Record<Measure, MeasureResult>;

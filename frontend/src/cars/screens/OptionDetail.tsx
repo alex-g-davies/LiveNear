@@ -6,7 +6,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import type { ExitMonthKey, OptionSummary } from "../api";
-import Badge, { humanizeId } from "../components/Badge";
+import Badge from "../components/Badge";
 import ExitChart from "../components/ExitChart";
 import MeasureSelect from "../components/MeasureSelect";
 import { formatDate, formatKm, formatMonths, formatNok } from "../lib/format";
@@ -105,7 +105,7 @@ export default function OptionDetail() {
             <p className="cars-lede">{subtitle}</p>
           </div>
           <div className="cars-titlebar__tools">
-            <Badge status={r.status} estimates={r.material_estimates} />
+            <Badge status={r.status} estimates={r.material_estimate_labels} />
             <MeasureSelect value={state.measure} onChange={setMeasure} />
             {scenario.loading && <span className="cars-hint">updating…</span>}
           </div>
@@ -212,7 +212,7 @@ export default function OptionDetail() {
             <tbody>
               {r.inputs.map((inp) => {
                 const overridden = inp.id in state.overrides;
-                const label = humanizeId(inp.id);
+                const label = inp.label;
                 return (
                   <tr key={inp.id} data-testid={`input-${inp.id}`}>
                     <td className="cars-strong">

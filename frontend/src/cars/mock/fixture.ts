@@ -22,6 +22,17 @@ import type {
 import type { Measure, Mode } from "../lib/profile";
 
 const CURRENT_YEAR = 2026;
+const MOCK_INPUT_LABELS: Record<string, string> = {
+  purchase_price: "Purchase price",
+  resale_curve: "Resale at exit",
+  loan_rate: "Loan rate",
+  insurance_year_nok: "Insurance (per year)",
+  rereg_fee_nok: "Re-registration fee",
+  winter_tyres_nok: "Winter tyres",
+  energy_price_nok_kwh: "Energy price",
+  lease_rent: "Lease monthly payment",
+};
+
 const BUNDLE_AS_OF = "2026-10-24";
 const MONTHS = 61;
 const EXIT_MONTHS: ExitMonthKey[] = ["12", "24", "36", "48"];
@@ -328,11 +339,13 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
     per_km: measureResult(perKm, true),
   };
 
-  // Inputs with provenance.
-  const inputs: InputView[] = [];
+  // Inputs with provenance. Labels are filled from MOCK_INPUT_LABELS below so
+  // each push stays short; the real API sends `label` on every input.
+  type Unlabelled = Omit<InputView, "label"> & { label?: string };
+  const inputs: Unlabelled[] = [];
   const tco36 = Math.max(1, tco[36]);
   const share = (key: string) => (display["36"].find((i) => i.key === key)?.ore ?? 0) / tco36;
-  const withOverride = (id: string, base: Omit<InputView, "id">): InputView => {
+  const withOverride = (id: string, base: Omit<Unlabelled, "id">): Unlabelled => {
     const o = ov[id];
     if (o === undefined) return { id, ...base };
     return {
@@ -452,6 +465,7 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
     }),
   );
 
+  for (const i of inputs) i.label ??= MOCK_INPUT_LABELS[i.id] ?? i.id.replace(/_/g, " ");
   const materialEstimates = inputs.filter((i) => i.material && i.status === "estimate").map((i) => i.id);
   const lineItems: LineItemView[] = display["36"].map((item) => ({
     key: item.key,
@@ -479,12 +493,13 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
     fun_score: v.fun_score,
     status: materialEstimates.length ? "estimate" : "live",
     material_estimates: materialEstimates,
+    material_estimate_labels: inputs.filter((i) => materialEstimates.includes(i.id)).map((i) => i.label ?? i.id),
     cash_up_front: cashUpFront,
     km_at: kmAt,
     measures,
     line_items: lineItems,
     display,
-    inputs,
+    inputs: inputs as InputView[],
     resale_p50: mode === "lease" ? null : resale,
   };
   return {

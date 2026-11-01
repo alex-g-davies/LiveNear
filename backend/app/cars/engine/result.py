@@ -98,6 +98,7 @@ class OptionResult(BaseModel):
     fun_score: str
     status: str  # "live" | "estimate"
     material_estimates: list[str]
+    material_estimate_labels: list[str]
     cash_up_front: int
     km_at: list[int]
     measures: dict[str, MeasureResult]
@@ -231,6 +232,7 @@ def build_option_result(
         model_year=option.vehicle.model_year,
         fun_score=str(option.vehicle.fun_score.value),
         status="estimate" if material_estimates else "live",
+        material_estimate_labels=[material_label(m) for m in material_estimates],
         material_estimates=sorted(set(material_estimates)),
         cash_up_front=det.cash_up_front,
         km_at=s.km_at,
@@ -272,10 +274,26 @@ INPUT_LABELS = {
     "early_exit_table": "Early-exit table",
     "charging_home": "Home charging price",
     "charging_public": "Public charging price",
+    "home_ore_per_kwh": "Home charging price (øre/kWh)",
+    "public_ore_per_kwh": "Public charging price (øre/kWh)",
+    "monthly": "Lease monthly payment",
+    "upfront": "Lease upfront rent",
+    "km_cap": "Lease km cap (per year)",
+    "excess_km_fee": "Excess km fee (per km)",
+    "end_fee": "End-of-lease fee",
+    "dealer_premium": "Dealer asking premium",
+    "ask_to_sale_discount": "Ask-to-sale discount",
     "used_price_drift": "Used-car price drift",
     "rental_per_month": "Rental while waiting",
     "materiality_threshold": "Materiality threshold",
 }
+
+
+def material_label(material_id: str) -> str:
+    """Label for a material-estimate entry: an input id or `item:<key>`."""
+    if material_id.startswith("item:"):
+        return ITEM_LABELS.get(material_id[5:], material_id[5:].replace("_", " ").capitalize())
+    return input_label(material_id)
 
 
 def input_label(input_id: str) -> str:
