@@ -65,6 +65,7 @@ class Profile(BaseModel):
     fun_weight: int = Field(default=50, ge=0, le=100)
     preferred_measure: Measure = "per_month"
     start_date: date | None = None  # defaults to today on the server
+    arrival_date: date | None = None  # checklist due dates only (023 R5); the engine ignores it
 
 
 class SelectionItem(BaseModel):
@@ -182,6 +183,29 @@ class ListingsResponse(BaseModel):
     cohort_id: str
     listings_mode: ListingsMode
     listings: list[ListingOut]
+
+
+class MarketPoint(BaseModel):
+    """One dot on the market map (spec 023 R1): a listing in its latest
+    `listed` snapshot. Hashed id only; no URL, seller name, location or
+    registration number is ever served."""
+
+    listing_id: str
+    variant_id: str
+    cohort_id: str
+    model_year: int
+    ask_ore: int
+    km: int
+    seller_type: str
+    first_reg_month: str | None
+    snapshot_date: date
+
+
+class MarketPointsResponse(BaseModel):
+    bundle_as_of: date
+    listings_mode: ListingsMode
+    n_points: int
+    points: list[MarketPoint]
 
 
 class SourcesResponse(BaseModel):

@@ -59,6 +59,8 @@ export interface CarProfile {
   fun_weight: number;
   preferred_measure: Measure;
   start_date: string | null;
+  /** When the user arrives/arrived in Norway (ISO date); drives checklist due dates (023 R5). */
+  arrival_date: string | null;
 }
 
 export interface SelectionItem {
@@ -82,6 +84,8 @@ export interface CarState {
   whatIf: WhatIf | null;
   overrides: Record<string, string | number>;
   measure: Measure;
+  /** Ticked newcomer-checklist item ids (023 R5). */
+  checklist: string[];
 }
 
 export const DEFAULT_PROFILE: CarProfile = {
@@ -100,6 +104,7 @@ export const DEFAULT_PROFILE: CarProfile = {
   fun_weight: 50,
   preferred_measure: "per_month",
   start_date: null,
+  arrival_date: null,
 };
 
 export const DEFAULT_STATE: CarState = {
@@ -108,6 +113,7 @@ export const DEFAULT_STATE: CarState = {
   whatIf: null,
   overrides: {},
   measure: "per_month",
+  checklist: [],
 };
 
 export const STORAGE_KEY = "livenear.cars.state";
@@ -187,6 +193,7 @@ export function sanitizeProfile(raw: unknown): CarProfile {
     fun_weight: num(raw.fun_weight, d.fun_weight, 0, 100),
     preferred_measure: oneOf(raw.preferred_measure, MEASURES, d.preferred_measure),
     start_date: isoDate(raw.start_date),
+    arrival_date: isoDate(raw.arrival_date),
   };
 }
 
@@ -234,7 +241,20 @@ export function sanitizeState(raw: unknown): CarState {
     whatIf: sanitizeWhatIf(r.whatIf),
     overrides: sanitizeOverrides(r.overrides),
     measure: oneOf(r.measure, MEASURES, profile.preferred_measure),
+    checklist: sanitizeChecklist(r.checklist),
   };
+}
+
+/** Ticked checklist ids: strings only, de-duplicated; unknown ids are dropped
+ * by the Checklist screen against its item table, not here (the table lives
+ * with the screen). */
+export function sanitizeChecklist(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const out: string[] = [];
+  for (const x of raw) {
+    if (typeof x === "string" && /^[a-z0-9_-]{1,40}$/.test(x) && !out.includes(x)) out.push(x);
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------------------

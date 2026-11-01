@@ -1,0 +1,357 @@
+// Market map (spec 023 R2/R3): every model year in the catalogue as a scatter
+// of asking prices, a filter rail, box-select and a selection tray that feeds
+// Compare. Filters are local state; the selection is the shared one.
+
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import type { EnergyType, MarketFilters } from "../api";
+import MarketScatter from "../components/MarketScatter";
+import { useMarket } from "../hooks/useMarket";
+import { formatDate } from "../lib/format";
+import {
+  COLOR_BYS,
+  ENERGY_LABELS,
+  X_AXES,
+  Y_AXES,
+  addPairs,
+  dotsFromCohorts,
+  dotsFromPoints,
+  fullRange,
+  matchesSearch,
+  removeVariant,
+  togglePair,
+  yearRangeLabel,
+  type ColorBy,
+  type XAxis,
+  type YAxis,
+} from "../lib/market";
+import { useCarState } from "../state";
+import "../market.css";
+
+const MIN_YEAR = 2010;
+const MAX_YEAR = 2030;
+
+export default function MarketMap() {
+  const navigate = useNavigate();
+  const { state, setSelection, vehicles } = useCarState();
+  const { selection, profile } = state;
+  const catalogue = vehicles.data ?? [];
+
+  const energyTypes = useMemo(
+    () => [...new Set(catalogue.map((v) => v.energy_type))] as EnergyType[],
+    [catalogue],
+  );
+
+  // Filters (local, not persisted).
+  const [search, setSearch] = useState("");
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [energyOff, setEnergyOff] = useState<EnergyType[]>([]);
+  const [hideFailing, setHideFailing] = useState(true);
+  const [xAxis, setXAxis] = useState<XAxis>("year");
+  const [yAxis, setYAxis] = useState<YAxis>("price");
+  const [colorBy, setColorBy] = useState<ColorBy>("energy");
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const yf = Number(yearFrom);
+  const yt = Number(yearTo);
+  const mp = Number(maxPrice.replace(/\s/g, ""));
+  const mustHaves = hideFailing ? profile.limits.must_haves : [];
+  const filters = useMemo<MarketFilters>(() => {
+    const f: MarketFilters = {};
+    if (yearFrom && Number.isInteger(yf) && yf >= MIN_YEAR && yf <= MAX_YEAR) f.year_from = yf;
+    if (yearTo && Number.isInteger(yt) && yt >= MIN_YEAR && yt <= MAX_YEAR) f.year_to = yt;
+    if (maxPrice && Number.isFinite(mp) && mp > 0) f.max_price_nok = Math.round(mp);
+    const energyOn = energyTypes.filter((e) => !energyOff.includes(e));
+    if (energyOff.length && energyOn.length) f.energy_type = energyOn;
+    if (mustHaves.length) f.must_have = [...mustHaves];
+    return f;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yearFrom, yearTo, maxPrice, energyOff.join(","), energyTypes.join(","), mustHaves.join(","), yf, yt, mp]);
+
+  const market = useMarket(filters);
+  const cohorts = market.cohorts?.cohorts ?? [];
+  const points = market.points?.points ?? [];
+  const noneSelectedEnergy = energyTypes.length > 0 && energyOff.length === energyTypes.length;
+  const usePoints = (market.points?.listings_mode ?? "unavailable") !== "unavailable" && points.length > 0;
+
+  const dots = useMemo(() => {
+    if (noneSelectedEnergy) return [];
+    const visibleCohorts = cohorts.filter((c) => (!hideFailing || c.meets_must_haves) && matchesSearch({ label: `${c.make} ${c.model} ${c.trim_group}` }, search));
+    const all = usePoints ? dotsFromPoints(points, visibleCohorts) : dotsFromCohorts(visibleCohorts);
+    return all;
+  }, [cohorts, points, usePoints, hideFailing, search, noneSelectedEnergy]);
+
+  const pointsByVariant = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const d of dots) m.set(d.variant_id, (m.get(d.variant_id) ?? 0) + (d.isCohort ? 0 : 1));
+    return m;
+  }, [dots]);
+
+  const byId = useMemo(() => new Map(catalogue.map((v) => [v.variant_id, v])), [catalogue]);
+  const selectedVariants = [...new Set(selection.map((s) => s.variant_id))];
+  const nListings = market.points?.n_points ?? market.cohorts?.n_listings_total ?? 0;
+  const asOf = market.cohorts?.bundle_as_of ?? market.points?.bundle_as_of ?? null;
+
+  const toggleEnergy = (e: EnergyType, on: boolean) =>
+    setEnergyOff((cur) => (on ? cur.filter((x) => x !== e) : cur.includes(e) ? cur : [...cur, e]));
+
+  return (
+    <>
+      <div className="cars-titlebar">
+        <div className="cars-titlebar__text">
+          <h1 className="cars-h1">Market map</h1>
+          <p className="cars-lede">
+            Every model and model year in the catalogue. Pick the cars you want costed; only your selection
+            goes to Compare.
+          </p>
+        </div>
+        <div className="cars-titlebar__tools">
+          <span className="cars-hint" data-testid="market-count">
+            {nListings} listings · as of {formatDate(asOf)}
+            {market.loading && <span className="cars-hint__loading"> · updating…</span>}
+          </span>
+        </div>
+      </div>
+
+      <div className="cars-layout cars-layout--rail-left">
+        <aside className="cars-layout__aside" aria-label="Filters">
+          <section className="cars-card">
+            <label className="cars-field">
+              <span className="cars-field__label">Find a model</span>
+              <input
+                type="search"
+                className="cars-input"
+                placeholder="e.g. Model 3"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
+            <div className="cars-grid cars-grid--2">
+              <label className="cars-field">
+                <span className="cars-field__label cars-field__label--muted">Year from</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  className="cars-input"
+                  min={MIN_YEAR}
+                  max={MAX_YEAR}
+                  value={yearFrom}
+                  onChange={(e) => setYearFrom(e.target.value)}
+                />
+              </label>
+              <label className="cars-field">
+                <span className="cars-field__label cars-field__label--muted">Year to</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  className="cars-input"
+                  min={MIN_YEAR}
+                  max={MAX_YEAR}
+                  value={yearTo}
+                  onChange={(e) => setYearTo(e.target.value)}
+                />
+              </label>
+            </div>
+            <label className="cars-field">
+              <span className="cars-field__label">Max asking price</span>
+              <span className="cars-field__unit">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="cars-input"
+                  placeholder="NOK"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                />
+                <span className="cars-hint">kr</span>
+              </span>
+            </label>
+            <fieldset className="cars-fieldset">
+              <legend className="cars-legend-label">Energy type</legend>
+              <div className="cars-market__energy">
+                {energyTypes.map((e) => (
+                  <label key={e} className="cars-check">
+                    <input
+                      type="checkbox"
+                      checked={!energyOff.includes(e)}
+                      onChange={(ev) => toggleEnergy(e, ev.target.checked)}
+                    />{" "}
+                    {ENERGY_LABELS[e]}
+                  </label>
+                ))}
+                {energyTypes.length === 0 && <span className="cars-hint">Loading catalogue…</span>}
+              </div>
+            </fieldset>
+            <label className="cars-check cars-check--top">
+              <input type="checkbox" checked={hideFailing} onChange={(e) => setHideFailing(e.target.checked)} />{" "}
+              Hide cars that fail my must-haves
+              {profile.limits.must_haves.length === 0 && <span className="cars-hint"> (none set)</span>}
+            </label>
+          </section>
+        </aside>
+
+        <div className="cars-layout__main">
+          <section className="cars-card" aria-labelledby="market-plot">
+            <div className="cars-market__head">
+              <h2 id="market-plot" className="cars-h2">
+                {Y_AXES.find((a) => a.key === yAxis)!.label} by {X_AXES.find((a) => a.key === xAxis)!.label.toLowerCase()}
+              </h2>
+              <div className="cars-market__axes">
+                <label className="cars-field cars-field--inline">
+                  <span className="cars-field__label cars-field__label--muted">X axis</span>
+                  <select className="cars-select cars-select--sm" value={xAxis} onChange={(e) => setXAxis(e.target.value as XAxis)}>
+                    {X_AXES.map((a) => (
+                      <option key={a.key} value={a.key}>
+                        {a.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="cars-field cars-field--inline">
+                  <span className="cars-field__label cars-field__label--muted">Y axis</span>
+                  <select className="cars-select cars-select--sm" value={yAxis} onChange={(e) => setYAxis(e.target.value as YAxis)}>
+                    {Y_AXES.map((a) => (
+                      <option key={a.key} value={a.key}>
+                        {a.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div className="cars-market__colorby">
+              <span className="cars-hint">Colour by</span>
+              <div role="group" aria-label="Colour by" className="cars-filters">
+                {COLOR_BYS.map((c) => (
+                  <button
+                    key={c.key}
+                    type="button"
+                    className="cars-filter"
+                    aria-pressed={colorBy === c.key}
+                    onClick={() => setColorBy(c.key)}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {market.error && (
+              <div className="status status--error" role="alert">
+                Could not load the market: {market.error}
+              </div>
+            )}
+            {!usePoints && dots.length > 0 && (
+              <p className="cars-market__fallback" data-testid="market-fallback">
+                Cohort medians: listing detail unavailable. Each dot is the fitted asking value of one model year
+                at its typical mileage.
+              </p>
+            )}
+            {!market.loading && dots.length === 0 && !market.error && (
+              <p className="cars-empty">No cars match these filters.</p>
+            )}
+            <MarketScatter
+              dots={dots}
+              xAxis={xAxis}
+              yAxis={yAxis}
+              colorBy={colorBy}
+              selection={selection}
+              onToggle={(vid, year) => setSelection(togglePair(selection, vid, year))}
+              onBoxSelect={(pairs) => setSelection(addPairs(selection, pairs))}
+            />
+          </section>
+
+          <section className="cars-card" aria-labelledby="market-selection">
+            <div className="cars-card__bar cars-card__bar--plain">
+              <h2 id="market-selection" className="cars-h2">
+                Your selection
+              </h2>
+              <span className="cars-hint" data-testid="selection-summary">
+                {selectedVariants.length} model{selectedVariants.length === 1 ? "" : "s"} ·{" "}
+                {selectedVariants.reduce((n, vid) => n + (pointsByVariant.get(vid) ?? 0), 0)} listings
+              </span>
+            </div>
+            <div className="cars-market__tray">
+              {selectedVariants.map((vid) => {
+                const v = byId.get(vid);
+                const name = v ? `${v.make} ${v.model} ${v.trim_group}` : vid;
+                return (
+                  <div key={vid} className="cars-market__sel" data-testid="selection-chip">
+                    <div className="cars-market__sel-text">
+                      <span className="cars-market__sel-name">{name}</span>
+                      <span className="cars-market__sel-sub">
+                        {yearRangeLabel(selection, vid)} · {pointsByVariant.get(vid) ?? 0} listings
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="cars-market__remove"
+                      aria-label={`Remove ${name}`}
+                      onClick={() => setSelection(removeVariant(selection, vid))}
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
+              })}
+              <button
+                type="button"
+                className="cars-market__add"
+                aria-expanded={pickerOpen}
+                onClick={() => setPickerOpen((o) => !o)}
+              >
+                {pickerOpen ? "Close" : "Add model"}
+              </button>
+            </div>
+            {pickerOpen && (
+              <div className="cars-market__picker" role="group" aria-label="Add model">
+                {catalogue.map((v) => {
+                  const on = selection.some((s) => s.variant_id === v.variant_id);
+                  const name = `${v.make} ${v.model} ${v.trim_group}`;
+                  return (
+                    <label key={v.variant_id} className="cars-check">
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        aria-label={name}
+                        onChange={(e) =>
+                          setSelection(
+                            e.target.checked
+                              ? [...removeVariant(selection, v.variant_id), fullRange(v)]
+                              : removeVariant(selection, v.variant_id),
+                          )
+                        }
+                      />{" "}
+                      {name}
+                      <span className="cars-hint">
+                        {" "}
+                        · {Math.min(...v.model_years)}–{Math.max(...v.model_years)}
+                      </span>
+                    </label>
+                  );
+                })}
+                {catalogue.length === 0 && <span className="cars-hint">Loading catalogue…</span>}
+              </div>
+            )}
+            <div className="cars-actions">
+              {selection.length === 0 && <span className="cars-hint">Pick at least one car to compare.</span>}
+              <button type="button" className="cars-btn" onClick={() => setSelection([])} disabled={selection.length === 0}>
+                Clear
+              </button>
+              <button
+                type="button"
+                className="cars-btn cars-btn--primary"
+                disabled={selection.length === 0}
+                onClick={() => navigate("/cars/compare")}
+              >
+                Compare selection
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
+  );
+}

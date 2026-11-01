@@ -6,10 +6,13 @@
 // best and worst, and sensible reactions to what-if and override inputs.
 
 import type {
+  CohortsResponse,
   DisplayItem,
   ExitMonthKey,
   InputView,
   LineItemView,
+  MarketFilters,
+  MarketPointsResponse,
   MeasureResult,
   OptionResult,
   OptionSummary,
@@ -619,7 +622,7 @@ export function buildScenario(req: ScenarioRequest): ScenarioResponse {
     sensitivity.push(
       { driver: "resale", label: "Resale value", low: scale(-0.14), high: scale(0.12), note: "Resale ±12 % around the curve" },
       {
-        driver: "exit_month",
+        driver: "exit_timing",
         label: "When you leave",
         low: m.best.value - e,
         high: m.worst.value - e,
@@ -658,4 +661,116 @@ export function buildScenario(req: ScenarioRequest): ScenarioResponse {
     sensitivity_option_id: sensitivityId,
     elapsed_ms: 42,
   };
+}
+
+// ---- Market (spec 023 R1/R2): cohort points and per-listing points for the
+// mock mode and the market screen tests. Deterministic (seeded PRNG), priced
+// with the same toy retention model as the scenario builder.
+
+function lcg(seed: number): () => number {
+  let s = seed >>> 0 || 1;
+  return () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+function hex16(text: string): string {
+  // Two FNV-1a passes make a 16-hex, listing-id-shaped token (not a real hash).
+  let a = 0x811c9dc5;
+  let b = 0x01000193;
+  for (let i = 0; i < text.length; i++) {
+    a = Math.imul(a ^ text.charCodeAt(i), 0x01000193) >>> 0;
+    b = Math.imul(b ^ text.charCodeAt(text.length - 1 - i), 0x811c9dc5) >>> 0;
+  }
+  return a.toString(16).padStart(8, "0") + b.toString(16).padStart(8, "0");
+}
+
+function cohortSeed(v: VehicleOut, year: number): { refKm: number; valueOre: number; n: number } {
+  const age0 = Math.max(0, CURRENT_YEAR - year);
+  const refKm = age0 === 0 ? 5_000 : age0 * 15_000;
+  const P = v.new_price_ore ?? 40_000_000;
+  const valueOre = Math.round(P * retention(age0, refKm));
+  const rnd = lcg(hex16(`${v.variant_id}:${year}`).length + year * 31 + v.variant_id.length * 7);
+  return { refKm, valueOre, n: 8 + Math.floor(rnd() * 8) };
+}
+
+function meetsMustHaves(v: VehicleOut, mustHaves: string[]): boolean {
+  return mustHaves.every(
+    (m) => (m === "heat_pump" && v.heat_pump) || (m === "auto_precondition" && v.auto_precondition) || (m === "awd" && v.drive === "awd"),
+  );
+}
+
+function marketVehicles(f: MarketFilters): VehicleOut[] {
+  return VEHICLES.filter(
+    (v) =>
+      (!f.make || v.make.toLowerCase() === f.make.toLowerCase()) &&
+      (!f.energy_type || f.energy_type.includes(v.energy_type)),
+  );
+}
+
+export function buildCohorts(f: MarketFilters = {}): CohortsResponse {
+  const cohorts: CohortsResponse["cohorts"] = [];
+  let total = 0;
+  for (const v of marketVehicles(f)) {
+    for (const year of v.model_years) {
+      if (year < (f.year_from ?? 2010) || year > (f.year_to ?? 2030)) continue;
+      const c = cohortSeed(v, year);
+      total += c.n;
+      if (f.max_price_nok !== undefined && c.valueOre > f.max_price_nok * 100) continue;
+      cohorts.push({
+        cohort_id: `${v.variant_id}:${year}`,
+        variant_id: v.variant_id,
+        make: v.make,
+        model: v.model,
+        trim_group: v.trim_group,
+        model_year: year,
+        energy_type: v.energy_type,
+        drive: v.drive,
+        body: v.body,
+        n_listings: c.n,
+        ref_km: c.refKm,
+        value_ref_ore: c.valueOre,
+        pi_low_ore: Math.round(c.valueOre * 0.92),
+        pi_high_ore: Math.round(c.valueOre * 1.08),
+        status: c.n >= 5 ? "live" : "estimate",
+        as_of: BUNDLE_AS_OF,
+        range_km_wltp: v.range_km_wltp,
+        efficiency_wh_per_km: 150 + Math.round((v.power_kw ?? 150) / 10),
+        accel_0_100_s: v.accel_0_100_s,
+        meets_must_haves: meetsMustHaves(v, f.must_have ?? []),
+      });
+    }
+  }
+  return { bundle_as_of: BUNDLE_AS_OF, listings_mode: "fixture", n_listings_total: total, cohorts };
+}
+
+export function buildMarketPoints(f: MarketFilters = {}): MarketPointsResponse {
+  const points: MarketPointsResponse["points"] = [];
+  for (const v of marketVehicles(f)) {
+    if (f.must_have?.length && !meetsMustHaves(v, f.must_have)) continue;
+    for (const year of v.model_years) {
+      if (year < (f.year_from ?? 2010) || year > (f.year_to ?? 2030)) continue;
+      const c = cohortSeed(v, year);
+      const rnd = lcg(year * 1009 + v.variant_id.length * 97 + c.n);
+      for (let i = 0; i < c.n; i++) {
+        const km = Math.max(10, Math.round((c.refKm * Math.exp((rnd() - 0.5) * 0.9)) / 100) * 100);
+        const dealer = rnd() < 0.5;
+        const ask = Math.round(c.valueOre * (1 - 0.1 * Math.log((km + 10_000) / (c.refKm + 10_000))) * (dealer ? 1.03 : 1) * (0.93 + rnd() * 0.14));
+        if (f.max_price_nok !== undefined && ask > f.max_price_nok * 100) continue;
+        points.push({
+          listing_id: hex16(`${v.variant_id}:${year}:${i}`),
+          variant_id: v.variant_id,
+          cohort_id: `${v.variant_id}:${year}`,
+          model_year: year,
+          ask_ore: ask,
+          km,
+          seller_type: dealer ? "dealer" : "private",
+          first_reg_month: `${year}-${String(1 + Math.floor(rnd() * 12)).padStart(2, "0")}`,
+          snapshot_date: BUNDLE_AS_OF,
+        });
+      }
+    }
+  }
+  return { bundle_as_of: BUNDLE_AS_OF, listings_mode: "fixture", n_points: points.length, points };
 }

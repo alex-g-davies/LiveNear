@@ -35,6 +35,27 @@ Dated decisions that are not derivable from the code. Newest first.
   (`exp(drift × t/12)`) and the band, so the chart's centre line and its
   band move together.
 
+## 2026-11-01 — Market map and checklist (spec 023)
+
+- **One dot per listing, hashed.** `GET /api/cars/market/points` serves the
+  latest `listed` snapshot per listing with the same fields the per-cohort
+  listings endpoint already exposed (hashed id, price, km, year, seller
+  type, first-registration month). In `unavailable` mode it returns 200 and
+  an empty list and the screen falls back to cohort medians with a visible
+  note, so the map never 503s.
+- **Checklist content is the owner's wireframe list**, held in the frontend
+  (`lib/checklist.ts`); ticks live in `CarState.checklist` and travel in the
+  `c` URL parameter. Due dates are estimates with a written basis: licence
+  exchange = arrival + 12 months (non-EEA rule of thumb), winter tyres =
+  next 1 November, EV tax change = the pending rule's effective date only
+  while `tax_rules.yaml` lists a pending `ev_vat` entry.
+- **Default selection only on the Situation form.** The first-visit default
+  (first four variants) no longer re-fills an emptied selection on Market or
+  Compare, so Clear means clear.
+- Box-select is built on d3-brush and is covered by unit tests of the pure
+  selection arithmetic; jsdom cannot drive a brush drag, so the drag itself
+  is part of the manual walkthrough.
+
 ## 2026-11-01 — First real data (owner exports)
 
 - **Owner exports are converted, not scraped.** The owner supplied three

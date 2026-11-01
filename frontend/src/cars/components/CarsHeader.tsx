@@ -1,5 +1,5 @@
-// Header with the five-step nav (spec 022 R11). Steps 2 (Market) and 5
-// (Checklist) are follow-up specs and render as disabled "coming soon".
+// Header with the five-step nav (spec 022 R11, 023 R3). Step 4 (Detail) is
+// only reachable from an option, so it is a link only while on one.
 
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -21,9 +21,9 @@ export default function CarsHeader() {
           <NavLink to="/cars" end className="cars-steps__link">
             1 Your situation
           </NavLink>
-          <span className="cars-steps__link cars-steps__link--soon" aria-disabled="true">
-            2 Market <small>coming soon</small>
-          </span>
+          <NavLink to="/cars/market" className="cars-steps__link">
+            2 Market
+          </NavLink>
           <NavLink
             to="/cars/compare"
             className="cars-steps__link"
@@ -40,9 +40,9 @@ export default function CarsHeader() {
               4 Detail
             </span>
           )}
-          <span className="cars-steps__link cars-steps__link--soon" aria-disabled="true">
-            5 Checklist <small>coming soon</small>
-          </span>
+          <NavLink to="/cars/checklist" className="cars-steps__link">
+            5 Checklist
+          </NavLink>
         </nav>
       </div>
     </header>

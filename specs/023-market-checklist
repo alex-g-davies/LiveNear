@@ -1,0 +1,161 @@
+# Spec 023 — Market map and newcomer checklist (cars module screens 2 and 5)
+
+Status: Draft
+Owner: <you>
+Related: 022-car-tco (engine, market model, API, core screens), 009-zip-explorer
+(shareable URL state). Source documents: the owner's MVP build spec and the
+"Market" and "Checklist" wireframes ("Norway car TCO app — wireframes").
+
+## Overview
+
+Spec 022 shipped steps 1, 3 and 4 of the five-step flow at `/cars`. This spec
+adds the two remaining screens the header already names:
+
+- **2 Market** — every model year in the catalogue as a scatter of asking
+  prices, with filters, a box-select and a selection tray that feeds Compare.
+- **5 Checklist** — the things a newcomer has to do that a local does not,
+  grouped by when, with ticks that persist in the browser, due dates derived
+  from the profile and a panel showing which items move the user's own
+  ranking the most.
+
+Everything stays stateless on the server and personal-data-free; the only
+new persisted fields live in the browser-held state (spec 022 R2).
+
+## Context
+
+- The backend already serves per-cohort points (`GET /api/cars/market/cohorts`
+  with filters, range / efficiency / 0–100 fields and `meets_must_haves`) and
+  per-cohort listings from the private R2 copy. The wireframe draws one dot
+  per listing, so one new read endpoint is needed.
+- Listings are hashed ids with price, km, model year, seller type and the
+  first-registration month. No URL, dealer name, location or registration
+  number is served (022 R10). Points inherit that.
+- The catalogue is electric-only today (10 variants). The energy-type filter
+  is built as wireframed and simply shows one checked box per energy type
+  present in the catalogue; nothing is invented for hybrids or petrol.
+- Checklist content is the owner's wireframe list (11 items). Due dates
+  depend on an arrival date the profile did not have; it is added as an
+  optional field. Deadline rules differ by licence country, so every due
+  date is shown as an estimate with its basis and a link to the official
+  page, never as a bare date (022 "no silent defaults").
+
+## Requirements
+
+### Market map
+
+- **R1 — Points endpoint.** `GET /api/cars/market/points` returns one row per
+  listing in its latest `listed` snapshot: `listing_id` (hashed),
+  `variant_id`, `cohort_id`, `model_year`, `ask_ore`, `km`, `seller_type`,
+  `first_reg_month`, `snapshot_date`. Same filters as `/market/cohorts`
+  (`make`, `year_from`, `year_to`, `max_price_nok`, `energy_type`,
+  `must_have`). Response carries `bundle_as_of`, `listings_mode` and
+  `n_points`. In `unavailable` mode the list is empty with status 200 (the
+  screen falls back to cohort points), not 503. Rate-limited with
+  `DATA_LIMIT`. No field in the response can identify an ad or a person.
+- **R2 — Market screen** at `/cars/market`, per the wireframe:
+  - Filter rail: model search (make + model + trim substring), year from /
+    to, max asking price (NOK), energy type checkboxes (built from the
+    catalogue), "Hide cars that fail my must-haves" (from the profile's
+    limits). Filters are local state, not persisted.
+  - Scatter: X axis selectable among model year, km driven, WLTP range; Y
+    axis among asking price, range, efficiency, 0–100 km/h. Colour-by
+    toggle: energy type, drive, body style, with a legend. One dot per
+    listing when points exist, else one dot per cohort (value at reference
+    km) with a visible note "cohort medians: listing detail unavailable".
+    Dots of selected variant × year ranges are full-opacity with a ring;
+    others are faded. Light vertical gridlines per model year on the year
+    axis.
+  - Box-select: dragging a region (d3-brush) adds every (variant, year)
+    under it to the selection as merged year ranges. Clicking a dot adds its
+    variant for that model year; clicking a selected dot removes that year.
+    Hovering a dot shows a tooltip with make, model, trim, model year, km
+    and asking price (no identifiers).
+  - "Your selection" tray: one chip per variant with its year range and
+    listing count, a remove button (44 px target), "Add model" opens the
+    same picker the Situation screen uses, "Clear", and "Compare selection"
+    (disabled with a hint when the selection is empty) navigating to
+    `/cars/compare`. Header line shows "[n] listings · as of [date]".
+  - Hand-written SVG on d3 scales, as the other charts; responsive via
+    `useContainerWidth`; keyboard: every chip and button focusable, the
+    scatter has an `img` role with a descriptive label; phone width stacks
+    the rail above the plot and the plot scrolls horizontally if needed.
+- **R3 — Selection handoff.** The Market screen reads and writes the same
+  `selection` as the Situation picker and Compare (022 R2). The Situation
+  screen gains a secondary "Browse the market" link; the Compare header's
+  "Edit selection" affordance (if any) points to `/cars/market`. The header
+  step "2 Market" becomes a live link.
+
+### Newcomer checklist
+
+- **R4 — Checklist screen** at `/cars/checklist`, per the wireframe: three
+  groups (Before you choose, Before you sign, After you get the car) with the
+  eleven wireframe items, each with a title, a one-line why, a tag, a
+  checkbox (22 px box, 44 px row target) and, where applicable, a due date.
+  Items that only apply to a mode the user has not selected (used-car and
+  lease items) are still shown but marked "only if you go used / lease".
+- **R5 — Ticks and due dates in browser state.** `CarState.checklist` holds
+  the ticked item ids; it round-trips through localStorage and the `c` URL
+  parameter like every other field and is sanitised on decode (unknown ids
+  dropped). `CarProfile.arrival_date` (ISO date or null) is added to the
+  Situation form ("When did/will you arrive in Norway?", optional). Due
+  dates: licence exchange = arrival + 12 months (estimate, basis: "most
+  non-EEA licences must be exchanged within one year of residence; EEA
+  licences need no exchange; check Statens vegvesen for your country");
+  winter tyres = the next 1 November after the start date (estimate, basis:
+  "studded-tyre season and typical first snow; the legal duty is to have
+  adequate tyres for the conditions"); EV tax changes = the next 1 January
+  (estimate, basis: the pending 2027 EV VAT change in `tax_rules.yaml`
+  `pending`, shown only while that entry exists). With no arrival date the
+  licence item shows "Add your arrival date to see the deadline".
+- **R6 — Impact panel.** "Biggest effect on your cost" lists, from the
+  current scenario's sensitivity rows (022 R10), the insurance band as the
+  effect of real quotes, the claims-free letter as the insurance low side,
+  and the lease early-exit terms as the exit-timing band for the best lease
+  option when one is in the ranking; values in the user's measure, formatted
+  nb-NO, with the per-year suffix the wireframe uses where the measure is per
+  month (× 12). Each row links to Compare. When no scenario has run, the
+  panel says so and links to Compare instead of showing dashes.
+- **R7 — Progress and download.** Progress card: "n of 11 done", a bar, and
+  the next due item. "Download checklist" produces a Markdown file in the
+  browser (`norway-car-checklist.md`) with groups, ticks, due dates and
+  their bases; no network call.
+
+### Cross-cutting
+
+- **R8 — Tests.** Backend: points endpoint shape, filters, identifier-free
+  response, unavailable mode returns 200 + empty. Frontend: market screen
+  renders cohort fallback and listing points from the mock fixture, filters
+  narrow the dots, brush and click change the selection, Compare button
+  navigates; checklist ticks persist through encode/decode, due dates follow
+  the arrival date, impact panel renders from the fixture sensitivity rows,
+  download builds the expected Markdown. Existing 022 tests keep passing.
+
+## Out of Scope (explicit)
+
+- Quarantine review UI, automated brand price lists and lease portals, the
+  weekly GitHub Actions ingest PR (spec 024).
+- Norwegian UI; per-country licence rules beyond the one-year estimate.
+- Any FINN automation.
+
+## Acceptance Criteria
+
+- [ ] R1: `GET /api/cars/market/points` returns hashed-id rows with the
+      filters applied; `curl` of the live site shows `n_points` > 0 and no
+      URL or registration number anywhere in the body.
+- [ ] R2/R3: on `/cars/market` the owner can filter to one make, drag a box
+      over two model years, see the chips update, press Compare selection and
+      land on Compare with exactly those cars ranked.
+- [ ] R4/R5: ticking three items, reloading, and opening the share URL in a
+      fresh tab shows the same three ticks; entering an arrival date shows the
+      licence deadline with its basis.
+- [ ] R6: with a scenario run, the impact panel shows NOK figures that match
+      the sensitivity rail on Compare for the same option.
+- [ ] R7: the downloaded Markdown lists all 11 items with the ticked ones
+      marked.
+- [ ] R8: `pytest` and `npm run test` pass in CI; the Docker smoke passes.
+
+## Verification notes
+
+- R1 → `backend/tests/cars/test_api_cars.py` (points section).
+- R2/R3 → `frontend/src/test/cars/market.test.tsx`.
+- R4–R7 → `frontend/src/test/cars/checklist.test.tsx`, `profile.test.ts`.

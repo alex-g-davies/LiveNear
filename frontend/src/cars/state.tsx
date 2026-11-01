@@ -48,6 +48,8 @@ export interface CarStateApi {
   setOverride: (id: string, value: string | number) => void;
   clearOverride: (id: string) => void;
   setMeasure: (measure: Measure) => void;
+  /** Tick / untick a newcomer-checklist item (023 R5). */
+  toggleChecklist: (id: string) => void;
   /** Explicit persist (the Save draft button); returns false if storage failed. */
   saveDraft: () => boolean;
   request: ScenarioRequest | null;
@@ -154,6 +156,14 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setState((s) => ({ ...s, measure, profile: { ...s.profile, preferred_measure: measure } })),
     [],
   );
+  const toggleChecklist = useCallback(
+    (id: string) =>
+      setState((s) => ({
+        ...s,
+        checklist: s.checklist.includes(id) ? s.checklist.filter((x) => x !== id) : [...s.checklist, id],
+      })),
+    [],
+  );
   const saveDraft = useCallback(() => saveState(state), [state]);
 
   // The scenario runs on every screen except the form itself (typing there
@@ -166,12 +176,13 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
   const scenario = useScenario(request);
   const vehicles = useVehicles();
 
-  // Default selection until the Market screen exists: the first four variants
-  // over their full model-year range, applied once when the catalogue lands
-  // and the user has picked nothing.
+  // Default selection for a first visit: the first four variants over their
+  // full model-year range, applied once when the catalogue lands while the
+  // user is on the Situation form and has picked nothing. On Market and
+  // Compare an empty selection stays empty (023 R3: Clear means clear).
   const defaulted = useRef(false);
   useEffect(() => {
-    if (defaulted.current || !vehicles.data) return;
+    if (defaulted.current || !vehicles.data || !onForm) return;
     defaulted.current = true;
     if (state.selection.length > 0) return;
     const first = vehicles.data.slice(0, 4).map<SelectionItem>((v) => ({
@@ -180,7 +191,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       year_to: Math.max(...v.model_years),
     }));
     if (first.length) setState((s) => (s.selection.length ? s : { ...s, selection: first }));
-  }, [vehicles.data, state.selection.length]);
+  }, [vehicles.data, state.selection.length, onForm]);
 
   const api = useMemo<CarStateApi>(
     () => ({
@@ -193,6 +204,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setOverride,
       clearOverride,
       setMeasure,
+      toggleChecklist,
       saveDraft,
       request,
       scenario,
@@ -208,6 +220,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setOverride,
       clearOverride,
       setMeasure,
+      toggleChecklist,
       saveDraft,
       request,
       scenario,
