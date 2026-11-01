@@ -152,3 +152,40 @@ variants:
     efficiency_wh_per_km: {value: 155, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 9000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
     fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: tesla-modely-lr-awd-juniper
+    make: Tesla
+    model: Model Y
+    trim_group: Long Range AWD (2025 facelift)
+    segment: ev-suv
+    model_years: [2025, 2026]
+    drive: awd
+    body: crossover
+    battery_kwh: 75
+    heat_pump: true
+    auto_precondition: true
+    tyre_size: 255/45 R19
+    range_km_wltp: 586
+    accel_0_100_s: 4.8
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "Facelift is slightly more efficient than the 2022-2024 car; NAF El Prix to confirm"}
+    tyre_set_nok: {value: 14000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: mg-mg4-64
+    make: MG
+    model: MG4
+    trim_group: 64 kWh
+    segment: ev-small
+    model_years: [2023, 2024, 2025, 2026]
+    drive: rwd
+    body: hatchback
+    battery_kwh: 64
+    power_kw: 150
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 235/45 R18
+    warranty_years: 7
+    warranty_km: 150000
+    range_km_wltp: 435
+    accel_0_100_s: 7.9
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 to 18 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}

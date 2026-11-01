@@ -55,3 +55,14 @@ Market model v1 notes (R7): fleet/taxi and warranty terms are carried through
 the listing rows but **not fitted** in `eb-v1`; the drift and ask→sale
 estimates need ≥ 8 weekly snapshots to be computed and are `estimate` until
 12 exist (spec R7); the ask→sale figure is a proxy (last ask before removal).
+
+## Owner exports (2026-11-01)
+
+| Source | Data | Access | Terms decision | Date |
+|---|---|---|---|---|
+| Owner used-listings export | One row per listing with the owner's cohort label and trim match (974 sale rows kept, 971 stored, 3 quarantined for km vs age) | `app/cars/ingest/owner_export.py` -> listings contract -> `ingest.runner` -> `scripts/cars_build_bundle.py --listings` | Private file under `data/cars/private/`; the module only re-shapes what the owner provides and never fetches. Only the derived cohort aggregates are committed. | 2026-11-01 |
+| Owner private-lease export (Ayvens offers) | 47 offers; 6 map to catalogue variants and are committed in `data/cars/seed/lease_quotes.csv` with their offer URLs | Same converter -> lease contract | Public offer prices with source URLs; fees not in the export are flagged estimate. Portal automation still needs a terms check first. | 2026-11-01 |
+| Owner new/near-new stock export | 711 dealer listings across all brands | Same converter -> new-price contract (only `new` condition, as `estimate`) | No catalogue variant appears as `new`; used only to bound list prices for the 2026 facelift Model Y and MG4. Manufacturer list prices remain to be sourced. | 2026-11-01 |
+
+Run order: `scripts/cars_convert_owner_export.py` -> `python -m app.cars.ingest.runner --sources listings_csv --listings data/cars/private/contract/listings.csv --out data/cars/private/ingest --raw-dir data/cars/private/raw` -> `scripts/cars_build_bundle.py --listings data/cars/private/ingest/store/listings.csv --report docs/cars/backtest.md`. For the live site, upload the converted `listings.csv` to R2 at `CARS_R2_LISTINGS_KEY` (default `listings/listings.csv`) so the per-cohort listing drill-down works; the bundle itself ships with the repo.
+

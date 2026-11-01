@@ -110,7 +110,7 @@ def render_backtest_markdown(
         f"(`{params.ask_to_sale_discount.status}`, {params.ask_to_sale_discount.source})",
         "- Fleet / taxi and warranty terms: not fitted in v1 (columns carried through).",
         "",
-        "## Segment retention curves (log r = a + b * age + c * log(km + 1000))",
+        "## Segment retention curves (log r = a + b * age + c * log(km + KM_OFFSET))",
         "",
         "| Segment | a | b | c | sigma_resid | sigma_per_year | beta_logkm |",
         "|---|---:|---:|---:|---:|---:|---:|",

@@ -48,21 +48,39 @@ rules:
   - id: re_registration_2025
     kind: re_registration_fee
     effective_from: 2025-01-01
-    effective_to: null
+    effective_to: 2026-01-01
     params:
-      # Passenger cars; bands by vehicle age in whole years at purchase.
-      # Weight classes collapsed to the lightest band for the MVP.
+      # Passenger cars over 1 200 kg (every EV in the catalogue); bands by
+      # vehicle age in whole years at purchase.
       age_bands_ore:
-        - {min_years: 0, ore: 700000}
-        - {min_years: 4, ore: 430000}
+        - {min_years: 0, ore: 734300}
+        - {min_years: 4, ore: 443400}
         - {min_years: 12, ore: 170000}
       ev_factor: "1"
     source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
     status: unverified
     note: >-
-      Placeholder bands recalled from the 2025 rate table for cars up to
-      1 200 kg; heavier cars pay more. Electric cars have paid the fee since
-      2022. Verify bands, weight classes and the EV factor before marking live.
+      0-3 and 4-11 year bands are the fees dealers still quoted on a minority
+      of October 2026 listings (7 343 / 4 434 kr), read as the 2025 rates;
+      the 12+ band is a recalled placeholder. Verify on the Skatteetaten
+      rate table before marking live.
+  - id: re_registration_2026
+    kind: re_registration_fee
+    effective_from: 2026-01-01
+    effective_to: null
+    params:
+      age_bands_ore:
+        - {min_years: 0, ore: 750500}
+        - {min_years: 4, ore: 453200}
+        - {min_years: 12, ore: 170000}
+      ev_factor: "1"
+    source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
+    status: unverified
+    note: >-
+      0-3 and 4-11 year bands observed on 2 000+ dealer listings in October
+      2026 (7 505 kr for 2024 model years, 4 532 kr for 2019-2022); the 12+
+      band is a recalled placeholder. Verify bands and weight classes on the
+      Skatteetaten rate table before marking live.
 
   # --- VAT on new electric cars --------------------------------------------
   - id: ev_vat_2023

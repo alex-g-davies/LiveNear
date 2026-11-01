@@ -173,13 +173,16 @@ def load_lease_quotes(path: Path = SEED_DIR / "lease_quotes.csv") -> list[LeaseO
             basis = row.get("basis") or None
 
             def m(key: str, col: str, _row: dict[str, Any] = row) -> In[int]:
+                # A per-column `<col>_status` / `<col>_basis` overrides the
+                # offer-wide status, so a quoted rent can be live while an
+                # unquoted fee stays an estimate with its own basis.
                 return In[int](
                     id=f"{_row['offer_id']}.{key}",
                     value=nok(_d(_row[col])),
                     source=_row["source"],
                     as_of=_date(_row["date"]),
-                    status=_row.get("status") or "live",
-                    basis=_row.get("basis") or None,
+                    status=_row.get(f"{col}_status") or _row.get("status") or "live",
+                    basis=_row.get(f"{col}_basis") or _row.get("basis") or None,
                 )
 
             terms = (row.get("early_exit_terms") or "default").strip()

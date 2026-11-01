@@ -1,6 +1,6 @@
 # Market model backtest (eb-v1)
 
-Rendered by `app.cars.market.report` from **the synthetic fixture data/cars/fixtures/listings_fixture.csv**, as of 2026-10-31. Model status: `live`.
+Rendered by `app.cars.market.report` from **owner listings CSV (listings.csv)**, as of 2026-10-31. Model status: `live`.
 
 Leave-one-listing-out CV on the cohort fit set (one row per listing, latest
 `listed` snapshot): the cohort intercept is refitted without the listing
@@ -13,32 +13,31 @@ interval on that share.
 
 ## Data
 
-- Distinct listings in the fit: 264
-- Cohorts (variant x model year): 22
-- Weekly snapshots: 10
-- Variants with a fitted cohort: 8
+- Distinct listings in the fit: 971
+- Cohorts (variant x model year): 21
+- Weekly snapshots: 1
+- Variants with a fitted cohort: 9
 
 ## Overall
 
 | Set | n | MAPE | 80 % PI coverage | Wilson 95 % |
 |---|---:|---:|---:|---|
-| all listings | 264 | 7.9 % | 81.4 % | 76.3 % to 85.7 % |
+| all listings | 971 | 4.5 % | 76.2 % | 73.4 % to 78.8 % |
 
 ## By segment
 
 | Segment | n | MAPE | 80 % PI coverage | Wilson 95 % |
 |---|---:|---:|---:|---|
-| ev-mid | 204 | 7.9 % | 82.4 % | 76.5 % to 87.0 % |
-| ev-small | 24 | 7.9 % | 70.8 % | 50.8 % to 85.1 % |
-| ev-suv | 36 | 8.0 % | 83.3 % | 68.1 % to 92.1 % |
+| ev-mid | 450 | 5.0 % | 78.7 % | 74.6 % to 82.2 % |
+| ev-small | 113 | 5.1 % | 76.1 % | 67.5 % to 83.0 % |
+| ev-suv | 408 | 3.8 % | 73.5 % | 69.0 % to 77.6 % |
 
 ## By age band
 
 | Age at as-of | n | MAPE | 80 % PI coverage | Wilson 95 % |
 |---|---:|---:|---:|---|
-| <2y | 24 | 7.4 % | 83.3 % | 64.1 % to 93.3 % |
-| 2-4y | 84 | 8.4 % | 85.7 % | 76.7 % to 91.6 % |
-| 4y+ | 156 | 7.8 % | 78.8 % | 71.8 % to 84.5 % |
+| 2-4y | 468 | 3.7 % | 78.0 % | 74.0 % to 81.5 % |
+| 4y+ | 503 | 5.2 % | 74.6 % | 70.6 % to 78.2 % |
 
 ## Temporal backtest
 
@@ -50,21 +49,21 @@ None.
 
 ## Fitted global terms
 
-- Dealer premium delta: 0.0535 log points (`live`, Pooled dealer term of within-cohort residuals (eb-v1))
-- Used-price drift: 1.18 % per year (`estimate`, P10-P90 -12.35 to 14.72)
-- Ask-to-sale discount: 2.0 % (`estimate`, Median last/first ask of 199 removed listings (proxy for sale price))
+- Dealer premium delta: 0.0084 log points (`live`, Pooled dealer term of within-cohort residuals (eb-v1))
+- Used-price drift: 0 % per year (`estimate`, P10-P90 -6 to 2)
+- Ask-to-sale discount: 0 % (`estimate`, Placeholder until removed listings are tracked)
 - Fleet / taxi and warranty terms: not fitted in v1 (columns carried through).
 
-## Segment retention curves (log r = a + b * age + c * log(km + 1000))
+## Segment retention curves (log r = a + b * age + c * log(km + KM_OFFSET))
 
 | Segment | a | b | c | sigma_resid | sigma_per_year | beta_logkm |
 |---|---:|---:|---:|---:|---:|---:|
-| ev-mid | 0.6340 | -0.1020 | -0.0896 | 0.050 | 0.080 | -0.0976 |
-| ev-small | 0.6103 | -0.1161 | -0.0868 | 0.050 | 0.090 | -0.2600 |
-| ev-suv | 0.7287 | -0.0845 | -0.1019 | 0.050 | 0.080 | -0.0630 |
+| ev-mid | 2.4661 | -0.1017 | -0.2222 | 0.051 | 0.080 | -0.2222 |
+| ev-small | 1.4046 | -0.0605 | -0.1463 | 0.050 | 0.090 | -0.1463 |
+| ev-suv | 2.1806 | -0.0842 | -0.2058 | 0.050 | 0.080 | -0.2058 |
 
 ## Notes
 
-- segment ev-small: 2 fitted cohort(s) < 4, prior pseudo-observations added
 - segment ev-suv: 3 fitted cohort(s) < 4, prior pseudo-observations added
+- drift and ask-to-sale kept at the priors: 1 weekly snapshot(s) < 8
 - temporal backtest skipped: fewer than 100 listings removed after the cutoff week

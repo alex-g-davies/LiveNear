@@ -116,6 +116,7 @@ def test_scenario_under_two_seconds_for_ten_options_at_2000_draws(client):
         {"variant_id": "hyundai-ioniq5-lr-rwd", "year_from": 2021, "year_to": 2023},
         {"variant_id": "skoda-enyaq-80-rwd", "year_from": 2021, "year_to": 2023},
         {"variant_id": "tesla-modely-lr-awd", "year_from": 2022, "year_to": 2024},
+        {"variant_id": "tesla-model3-rwd-highland", "year_from": 2024, "year_to": 2026},
     ]
     client.post("/api/cars/vehicles")  # warm imports (405 is fine)
     r = client.post("/api/cars/scenarios", json=body)

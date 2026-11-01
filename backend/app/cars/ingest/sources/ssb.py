@@ -102,6 +102,7 @@ def run_source(ctx: SourceContext) -> SourceOutput:
             client=ctx.http,
             r2_upload=ctx.r2_upload,
             r2_client=ctx.r2_client,
+            now=ctx.fetched_at(),
         )
         rec = make(json.loads(snap.read_text()))
         stamp([rec], snap, ctx.today)

@@ -57,6 +57,9 @@ for newcomers. Rules that apply inside `backend/app/cars/` and
   Listings and raw snapshots go to the owner's private R2 bucket, never
   this public repo; only derived bundles are committed under
   `backend/data/cars/`.
+  Owner exports dropped in the repo root go straight to
+  `backend/data/cars/private/` (gitignored); convert them with
+  `scripts/cars_convert_owner_export.py`, never commit them.
 - **No personal data server-side.** Profiles, selections and overrides live
   in the browser and the URL; scenario runs are stateless.
 - Commands (from `backend/`): engine CLI

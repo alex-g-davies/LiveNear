@@ -11,7 +11,7 @@ from __future__ import annotations
 import importlib
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -57,6 +57,12 @@ class SourceContext:
     @property
     def cache_dir(self) -> Path:
         return self.out_dir / "cache"
+
+    def fetched_at(self) -> datetime:
+        """Timestamp for raw archives: the run date (`today`, which `--today`
+        may override) with the real clock time, so a replayed run files its
+        snapshots under that day."""
+        return datetime.combine(self.today, datetime.now(UTC).time(), tzinfo=UTC)
 
 
 @dataclass

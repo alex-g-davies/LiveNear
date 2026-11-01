@@ -128,10 +128,11 @@ def test_map_variant_by_trim_then_by_buckets(vehicles):
         map_variant(_row(trim_as_listed="Long Range AWD", drive="AWD"), vehicles)
         == "tesla-model3-lr-awd"
     )
-    # unknown trim text, but battery + drive + power identify the Highland? No: two RWD 60 kWh
-    # variants share the buckets, so it stays unmapped (quarantined, not guessed).
-    assert map_variant(_row(trim_as_listed="Standard Plus"), vehicles) is None
-    # Model Y: a single AWD 75 kWh variant => bucket match works
+    # unknown trim text: two RWD 60 kWh Model 3 variants share the buckets, but the
+    # 2022 model year rules out the Highland (2024-); without a year it stays unmapped.
+    assert map_variant(_row(trim_as_listed="Standard Plus"), vehicles) == "tesla-model3-rwd"
+    assert map_variant(_row(trim_as_listed="Standard Plus", model_year=""), vehicles) is None
+    # Model Y: AWD 75 kWh and a 2022 model year => the 2022-2024 variant, not the facelift
     assert (
         map_variant(
             _row(
@@ -425,7 +426,8 @@ def test_runner_stores_validated_rows_and_quarantines_failures(tmp_path, httpx_m
     by = {s.source: s for s in report.sources}
     assert by["listings_csv"].rows_in == 403 and by["listings_csv"].quarantined == 3
     assert by["listings_csv"].stored == 400
-    assert by["new_prices_csv"].stored == 22 and by["lease_csv"].stored == 2
+    assert by["new_prices_csv"].stored == len(seeds.load_new_prices())
+    assert by["lease_csv"].stored == len(seeds.load_lease_quotes())
     assert by["norges_bank"].stored == 1 and by["ssb"].stored == 2
     assert by["vegvesen"].status == "disabled" and by["tesla_configurator"].status == "disabled"
     assert "terms check pending" in by["tesla_configurator"].note

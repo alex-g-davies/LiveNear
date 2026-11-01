@@ -202,8 +202,12 @@ def build_scenario(
         label_base = f"{v.make} {v.model} {v.trim_group}"
         newest = max(v.model_years)
 
-        # --- buy new (only the newest model year on the price list) -----------
-        if "new" in allowed and newest in years:
+        # --- buy new (only the newest model year on the price list, and only
+        # while that year is current: a variant whose last model year is two
+        # or more years before the start is no longer sold new) -------------
+        if "new" in allowed and newest in years and newest < start.year - 1:
+            notes.append(f"{label_base}: last model year {newest}, not sold new in {start.year}")
+        elif "new" in allowed and newest in years:
             price = b.new_price(v.variant_id, newest)
             if price is None:
                 notes.append(f"{label_base} {newest}: no new price on file")

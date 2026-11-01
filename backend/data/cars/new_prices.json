@@ -328,5 +328,95 @@
   },
   "valid_from": "2020-01-01",
   "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd-juniper",
+  "model_year": 2025,
+  "price_ore": {
+   "id": "tesla-modely-lr-awd-juniper.2025.new_price",
+   "value": 54990000,
+   "source": "New-price history CSV",
+   "as_of": "2025-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2025-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-lr-awd-juniper",
+  "model_year": 2026,
+  "price_ore": {
+   "id": "tesla-modely-lr-awd-juniper.2026.new_price",
+   "value": 56900000,
+   "source": "New-price history CSV",
+   "as_of": "2026-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; near-new dealer asks on 2026-11-01 were 569 000-598 000 kr, so the list price is at or below this",
+   "range": null
+  },
+  "valid_from": "2026-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "mg-mg4-64",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "mg-mg4-64.2023.new_price",
+   "value": 33990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "mg-mg4-64",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "mg-mg4-64.2024.new_price",
+   "value": 32990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "mg-mg4-64",
+  "model_year": 2025,
+  "price_ore": {
+   "id": "mg-mg4-64.2025.new_price",
+   "value": 29990000,
+   "source": "New-price history CSV",
+   "as_of": "2025-01-01",
+   "status": "estimate",
+   "basis": "Placeholder",
+   "range": null
+  },
+  "valid_from": "2025-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "mg-mg4-64",
+  "model_year": 2026,
+  "price_ore": {
+   "id": "mg-mg4-64.2026.new_price",
+   "value": 28990000,
+   "source": "New-price history CSV",
+   "as_of": "2026-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; a near-new dealer ask on 2026-11-01 was 289 900 kr, so the list price is at or below this",
+   "range": null
+  },
+  "valid_from": "2026-01-01",
+  "valid_to": null
  }
 ]

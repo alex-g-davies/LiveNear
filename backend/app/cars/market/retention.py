@@ -1,13 +1,20 @@
 """Segment retention curves from fitted cohort values (spec 022 R7).
 
     r_c = exp(alpha_c) / (new_price(variant, model_year) * adjustment)
-    log r = a_s + b_s * age_years + c_s * log(ref_km + 1000)      (WLS, weights n_c)
+    log r = a_s + b_s * age_years + c_s * log(ref_km + KM_OFFSET)
 
-`age_years` is the time from 1 July of the model year to `as_of`. Each
-cohort contributes one observation weighted by its listing count. A segment
-with fewer than 4 fitted cohorts also gets the prior curve as pseudo
-observations (weight 1 each, an age x km grid) so the three coefficients stay
-identified; with no fitted cohorts the prior stands unchanged.
+`c_s` is NOT fitted here: it is tied to the segment's pooled within-cohort
+mileage slope `beta_bar` (identified on hundreds of listings). Across the
+handful of cohort points per segment, age and median km are nearly
+collinear, and a free three-coefficient WLS split the depreciation between
+them arbitrarily (positive km coefficients on real data, 2026-11-01). With c
+fixed, a and b come from a WLS of `log r - c * log(ref_km + KM_OFFSET)` on
+`[1, age]`, weights n_c. `age_years` is the time from 1 July of the model
+year to `as_of`. A segment with fewer than 4 fitted cohorts also gets the
+prior curve as pseudo observations (weight 1 each, an age x km grid) so a
+and b stay identified; with no fitted cohorts the prior stands unchanged.
+If the fitted b comes out positive (value rising with age) it is clamped to
+0 and noted in the report.
 
 Per variant, `shift` is the shrunk mean residual n/(n + 5) * mean_resid,
 with n the variant's total listing count across its fitted cohorts.
@@ -38,7 +45,7 @@ import numpy as np
 
 from ..bundle_schema import MarketModelParams, NewPriceRecord, SegmentParams, VariantRecord
 from .design import ref_logkm, retention_design
-from .schema import age_years
+from .schema import KM_OFFSET, age_years
 
 if TYPE_CHECKING:
     from .fit import CohortEstimate
@@ -111,34 +118,48 @@ def observations(
     return out
 
 
-def prior_pseudo_observations(segment: str, prior: SegmentParams) -> list[RetentionObs]:
+def prior_pseudo_observations(
+    segment: str, prior: SegmentParams, c: float | None = None
+) -> list[RetentionObs]:
+    """The prior curve on an age x km grid, evaluated with the km coefficient
+    the fit will use (`c`, default the prior's own) so the pseudo points pull
+    a and b towards the prior rather than towards a different km slope."""
+    c = prior.c if c is None else c
     out: list[RetentionObs] = []
     for age in PSEUDO_AGES:
         for kpy in PSEUDO_KM_PER_YEAR:
-            lkm = math.log(kpy * age + 1000.0)
+            lkm = math.log(kpy * age + KM_OFFSET)
             out.append(
                 RetentionObs(
-                    "prior", 0, segment, age, lkm, prior.a + prior.b * age + prior.c * lkm, 1, True
+                    "prior", 0, segment, age, lkm, prior.a + prior.b * age + c * lkm, 1, True
                 )
             )
     return out
 
 
-def _wls(obs: list[RetentionObs]) -> tuple[float, float, float] | None:
+def _wls(obs: list[RetentionObs], c: float) -> tuple[float, float] | None:
+    """WLS of log r - c * logkm on [1, age] -> (a, b); None if not identified."""
     import statsmodels.api as sm
 
-    y = np.array([o.log_r for o in obs])
-    X = retention_design([o.age for o in obs], [o.logkm for o in obs])
+    y = np.array([o.log_r - c * o.logkm for o in obs])
+    X = retention_design([o.age for o in obs], [o.logkm for o in obs])[:, :2]
     w = np.array([o.n for o in obs], dtype=float)
-    if np.linalg.matrix_rank(X) < 3:
+    if np.linalg.matrix_rank(X) < 2:
         return None
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         res = sm.WLS(y, X, weights=w).fit()
-    a, b, c = (float(v) for v in res.params)
-    if not all(math.isfinite(v) for v in (a, b, c)):
+    a, b = (float(v) for v in res.params)
+    if not all(math.isfinite(v) for v in (a, b)):
         return None
-    return a, b, c
+    return a, b
+
+
+def km_coefficient(seg: str, prior: SegmentParams, beta_bar: dict[str, float]) -> float:
+    """The retention km coefficient: the pooled within-cohort slope when it
+    has the expected sign, else the prior's c."""
+    c = beta_bar.get(seg)
+    return float(c) if c is not None and math.isfinite(c) and c < 0 else prior.c
 
 
 def fit_retention(
@@ -164,7 +185,7 @@ def fit_retention(
         real = [o for o in obs if o.segment == seg]
         if prior is None:
             prior = SegmentParams(
-                a=0.553, b=-0.11, c=-0.08, sigma_resid=0.10, sigma_per_year=0.08, beta_logkm=-0.08
+                a=0.737, b=-0.11, c=-0.08, sigma_resid=0.10, sigma_per_year=0.08, beta_logkm=-0.08
             )
             notes.append(f"segment {seg}: no prior in retention_priors.yaml, generic prior used")
         if not real:
@@ -173,20 +194,24 @@ def fit_retention(
             )
             continue
         use = list(real)
+        c = km_coefficient(seg, prior, beta_bar)
         if len(real) < MIN_COHORTS_FOR_FIT:
-            use += prior_pseudo_observations(seg, prior)
+            use += prior_pseudo_observations(seg, prior, c)
             notes.append(
                 f"segment {seg}: {len(real)} fitted cohort(s) < {MIN_COHORTS_FOR_FIT}, "
                 "prior pseudo-observations added"
             )
-        coef = _wls(use)
+        coef = _wls(use, c)
         if coef is None:
             segments[seg] = SegmentParams(
                 **{**prior.model_dump(), "beta_logkm": beta_bar.get(seg, prior.beta_logkm)}
             )
             notes.append(f"segment {seg}: retention WLS not identified, prior kept")
             continue
-        a, b, c = coef
+        a, b = coef
+        if b > 0:
+            notes.append(f"segment {seg}: fitted age slope b={b:.3f} > 0, clamped to 0")
+            b = 0.0
         resid = np.array([o.log_r - (a + b * o.age + c * o.logkm) for o in real])
         if resid.size >= 2:
             mad = float(1.4826 * np.median(np.abs(resid - np.median(resid))))

@@ -1,52 +1,52 @@
 [
  {
-  "offer_id": "m3h-36-15k",
+  "offer_id": "lease-155687",
   "variant_id": "tesla-model3-rwd-highland",
   "model_year": 2026,
   "term_months": 36,
   "monthly_ore": {
-   "id": "m3h-36-15k.monthly",
-   "value": 599000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "id": "lease-155687.monthly",
+   "value": 275000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
   "upfront_ore": {
-   "id": "m3h-36-15k.upfront",
-   "value": 6000000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "id": "lease-155687.upfront",
+   "value": 10000000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
   "fees_ore": {
-   "id": "m3h-36-15k.fees",
-   "value": 500000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
+   "id": "lease-155687.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
    "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
    "range": null
   },
   "km_cap_per_year": {
-   "id": "m3h-36-15k.km_cap",
+   "id": "lease-155687.km_cap",
    "value": 15000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
   "excess_km_fee_ore": {
-   "id": "m3h-36-15k.excess_km_fee",
+   "id": "lease-155687.excess_km_fee",
    "value": 150,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
    "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
    "range": null
   },
   "includes": [],
@@ -55,85 +55,85 @@
    "percent": null,
    "by_month_ore": null,
    "recovery_pct": {
-    "id": "m3h-36-15k.early_exit_recovery",
+    "id": "lease-155687.early_exit_recovery",
     "value": "60",
     "source": "Build spec default rule",
-    "as_of": "2026-10-31",
+    "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
     "range": null
    }
   },
   "end_of_lease_fee_ore": {
-   "id": "m3h-36-15k.end_fee",
-   "value": 300000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
+   "id": "lease-155687.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
    "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "basis": "Return/inspection fee not in the offer export",
    "range": null
   },
   "delivery_months": {
-   "id": "m3h-36-15k.delivery_months",
+   "id": "lease-155687.delivery_months",
    "value": 1,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
-  "source": "Placeholder lease offer",
-  "as_of": "2026-10-31",
-  "status": "estimate"
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/155687/tesla-model-3/",
+  "as_of": "2026-11-01",
+  "status": "live"
  },
  {
-  "offer_id": "my-36-15k",
+  "offer_id": "lease-201805",
   "variant_id": "tesla-modely-lr-awd",
-  "model_year": 2024,
+  "model_year": 2023,
   "term_months": 36,
   "monthly_ore": {
-   "id": "my-36-15k.monthly",
-   "value": 699000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "id": "lease-201805.monthly",
+   "value": 699900,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
   "upfront_ore": {
-   "id": "my-36-15k.upfront",
-   "value": 7000000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "id": "lease-201805.upfront",
+   "value": 100000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
   "fees_ore": {
-   "id": "my-36-15k.fees",
-   "value": 500000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
+   "id": "lease-201805.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
    "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
    "range": null
   },
   "km_cap_per_year": {
-   "id": "my-36-15k.km_cap",
+   "id": "lease-201805.km_cap",
    "value": 15000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
   "excess_km_fee_ore": {
-   "id": "my-36-15k.excess_km_fee",
+   "id": "lease-201805.excess_km_fee",
    "value": 150,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
    "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
    "range": null
   },
   "includes": [],
@@ -142,35 +142,383 @@
    "percent": null,
    "by_month_ore": null,
    "recovery_pct": {
-    "id": "my-36-15k.early_exit_recovery",
+    "id": "lease-201805.early_exit_recovery",
     "value": "60",
     "source": "Build spec default rule",
-    "as_of": "2026-10-31",
+    "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
     "range": null
    }
   },
   "end_of_lease_fee_ore": {
-   "id": "my-36-15k.end_fee",
-   "value": 300000,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
+   "id": "lease-201805.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
    "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "basis": "Return/inspection fee not in the offer export",
    "range": null
   },
   "delivery_months": {
-   "id": "my-36-15k.delivery_months",
-   "value": 1,
-   "source": "Placeholder lease offer",
-   "as_of": "2026-10-31",
-   "status": "estimate",
-   "basis": "Owner's lease quotes CSV replaces this",
+   "id": "lease-201805.delivery_months",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
    "range": null
   },
-  "source": "Placeholder lease offer",
-  "as_of": "2026-10-31",
-  "status": "estimate"
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/201805/tesla-model-y/",
+  "as_of": "2026-11-01",
+  "status": "live"
+ },
+ {
+  "offer_id": "lease-214398",
+  "variant_id": "tesla-modely-lr-awd-juniper",
+  "model_year": 2026,
+  "term_months": 36,
+  "monthly_ore": {
+   "id": "lease-214398.monthly",
+   "value": 485000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "lease-214398.upfront",
+   "value": 10000000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "fees_ore": {
+   "id": "lease-214398.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "lease-214398.km_cap",
+   "value": 15000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "lease-214398.excess_km_fee",
+   "value": 150,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "lease-214398.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-11-01",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "lease-214398.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Return/inspection fee not in the offer export",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "lease-214398.delivery_months",
+   "value": 1,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/214398/tesla-model-y/",
+  "as_of": "2026-11-01",
+  "status": "live"
+ },
+ {
+  "offer_id": "lease-226674",
+  "variant_id": "tesla-modely-lr-awd-juniper",
+  "model_year": 2026,
+  "term_months": 36,
+  "monthly_ore": {
+   "id": "lease-226674.monthly",
+   "value": 505000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "lease-226674.upfront",
+   "value": 10000000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "fees_ore": {
+   "id": "lease-226674.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "lease-226674.km_cap",
+   "value": 15000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "lease-226674.excess_km_fee",
+   "value": 150,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "lease-226674.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-11-01",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "lease-226674.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Return/inspection fee not in the offer export",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "lease-226674.delivery_months",
+   "value": 1,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/226674/tesla-model-y/",
+  "as_of": "2026-11-01",
+  "status": "live"
+ },
+ {
+  "offer_id": "lease-233809",
+  "variant_id": "mg-mg4-64",
+  "model_year": 2026,
+  "term_months": 36,
+  "monthly_ore": {
+   "id": "lease-233809.monthly",
+   "value": 229000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "lease-233809.upfront",
+   "value": 5000000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "fees_ore": {
+   "id": "lease-233809.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "lease-233809.km_cap",
+   "value": 15000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "lease-233809.excess_km_fee",
+   "value": 150,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "lease-233809.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-11-01",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "lease-233809.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Return/inspection fee not in the offer export",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "lease-233809.delivery_months",
+   "value": 1,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/233809/mg-mg4/",
+  "as_of": "2026-11-01",
+  "status": "live"
+ },
+ {
+  "offer_id": "lease-235827",
+  "variant_id": "tesla-modely-lr-awd-juniper",
+  "model_year": 2025,
+  "term_months": 36,
+  "monthly_ore": {
+   "id": "lease-235827.monthly",
+   "value": 799900,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "lease-235827.upfront",
+   "value": 100000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "fees_ore": {
+   "id": "lease-235827.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "lease-235827.km_cap",
+   "value": 15000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "lease-235827.excess_km_fee",
+   "value": 150,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "lease-235827.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-11-01",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "lease-235827.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Return/inspection fee not in the offer export",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "lease-235827.delivery_months",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/235827/tesla-model-y/",
+  "as_of": "2026-11-01",
+  "status": "live"
  }
 ]

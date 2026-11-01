@@ -1,0 +1,4 @@
+# Owner data exports dropped in the repo root (listings, price pulls) must
+# never reach the public repo; keep them under backend/data/cars/private/.
+/*.csv
+/*.xlsx

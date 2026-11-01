@@ -38,7 +38,7 @@ def test_wilson_interval():
 def test_coverage_near_eighty_percent_on_thousand_listings(seed_data):
     vehicles, prices, priors = seed_data
     rows, truth = synthetic.generate(vehicles, prices, priors, n_per_cohort=46, seed=11)
-    assert truth.n_listings == 22 * 46 >= 1000
+    assert truth.n_listings == sum(len(v.model_years) for v in vehicles) * 46 >= 1000
     report, fit = run_backtest(
         parse_listings_csv(synthetic.to_csv(rows), vehicles), vehicles, prices, priors, AS_OF
     )

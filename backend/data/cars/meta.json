@@ -5,7 +5,7 @@
   {
    "name": "seed catalogue",
    "last_fetch": "2026-10-31",
-   "rows": 8,
+   "rows": 10,
    "quarantined": 0,
    "status": "manual",
    "note": ""
@@ -13,7 +13,7 @@
   {
    "name": "new-price history CSV",
    "last_fetch": "2026-10-31",
-   "rows": 22,
+   "rows": 28,
    "quarantined": 0,
    "status": "manual",
    "note": ""
@@ -21,7 +21,7 @@
   {
    "name": "lease quotes CSV",
    "last_fetch": "2026-10-31",
-   "rows": 2,
+   "rows": 6,
    "quarantined": 0,
    "status": "manual",
    "note": ""
@@ -29,11 +29,11 @@
   {
    "name": "listings CSV",
    "last_fetch": null,
-   "rows": 0,
+   "rows": 971,
    "quarantined": 0,
-   "status": "disabled",
-   "note": "no listings fitted yet"
+   "status": "manual",
+   "note": ""
   }
  ],
- "note": "Priors only: no listings fitted yet. Replace by running the bundle builder with the owner's listings CSV."
+ "note": "segment ev-suv: 3 fitted cohort(s) < 4, prior pseudo-observations added; drift and ask-to-sale kept at the priors: 1 weekly snapshot(s) < 8"
 }

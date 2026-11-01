@@ -1,6 +1,6 @@
 """Resale path for one car from the fitted market model (spec 022 R7, R4).
 
-    log r(age, km) = a_s + b_s·age_years + c_s·log(km + 1000) + shift_m
+    log r(age, km) = a_s + b_s·age_years + c_s·log(km + KM_OFFSET) + shift_m
 
 Given a car bought at age `age0` with `km0` on the clock and driven
 `km_per_year`, the P50 value at month t is the car's anchor value scaled by
@@ -24,10 +24,11 @@ from decimal import Decimal
 
 from ..bundle_schema import MarketModelParams
 from ..engine.models import MONTHS, In, ResalePath
+from .schema import KM_OFFSET
 
 
 def _log_r(seg, shift: float, age_years: float, km: float) -> float:
-    return seg.a + seg.b * age_years + seg.c * math.log(km + 1000.0) + shift
+    return seg.a + seg.b * age_years + seg.c * math.log(km + KM_OFFSET) + shift
 
 
 def anchor_value(
@@ -43,12 +44,19 @@ def anchor_value(
     seg = params.segments[v.segment]
     fit = v.cohorts.get(model_year)
     if fit is not None:
-        log_value = fit.alpha + fit.beta * (math.log(km0 + 1000.0) - math.log(fit.ref_km + 1000.0))
+        log_value = fit.alpha + fit.beta * (
+            math.log(km0 + KM_OFFSET) - math.log(fit.ref_km + KM_OFFSET)
+        )
         status = fit.status
         sigma_car = fit.sigma_car
     else:
         new_price = v.new_price_by_year.get(model_year) or max(v.new_price_by_year.values())
-        log_value = math.log(new_price) + _log_r(seg, v.shift, age0_months / 12.0, km0)
+        # Capped at the new price: the segment curve is fitted on used cohorts
+        # and can exceed r = 1 when extrapolated to a nearly new, low-km car.
+        log_value = min(
+            math.log(new_price) + _log_r(seg, v.shift, age0_months / 12.0, km0),
+            math.log(new_price),
+        )
         status = "estimate"
         sigma_car = math.hypot(seg.sigma_resid, 0.10)
     if dealer:
@@ -121,7 +129,9 @@ def cohort_value_at_km(
         return None
     return int(
         round(
-            math.exp(fit.alpha + fit.beta * (math.log(km + 1000.0) - math.log(fit.ref_km + 1000.0)))
+            math.exp(
+                fit.alpha + fit.beta * (math.log(km + KM_OFFSET) - math.log(fit.ref_km + KM_OFFSET))
+            )
         )
     )
 

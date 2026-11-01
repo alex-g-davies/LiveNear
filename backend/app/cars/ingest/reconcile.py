@@ -2,7 +2,9 @@
 
 * `map_variant`: by (make, model, trim_group | trim_as_listed), else by the
   Vegvesen-derived buckets battery kWh (+/- 5), drive and power kW (+/- 15 %)
-  when they identify exactly one variant of that make and model.
+  when they identify exactly one variant of that make and model whose
+  `model_years` include the row's model year (a facelift sold from 2025 is
+  never matched to a 2022 car).
 * `hash_identity`: `listing_id = hash_listing_id(ad_id_or_url, reg_number)`;
   the clear-text `reg_number` (and any `vin`) is dropped from the row.
 * `dedupe`: one row per (listing_id, snapshot_date), the last one wins.
@@ -42,9 +44,15 @@ def map_variant(row: dict[str, Any], vehicles: list[VariantRecord]) -> str | Non
     bat = parse_decimal(row.get("battery_kwh"))
     power = row.get("power_kw")
     drive = _norm(row.get("drive"))
+    try:
+        year: int | None = int(str(row.get("model_year") or "").strip())
+    except ValueError:
+        year = None
     candidates = []
     for v in vehicles:
         if _norm(v.make) != make or _norm(v.model) != model:
+            continue
+        if year is not None and v.model_years and year not in v.model_years:
             continue
         if (
             bat is not None

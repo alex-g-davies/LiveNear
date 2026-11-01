@@ -19,7 +19,7 @@ def ref_logkm(ref_km: int) -> float:
 
 
 def centred_logkm(km: np.ndarray, ref_km: int) -> np.ndarray:
-    """x = log(km + 1000) - log(ref_km + 1000), so the intercept is the log
+    """x = log(km + KM_OFFSET) - log(ref_km + KM_OFFSET), so the intercept is the log
     price at `ref_km`."""
     return logkm(km) - ref_logkm(ref_km)
 
@@ -37,7 +37,7 @@ def dealer_design(dealer: np.ndarray) -> np.ndarray:
 
 
 def retention_design(age: np.ndarray, lkm: np.ndarray) -> np.ndarray:
-    """[1, age_years, log(km + 1000)] for the segment retention WLS."""
+    """[1, age_years, log(km + KM_OFFSET)] for the segment retention WLS."""
     age = np.asarray(age, dtype=float)
     lkm = np.asarray(lkm, dtype=float)
     return np.column_stack([np.ones_like(age), age, lkm])

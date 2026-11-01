@@ -30,7 +30,14 @@ import pandas as pd
 
 from ..bundle_schema import MarketModelParams, NewPriceRecord, VariantRecord
 from .fit import LIVE_N, FitResult, fit_market, robust_mean
-from .schema import ListingLike, ListingRow, age_years, listings_frame, rows_from_listings
+from .schema import (
+    KM_OFFSET,
+    ListingLike,
+    ListingRow,
+    age_years,
+    listings_frame,
+    rows_from_listings,
+)
 
 Z80 = 1.2815515655446004
 AGE_BANDS: tuple[tuple[str, float, float], ...] = (
@@ -170,7 +177,7 @@ def temporal_backtest(
         e = fit.estimates.get((r.variant_id, int(r.model_year)))
         if e is None:
             continue
-        x = math.log(r.km + 1000.0) - math.log(e.cohort.ref_km + 1000.0)
+        x = math.log(r.km + KM_OFFSET) - math.log(e.cohort.ref_km + KM_OFFSET)
         pred = e.alpha + e.beta * x + fit.delta * float(r.dealer)
         resid = r.y - pred
         ape.append(abs(math.exp(pred) - r.ask_ore) / r.ask_ore)

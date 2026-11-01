@@ -49,18 +49,21 @@ def test_build_bundle_fits_from_listings_into_tmp_dir(tmp_path, fixture_listings
     )
     assert params.version == "eb-v1" and params.status == "live"
     fitted = {k: v for k, v in params.variants.items() if v.cohorts}
-    assert len(fitted) == 8
+    assert len(fitted) == len(vehicles)  # every catalogue variant has a cohort fit
     cohorts = [
         CohortPoint.model_validate(c)
         for c in json.loads((out / "cohorts.json").read_text(encoding="utf-8"))
     ]
     assert len(cohorts) == sum(len(v.model_years) for v in vehicles)
     live = [c for c in cohorts if c.n_listings >= 5]
-    assert len(live) == 22 and all(c.status == "live" for c in live)
+    n_cohorts = sum(len(v.model_years) for v in vehicles)
+    assert len(live) == n_cohorts and all(c.status == "live" for c in live)
     for c in live:
         assert c.pi_low_ore < c.value_ref_ore < c.pi_high_ore and 0 < c.sigma_car < 0.3
     listings_health = next(s for s in meta.sources if s.name == "listings CSV")
-    assert listings_health.rows == 264 and listings_health.status == "manual"
+    distinct = len({x.listing_id for x in listings})
+    assert listings_health.rows == distinct == n_cohorts * 12
+    assert listings_health.status == "manual"
 
 
 def test_get_bundle_loads_fitted_bundle(tmp_path, fixture_listings, monkeypatch):
@@ -72,7 +75,7 @@ def test_get_bundle_loads_fitted_bundle(tmp_path, fixture_listings, monkeypatch)
     b = data_bundle.get_bundle(bundle_dir=out, production=False)
     try:
         assert b.market.version == "eb-v1"
-        assert b.listings_mode == "fixture" and len(b.listings) == 1487
+        assert b.listings_mode == "fixture" and len(b.listings) == len(listings)
         point = b.cohort("tesla-model3-rwd:2022")
         assert point is not None and point.n_listings == 12
         assert len(b.listings_for("tesla-model3-rwd:2022")) > 12  # all snapshots behind the point
