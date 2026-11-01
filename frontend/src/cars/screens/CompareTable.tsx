@@ -141,7 +141,7 @@ export default function CompareTable() {
                         </td>
                         <td className="cars-table__num cars-hint">{r.fun_score} / 10</td>
                         <td>
-                          <Badge status={r.status} estimates={r.material_estimates} />
+                          <Badge status={r.status} estimates={r.material_estimate_labels} />
                         </td>
                       </tr>
                     );

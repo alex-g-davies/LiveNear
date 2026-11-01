@@ -53,6 +53,9 @@ describe("Option detail (spec 022 R11)", () => {
     await waitFor(() => expect(screen.getByTestId("tile-expected").textContent).not.toBe(tileBefore), WAIT);
     const row = screen.getByTestId("input-purchase_price");
     expect(row.textContent).toContain("Your override");
+    // Inputs are named by the API label, never by the raw id.
+    expect(row.textContent).toContain("Purchase price");
+    expect(screen.queryByText("purchase_price")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Clear override for Purchase price" }));
     await waitFor(() => expect(lastRequest().overrides).toEqual({}), WAIT);
