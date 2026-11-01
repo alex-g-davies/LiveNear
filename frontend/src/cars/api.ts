@@ -160,6 +160,102 @@ export interface ScenarioResponse {
   elapsed_ms: number;
 }
 
+// ---- Market (spec 023 R1/R2) ------------------------------------------------
+
+export interface CohortOut {
+  cohort_id: string;
+  variant_id: string;
+  make: string;
+  model: string;
+  trim_group: string;
+  model_year: number;
+  energy_type: EnergyType;
+  drive: Drive;
+  body: string;
+  n_listings: number;
+  ref_km: number;
+  value_ref_ore: number;
+  pi_low_ore: number;
+  pi_high_ore: number;
+  status: Status;
+  as_of: string;
+  range_km_wltp: number | null;
+  efficiency_wh_per_km: number;
+  accel_0_100_s: string | null;
+  meets_must_haves: boolean;
+}
+
+export type ListingsMode = "r2" | "fixture" | "unavailable";
+
+export interface CohortsResponse {
+  bundle_as_of: string;
+  listings_mode: ListingsMode;
+  n_listings_total: number;
+  cohorts: CohortOut[];
+}
+
+/** One dot on the market map: a listing in its latest `listed` snapshot. */
+export interface MarketPoint {
+  listing_id: string;
+  variant_id: string;
+  cohort_id: string;
+  model_year: number;
+  ask_ore: number;
+  km: number;
+  seller_type: "dealer" | "private";
+  first_reg_month: string | null;
+  snapshot_date: string;
+}
+
+export interface MarketPointsResponse {
+  bundle_as_of: string;
+  listings_mode: ListingsMode;
+  n_points: number;
+  points: MarketPoint[];
+}
+
+export interface MarketFilters {
+  make?: string;
+  year_from?: number;
+  year_to?: number;
+  max_price_nok?: number;
+  energy_type?: EnergyType[];
+  must_have?: string[];
+}
+
+function filterQuery(f: MarketFilters): string {
+  const q = new URLSearchParams();
+  if (f.make) q.set("make", f.make);
+  if (f.year_from !== undefined) q.set("year_from", String(f.year_from));
+  if (f.year_to !== undefined) q.set("year_to", String(f.year_to));
+  if (f.max_price_nok !== undefined) q.set("max_price_nok", String(f.max_price_nok));
+  for (const e of f.energy_type ?? []) q.append("energy_type", e);
+  for (const m of f.must_have ?? []) q.append("must_have", m);
+  const s = q.toString();
+  return s ? `?${s}` : "";
+}
+
+export async function getCohorts(f: MarketFilters = {}, signal?: AbortSignal): Promise<CohortsResponse> {
+  if (isMockMode()) {
+    const { buildCohorts } = await import("./mock/fixture");
+    return buildCohorts(f);
+  }
+  const res = await fetch(`${CARS_BASE}/market/cohorts${filterQuery(f)}`, { signal });
+  return readJson<CohortsResponse>(res, "/cars/market/cohorts");
+}
+
+export async function getMarketPoints(
+  f: MarketFilters = {},
+  signal?: AbortSignal,
+): Promise<MarketPointsResponse> {
+  if (isMockMode()) {
+    const { buildMarketPoints } = await import("./mock/fixture");
+    return buildMarketPoints(f);
+  }
+  const res = await fetch(`${CARS_BASE}/market/points${filterQuery(f)}`, { signal });
+  return readJson<MarketPointsResponse>(res, "/cars/market/points");
+}
+
 /** `?mock=1` anywhere in the URL switches to the in-browser fixture. */
 export function isMockMode(): boolean {
   try {

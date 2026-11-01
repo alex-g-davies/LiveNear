@@ -48,6 +48,8 @@ export interface CarStateApi {
   setOverride: (id: string, value: string | number) => void;
   clearOverride: (id: string) => void;
   setMeasure: (measure: Measure) => void;
+  /** Tick / untick a newcomer-checklist item (023 R5). */
+  toggleChecklist: (id: string) => void;
   /** Explicit persist (the Save draft button); returns false if storage failed. */
   saveDraft: () => boolean;
   request: ScenarioRequest | null;
@@ -154,6 +156,14 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setState((s) => ({ ...s, measure, profile: { ...s.profile, preferred_measure: measure } })),
     [],
   );
+  const toggleChecklist = useCallback(
+    (id: string) =>
+      setState((s) => ({
+        ...s,
+        checklist: s.checklist.includes(id) ? s.checklist.filter((x) => x !== id) : [...s.checklist, id],
+      })),
+    [],
+  );
   const saveDraft = useCallback(() => saveState(state), [state]);
 
   // The scenario runs on every screen except the form itself (typing there
@@ -193,6 +203,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setOverride,
       clearOverride,
       setMeasure,
+      toggleChecklist,
       saveDraft,
       request,
       scenario,
@@ -208,6 +219,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setOverride,
       clearOverride,
       setMeasure,
+      toggleChecklist,
       saveDraft,
       request,
       scenario,

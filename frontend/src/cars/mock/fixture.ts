@@ -6,10 +6,13 @@
 // best and worst, and sensible reactions to what-if and override inputs.
 
 import type {
+  CohortsResponse,
   DisplayItem,
   ExitMonthKey,
   InputView,
   LineItemView,
+  MarketFilters,
+  MarketPointsResponse,
   MeasureResult,
   OptionResult,
   OptionSummary,
@@ -658,4 +661,15 @@ export function buildScenario(req: ScenarioRequest): ScenarioResponse {
     sensitivity_option_id: sensitivityId,
     elapsed_ms: 42,
   };
+}
+
+// ---- Market (spec 023): cohort points and per-listing points for the mock
+// mode and the market screen tests. Filled in by the market-map build.
+
+export function buildCohorts(_f: MarketFilters = {}): CohortsResponse {
+  return { bundle_as_of: BUNDLE_AS_OF, listings_mode: "fixture", n_listings_total: 0, cohorts: [] };
+}
+
+export function buildMarketPoints(_f: MarketFilters = {}): MarketPointsResponse {
+  return { bundle_as_of: BUNDLE_AS_OF, listings_mode: "fixture", n_points: 0, points: [] };
 }

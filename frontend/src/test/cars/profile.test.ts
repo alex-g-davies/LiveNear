@@ -41,6 +41,7 @@ describe("profile codec (spec 022 R2)", () => {
       whatIf: { km_per_year: 20_000, pay_mode: "loan" },
       overrides: { purchase_price: 399_000 },
       measure: "tco",
+      checklist: ["claims_free_letter", "licence_exchange"],
     };
     const token = encodeState(state);
     expect(token).toMatch(/^[A-Za-z0-9_-]+$/);

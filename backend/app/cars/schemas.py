@@ -65,6 +65,7 @@ class Profile(BaseModel):
     fun_weight: int = Field(default=50, ge=0, le=100)
     preferred_measure: Measure = "per_month"
     start_date: date | None = None  # defaults to today on the server
+    arrival_date: date | None = None  # checklist due dates only (023 R5); the engine ignores it
 
 
 class SelectionItem(BaseModel):
