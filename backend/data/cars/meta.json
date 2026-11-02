@@ -1,27 +1,27 @@
 {
- "bundle_as_of": "2026-10-31",
+ "bundle_as_of": "2026-11-02",
  "schema_version": 1,
  "sources": [
   {
    "name": "seed catalogue",
-   "last_fetch": "2026-10-31",
-   "rows": 10,
+   "last_fetch": "2026-11-02",
+   "rows": 22,
    "quarantined": 0,
    "status": "manual",
    "note": ""
   },
   {
    "name": "new-price history CSV",
-   "last_fetch": "2026-10-31",
-   "rows": 28,
+   "last_fetch": "2026-11-02",
+   "rows": 59,
    "quarantined": 0,
    "status": "manual",
    "note": ""
   },
   {
    "name": "lease quotes CSV",
-   "last_fetch": "2026-10-31",
-   "rows": 6,
+   "last_fetch": "2026-11-02",
+   "rows": 7,
    "quarantined": 0,
    "status": "manual",
    "note": ""
@@ -29,11 +29,11 @@
   {
    "name": "listings CSV",
    "last_fetch": null,
-   "rows": 971,
+   "rows": 1548,
    "quarantined": 0,
    "status": "manual",
    "note": ""
   }
  ],
- "note": "segment ev-suv: 3 fitted cohort(s) < 4, prior pseudo-observations added; drift and ask-to-sale kept at the priors: 1 weekly snapshot(s) < 8"
+ "note": "drift and ask-to-sale kept at the priors: 2 weekly snapshot(s) < 8"
 }

@@ -138,7 +138,9 @@ def main() -> None:
         {
             "efficiency_wh_per_km": b.inp(0),
             "tyre_set": b.nok(0),
-            "service_per_year": b.nok(0),
+            "service_interval_months": 12,
+            "service_price": b.nok(0),
+            "wear_per_year": b.nok(0),
         }
     )
     g4["options"][0]["insurance"] = b.insurance(0)

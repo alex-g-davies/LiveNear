@@ -63,6 +63,20 @@ market:
     status: estimate
     basis: "An input is material when 5 % or more of expected TCO flows through it"
 
+  # spec 024 R2-R5
+  inspection_fee: {value_nok: 1400, range_nok: [1070, 1619], source: "Station prices 2026 (NAF, Bertel O. Steen, Viking)", as_of: 2026-11-02, status: estimate, basis: "Middle of the published station prices"}
+  wheel_change: {value_nok: 600, source: "NAF / Bertel O. Steen / Noddi 2026", as_of: 2026-11-02, status: estimate, basis: "Two changes a year at a workshop"}
+  repair:
+    bands_ore_per_km: [[20000, 11], [40000, 22], [60000, 34], [80000, 45], [100000, 79], [999999999, 96]]
+    source: {value: "Smarte Penger repair cost per km by odometer (mid-size car)", source: "https://www.smartepenger.no/bilokonomi/2231-bilkostnader-reparasjon", as_of: 2026-08-06, status: estimate, basis: "Editorial ICE estimate scaled by the EV factor", kind: str}
+    ev_factor: {value: 0.65, source: "OFV 2026 EV vs petrol service and repairs", as_of: 2026-11-02, status: estimate, basis: "Ratio of OFV EV to petrol cost"}
+    in_warranty_factor: {value: 0.3, source: "Smarte Penger: repairs near zero under warranty", as_of: 2026-11-02, status: estimate, basis: "Share that is wear not covered by warranty"}
+  toll_ring:
+    name: "Oslo toll ring (Fjellinjen), electric car"
+    offpeak: {value_nok: 21, source: "https://www.fjellinjen.no/en/tariffs-and-toll-stations", as_of: 2026-01-01, status: live}
+    rush: {value_nok: 26, source: "https://www.fjellinjen.no/en/tariffs-and-toll-stations", as_of: 2026-01-01, status: live}
+    monthly_cap: 120
+    source: {value: "Oslo toll ring", source: "https://www.fjellinjen.no/en/tariffs-and-toll-stations", as_of: 2026-01-01, status: estimate, basis: "50/50 off-peak/rush blend", kind: str}
 options:
   - id: m3-rwd-2022-used-dealer
     label: "Tesla Model 3 RWD 2022, used from a dealer"
@@ -83,7 +97,13 @@ options:
       winter_factor: {value: 1.25, source: "Placeholder winter uplift", as_of: 2026-10-31, status: estimate, basis: "NAF El Prix winter test to confirm"}
       tyre_set: {value_nok: 12000, source: "Placeholder winter set on rims, 18 in", as_of: 2026-10-31, status: estimate, basis: "Typical price for this size; owner to check"}
       tyre_life_km: {value: 40000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Mixed summer/winter wear assumption"}
-      service_per_year: {value_nok: 2500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "EV service is light; brake fluid, cabin filter, inspection"}
+      service_interval_months: 12
+
+      service_interval_km: 0
+
+      service_price: {value_nok: 2500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "EV service is light; brake fluid, cabin filter, inspection"}
+
+      wear_per_year: {value_nok: 1200, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Wipers, cabin filter, brake fluid, 12 V battery amortised"}
       fun_score: {value: 7.5, source: "Owner weighting", as_of: 2026-10-31, status: estimate, basis: "Owner to set"}
       new_price: {value_nok: 419900, source: "Placeholder 2022 list price", as_of: 2022-06-01, status: estimate, basis: "Owner's new-price history CSV replaces this"}
     deal:
@@ -142,7 +162,13 @@ options:
       winter_factor: {value: 1.3, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Smaller battery, larger winter uplift"}
       tyre_set: {value_nok: 9000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Typical price for 18 in"}
       tyre_life_km: {value: 40000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Assumption"}
-      service_per_year: {value_nok: 3000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer service plan"}
+      service_interval_months: 12
+
+      service_interval_km: 0
+
+      service_price: {value_nok: 3000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer service plan"}
+
+      wear_per_year: {value_nok: 1200, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Wipers, cabin filter, brake fluid, 12 V battery amortised"}
       fun_score: {value: 7.0, source: "Owner weighting", as_of: 2026-10-31, status: estimate, basis: "Owner to set"}
       new_price: {value_nok: 329900, source: "Placeholder list price", as_of: 2026-10-31, status: estimate, basis: "Brand price list ingestion replaces this"}
     deal:
@@ -179,7 +205,13 @@ options:
       winter_factor: {value: 1.25, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Assumption"}
       tyre_set: {value_nok: 13000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "19 in"}
       tyre_life_km: {value: 40000, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Assumption"}
-      service_per_year: {value_nok: 3500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer service"}
+      service_interval_months: 12
+
+      service_interval_km: 0
+
+      service_price: {value_nok: 3500, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Dealer service"}
+
+      wear_per_year: {value_nok: 1200, source: "Placeholder", as_of: 2026-10-31, status: estimate, basis: "Wipers, cabin filter, brake fluid, 12 V battery amortised"}
       fun_score: {value: 6.5, source: "Owner weighting", as_of: 2026-10-31, status: estimate, basis: "Owner to set"}
     deal:
       mode: used_5_plus

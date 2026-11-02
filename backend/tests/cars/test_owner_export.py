@@ -76,6 +76,73 @@ def test_listing_skips_are_counted_by_reason():
     }
 
 
+def _target_listing(**over):
+    """Second export shape (2026-11-02): `target_variant` label, `sale_form`
+    column, no `cohort` / `trim_match`."""
+    base = {
+        "finn_code": "2",
+        "url": "https://example.test/item/2",
+        "make": "Nissan",
+        "model": "Leaf",
+        "spec": "40kWh Acenta",
+        "condition": "used",
+        "model_year": "2019",
+        "first_reg": "2019-05-02",
+        "mileage_km": "83000",
+        "price_nok": "134532",
+        "price_excl_rereg": "130000",
+        "rereg_fee": "4532",
+        "battery_kwh": "40",
+        "drivetrain": "FWD",
+        "power_hp": "150",
+        "seller_type": "private",
+        "location": "Oslo",
+        "published": "2026-10-18",
+        "scraped": "2026-11-02",
+        "target_variant": "Leaf 40 kWh",
+        "owners": "1",
+        "dealer_segment": "Privat",
+        "last_updated": "2026-10-18",
+        "sale_form": "",
+    }
+    base.update(over)
+    return base
+
+
+def test_target_variant_export_maps_without_a_trim_match_column():
+    conv = oe.convert_listings([_target_listing()], VEHICLES)
+    assert conv.n == 1 and not conv.skipped
+    row = conv.rows[0]
+    assert row["variant_id"] == "nissan-leaf-40"
+    assert row["make"] == "Nissan" and row["model"] == "Leaf"
+    assert row["asking_price_nok"] == 130000 and row["price_basis"] == "excl_rereg"
+    assert row["snapshot_date"] == "2026-11-02" and row["seller_type"] == "private"
+
+
+def test_target_variant_export_skips_lease_takeovers_auctions_and_unknown_labels():
+    rows = [
+        _target_listing(sale_form="Leasing"),
+        _target_listing(sale_form="Auksjon"),
+        _target_listing(target_variant="Not a label"),
+        _target_listing(target_variant="Zoe ZE50 52 kWh (R110)", make="Renault", model="Zoe"),
+    ]
+    conv = oe.convert_listings(rows, VEHICLES)
+    assert conv.n == 1 and conv.rows[0]["variant_id"] == "renault-zoe-ze50"
+    assert conv.skipped == {"sales_form:leasing": 1, "sales_form:auksjon": 1, "cohort:unmapped": 1}
+
+
+def test_both_export_shapes_convert_in_one_run():
+    conv = oe.convert_listings([_listing(), _target_listing()], VEHICLES)
+    assert [r["variant_id"] for r in conv.rows] == ["tesla-model3-rwd", "nissan-leaf-40"]
+
+
+def test_lease_id3_pro_58_maps_to_the_performance_variant():
+    assert oe.match_trim("Volkswagen", "ID.3", "ID.3 Pro Limited 58KWH", 2023) == (
+        "vw-id3-pro-performance-58"
+    )
+    assert oe.match_trim("Volkswagen", "ID.3", "ID.3 Pro Limited 58KWH", 2024) is None
+
+
 def test_listing_csv_round_trips_through_the_contract_columns():
     text = oe.write_csv(oe.convert_listings([_listing()], VEHICLES).rows, oe.LISTING_OUT_COLUMNS)
     back = list(csv.DictReader(io.StringIO(text)))

@@ -1,12 +1,13 @@
-// "Your situation" (spec 022 R11): the profile form. Exit odds and charging
-// mix must each total 100 % before Continue is enabled; limits are filters.
-// Until the Market screen ships, a compact "Cars to compare" card picks
-// variants and model-year ranges straight from GET /vehicles.
+// "Your situation" (spec 022 R11, 024 R5/R10/R12): the profile form. Exit odds
+// and charging mix must each total 100 % before Continue is enabled; limits
+// are filters. The selection is a compact tray (chips + typeahead); the
+// Market screen is the browsing surface.
 
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import type { VehicleOut } from "../api";
+import { StartHereCard } from "../components/Recommendations";
+import SelectionTray from "../components/SelectionTray";
 import { MODE_LABELS } from "../lib/measures";
 import {
   AGE_BANDS,
@@ -17,7 +18,6 @@ import {
   type ExitKey,
   type Mode,
   type MustHave,
-  type SelectionItem,
 } from "../lib/profile";
 import { useCarState } from "../state";
 
@@ -57,47 +57,13 @@ export default function Situation() {
   const toggleList = <T extends string>(list: T[], item: T, on: boolean): T[] =>
     on ? (list.includes(item) ? list : [...list, item]) : list.filter((x) => x !== item);
 
-  const groups = useMemo(() => {
-    const map = new Map<string, VehicleOut[]>();
-    for (const v of vehicles.data ?? []) {
-      const k = `${v.make} ${v.model}`;
-      map.set(k, [...(map.get(k) ?? []), v]);
-    }
-    return [...map.entries()];
-  }, [vehicles.data]);
-  const selected = useMemo(() => new Map(selection.map((s) => [s.variant_id, s])), [selection]);
-
-  const toggleVariant = (v: VehicleOut, on: boolean) => {
-    if (on) {
-      if (selected.has(v.variant_id)) return;
-      const item: SelectionItem = {
-        variant_id: v.variant_id,
-        year_from: Math.min(...v.model_years),
-        year_to: Math.max(...v.model_years),
-      };
-      setSelection([...selection, item]);
-    } else {
-      setSelection(selection.filter((s) => s.variant_id !== v.variant_id));
-    }
-  };
-  const setYears = (id: string, patch: Partial<SelectionItem>) =>
-    setSelection(
-      selection.map((s) => {
-        if (s.variant_id !== id) return s;
-        const next = { ...s, ...patch };
-        if (next.year_from > next.year_to) {
-          if (patch.year_from !== undefined) next.year_to = next.year_from;
-          else next.year_from = next.year_to;
-        }
-        return next;
-      }),
-    );
-
   const onSave = () => {
     setSavedMsg(saveDraft() ? "Draft saved on this device." : "Could not save: browser storage is unavailable.");
   };
 
-  const selectedVehicles = (vehicles.data ?? []).filter((v) => selected.has(v.variant_id));
+  const selectedVehicles = (vehicles.data ?? []).filter((v) =>
+    selection.some((s) => s.variant_id === v.variant_id),
+  );
 
   return (
     <>
@@ -236,16 +202,36 @@ export default function Situation() {
                 : `Charging shares add up to ${chargeTotal} %. They must total 100 %.`}
             </p>
           </div>
-          <label className="cars-field">
-            <span className="cars-field__label">Home area (for tolls and climate)</span>
-            <input
-              type="text"
-              className="cars-input"
-              placeholder="Municipality"
-              value={profile.municipality}
-              onChange={(e) => updateProfile({ municipality: e.target.value })}
-            />
-          </label>
+          <div className="cars-grid cars-grid--2">
+            <label className="cars-field">
+              <span className="cars-field__label">Home area (for tolls and climate)</span>
+              <input
+                type="text"
+                className="cars-input"
+                placeholder="Municipality"
+                value={profile.municipality}
+                onChange={(e) => updateProfile({ municipality: e.target.value })}
+              />
+            </label>
+            <label className="cars-field">
+              <span className="cars-field__label">Toll ring passages per week</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={200}
+                className="cars-input"
+                value={profile.toll_passages_per_week}
+                onChange={(e) =>
+                  updateProfile({ toll_passages_per_week: Math.max(0, Math.min(200, Math.round(numOf(e)))) })
+                }
+              />
+              <span className="cars-hint">
+                Trips through the toll ring per week, both directions count. Leave 0 if you will not commute
+                through one.
+              </span>
+            </label>
+          </div>
         </section>
 
         <section className="cars-card" aria-labelledby="money">
@@ -525,82 +511,26 @@ export default function Situation() {
           </label>
         </section>
 
+        <StartHereCard />
+
         <section className="cars-card cars-card--wide" aria-labelledby="pick">
           <div className="cars-card__head">
             <h2 id="pick" className="cars-h2">
               Cars to compare
             </h2>
             <p className="cars-hint">
-              Pick the variants and model years to put side by side. The Market screen will replace this list.
+              The cars and model years to put side by side. Add one by name here, or pick from the Market
+              map.
               {selection.length > 0 && ` ${selection.length} selected.`}
             </p>
           </div>
-          {vehicles.loading && <p className="cars-hint">Loading vehicles…</p>}
-          {vehicles.error && (
-            <div className="status status--error" role="alert">
-              Could not load vehicles: {vehicles.error}
-            </div>
-          )}
-          <div className="cars-pick">
-            {groups.map(([name, list]) => (
-              <div key={name} className="cars-pick__group">
-                <h3 className="cars-pick__model">{name}</h3>
-                {list.map((v) => {
-                  const sel = selected.get(v.variant_id);
-                  return (
-                    <div key={v.variant_id} className="cars-pick__row">
-                      <label className="cars-check">
-                        <input
-                          type="checkbox"
-                          checked={!!sel}
-                          aria-label={`${v.make} ${v.model} ${v.trim_group}`}
-                          onChange={(e) => toggleVariant(v, e.target.checked)}
-                        />{" "}
-                        {v.trim_group}
-                        <span className="cars-hint">
-                          {" "}
-                          · {Math.min(...v.model_years)}–{Math.max(...v.model_years)}
-                          {v.has_lease_offer ? "" : " · no lease offer"}
-                        </span>
-                      </label>
-                      {sel && (
-                        <div className="cars-pick__years">
-                          <label className="cars-field cars-field--inline">
-                            <span className="cars-field__label cars-field__label--muted">From</span>
-                            <select
-                              className="cars-select cars-select--sm"
-                              value={sel.year_from}
-                              onChange={(e) => setYears(v.variant_id, { year_from: Number(e.target.value) })}
-                            >
-                              {v.model_years.map((y) => (
-                                <option key={y} value={y}>
-                                  {y}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label className="cars-field cars-field--inline">
-                            <span className="cars-field__label cars-field__label--muted">To</span>
-                            <select
-                              className="cars-select cars-select--sm"
-                              value={sel.year_to}
-                              onChange={(e) => setYears(v.variant_id, { year_to: Number(e.target.value) })}
-                            >
-                              {v.model_years.map((y) => (
-                                <option key={y} value={y}>
-                                  {y}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+          <SelectionTray
+            vehicles={vehicles.data ?? []}
+            selection={selection}
+            onChange={setSelection}
+            loading={vehicles.loading}
+            error={vehicles.error}
+          />
         </section>
       </div>
 

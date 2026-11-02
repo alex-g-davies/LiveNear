@@ -46,8 +46,10 @@ from .engine.models import (
     Option,
     PercentOfRemaining,
     Range,
+    RepairAllowance,
     ResalePath,
     Scenario,
+    TollRing,
     Used,
     UserInputs,
     VehicleInputs,
@@ -134,7 +136,19 @@ def _vehicle(v: dict[str, Any], prefix: str) -> VehicleInputs:
         winter_factor=load_in(v["winter_factor"], f"{prefix}.winter_factor", kind=Decimal),
         tyre_set_ore=load_in(v["tyre_set"], f"{prefix}.tyre_set"),
         tyre_life_km=load_in(v["tyre_life_km"], f"{prefix}.tyre_life_km"),
-        service_per_year_ore=load_in(v["service_per_year"], f"{prefix}.service_per_year"),
+        service_interval_months=int(v.get("service_interval_months", 0)),
+        service_interval_km=int(v.get("service_interval_km", 0)),
+        service_first_months=int(v.get("service_first_months", 0)),
+        service_price_ore=load_in(v["service_price"], f"{prefix}.service_price"),
+        service_first_price_ore=load_in(v["service_first_price"], f"{prefix}.service_first_price")
+        if v.get("service_first_price")
+        else None,
+        service_price_after_7y_ore=load_in(
+            v["service_price_after_7y"], f"{prefix}.service_price_after_7y"
+        )
+        if v.get("service_price_after_7y")
+        else None,
+        wear_per_year_ore=load_in(v["wear_per_year"], f"{prefix}.wear_per_year"),
         warranty_years=int(v.get("warranty_years", 5)),
         warranty_km=int(v.get("warranty_km", 100_000)),
         fun_score=load_in(v["fun_score"], f"{prefix}.fun_score", kind=Decimal),
@@ -170,6 +184,7 @@ def _deal(dd: dict[str, Any], prefix: str):
             end_of_lease_fee_ore=load_in(dd["end_of_lease_fee"], f"{prefix}.lease_end_fee"),
             delivery_months=load_in(dd["delivery_months"], f"{prefix}.delivery_months"),
             pay_in_advance=bool(dd.get("pay_in_advance", True)),
+            age_months_at_start=int(dd.get("age_months_at_start", 0)),
         )
     return Used(
         mode=mode,
@@ -243,6 +258,29 @@ def _resale(block: dict[str, Any] | None, price_ore: int, prefix: str) -> Resale
     )
 
 
+def _repair(block: dict[str, Any]) -> RepairAllowance:
+    return RepairAllowance(
+        bands=tuple((int(km), int(ore)) for km, ore in block["bands_ore_per_km"]),
+        source=load_in(block["source"], "market.repair_allowance", kind=str),
+        ev_factor=load_in(block["ev_factor"], "market.repair_ev_factor", kind=Decimal),
+        in_warranty_factor=load_in(
+            block["in_warranty_factor"], "market.repair_in_warranty_factor", kind=Decimal
+        ),
+    )
+
+
+def _toll_ring(block: dict[str, Any] | None) -> TollRing | None:
+    if not block:
+        return None
+    return TollRing(
+        name=str(block["name"]),
+        offpeak_ore=load_in(block["offpeak"], "market.toll_offpeak"),
+        rush_ore=load_in(block["rush"], "market.toll_rush"),
+        monthly_cap_passages=int(block.get("monthly_cap", 0)),
+        source=load_in(block["source"], "market.toll_ring", kind=str),
+    )
+
+
 def scenario_from_dict(data: dict[str, Any], base_dir: Path | None = None) -> Scenario:
     u = data["user"]
     user = UserInputs(
@@ -250,6 +288,7 @@ def scenario_from_dict(data: dict[str, Any], base_dir: Path | None = None) -> Sc
         km_per_year=int(u["km_per_year"]),
         charging_mix=ChargingMix(**u["charging_mix"]),
         municipality=u.get("municipality", ""),
+        toll_passages_per_week=int(u.get("toll_passages_per_week", 0)),
         pay_mode=u.get("pay_mode", "loan"),
         return_on_cash_pct=_d(u.get("return_on_cash_pct", 4)),
         down_payment_ore=nok(_d(u.get("down_payment_nok", 0))),
@@ -284,6 +323,10 @@ def scenario_from_dict(data: dict[str, Any], base_dir: Path | None = None) -> Sc
         materiality_threshold=load_in(
             m["materiality_threshold"], "market.materiality_threshold", kind=Decimal
         ),
+        repair=_repair(m["repair"]),
+        inspection_fee_ore=load_in(m["inspection_fee"], "market.inspection_fee"),
+        wheel_change_ore=load_in(m["wheel_change"], "market.wheel_change"),
+        toll_ring=_toll_ring(m.get("toll_ring")),
     )
     options = []
     for o in data["options"]:

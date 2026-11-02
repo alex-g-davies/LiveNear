@@ -76,6 +76,15 @@ def load_vehicles(path: Path = SEED_DIR / "vehicles.yaml") -> list[VariantRecord
         def pick(key: str, _v: dict[str, Any] = v) -> dict[str, Any]:
             return _v.get(key) or defaults[key]
 
+        def scalar(key: str, _v: dict[str, Any] = v) -> Any:
+            return _v[key] if key in _v else defaults[key]
+
+        def optional_money(key: str, _v: dict[str, Any] = v, _vid: str = vid) -> In | None:
+            block = _v.get(key, defaults.get(key))
+            if not block:
+                return None
+            return seed_in(block, f"{_vid}.{key.removesuffix('_nok')}", as_of, money=True)
+
         out.append(
             VariantRecord(
                 variant_id=vid,
@@ -101,8 +110,16 @@ def load_vehicles(path: Path = SEED_DIR / "vehicles.yaml") -> list[VariantRecord
                 ),
                 tyre_set_ore=seed_in(pick("tyre_set_nok"), f"{vid}.tyre_set", as_of, money=True),
                 tyre_life_km=seed_in(pick("tyre_life_km"), f"{vid}.tyre_life_km", as_of),
-                service_per_year_ore=seed_in(
-                    pick("service_per_year_nok"), f"{vid}.service_per_year", as_of, money=True
+                service_interval_months=int(scalar("service_interval_months")),
+                service_interval_km=int(scalar("service_interval_km")),
+                service_first_months=int(scalar("service_first_months")),
+                service_price_ore=seed_in(
+                    pick("service_price_nok"), f"{vid}.service_price", as_of, money=True
+                ),
+                service_first_price_ore=optional_money("service_first_price_nok"),
+                service_price_after_7y_ore=optional_money("service_price_after_7y_nok"),
+                wear_per_year_ore=seed_in(
+                    pick("wear_per_year_nok"), f"{vid}.wear_per_year", as_of, money=True
                 ),
                 warranty_years=int(v.get("warranty_years", 5)),
                 warranty_km=int(v.get("warranty_km", 100_000)),
@@ -137,6 +154,21 @@ def load_rates(path: Path = SEED_DIR / "rates.yaml") -> RatesRecord:
         new_car_delivery_months=i("new_car_delivery_months"),
         rental_per_month_ore=i("rental_per_month_nok", money=True),
         materiality_threshold=i("materiality_threshold", kind=Decimal),
+        inspection_fee_ore=i("inspection_fee_nok", money=True),
+        wheel_change_ore=i("wheel_change_nok", money=True),
+        repair_ev_factor=i("repair_ev_factor", kind=Decimal),
+        repair_in_warranty_factor=i("repair_in_warranty_factor", kind=Decimal),
+        repair_bands=tuple(
+            (int(km), int(ore)) for km, ore in d["repair_allowance"]["bands_ore_per_km"]
+        ),
+        repair_source=In[str](
+            id="rates.repair_allowance",
+            value=str(d["repair_allowance"]["source"]),
+            source=str(d["repair_allowance"]["source_url"]),
+            as_of=as_of,
+            status=d["repair_allowance"].get("status", "live"),
+            basis=d["repair_allowance"].get("basis"),
+        ),
     )
 
 

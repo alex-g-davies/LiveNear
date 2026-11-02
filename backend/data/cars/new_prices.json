@@ -418,5 +418,470 @@
   },
   "valid_from": "2026-01-01",
   "valid_to": null
+ },
+ {
+  "variant_id": "nissan-leaf-40",
+  "model_year": 2018,
+  "price_ore": {
+   "id": "nissan-leaf-40.2018.new_price",
+   "value": 29990000,
+   "source": "New-price history CSV",
+   "as_of": "2018-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2018-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "nissan-leaf-40",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "nissan-leaf-40.2019.new_price",
+   "value": 30990000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "nissan-leaf-40",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "nissan-leaf-40.2020.new_price",
+   "value": 31990000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "volvo-xc40-sm-69",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "volvo-xc40-sm-69.2022.new_price",
+   "value": 44990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "volvo-xc40-sm-69",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "volvo-xc40-sm-69.2023.new_price",
+   "value": 45990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "volvo-xc40-sm-er-82",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "volvo-xc40-sm-er-82.2024.new_price",
+   "value": 49990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "kia-ev6-lr-rwd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "kia-ev6-lr-rwd.2022.new_price",
+   "value": 46990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "kia-ev6-lr-rwd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "kia-ev6-lr-rwd.2023.new_price",
+   "value": 47990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "kia-ev6-lr-rwd",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "kia-ev6-lr-rwd.2024.new_price",
+   "value": 46990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id3-pro-performance-58",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "vw-id3-pro-performance-58.2021.new_price",
+   "value": 34990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id3-pro-performance-58",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "vw-id3-pro-performance-58.2022.new_price",
+   "value": 36990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id3-pro-performance-58",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "vw-id3-pro-performance-58.2023.new_price",
+   "value": 38990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id3-pro-58",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "vw-id3-pro-58.2022.new_price",
+   "value": 33990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-id3-pro-58",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "vw-id3-pro-58.2023.new_price",
+   "value": 35990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-rwd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "tesla-modely-rwd.2023.new_price",
+   "value": 44990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "tesla-modely-rwd",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "tesla-modely-rwd.2024.new_price",
+   "value": 41990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "peugeot-e208-50",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "peugeot-e208-50.2020.new_price",
+   "value": 29990000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "peugeot-e208-50",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "peugeot-e208-50.2021.new_price",
+   "value": 30990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "peugeot-e208-50",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "peugeot-e208-50.2022.new_price",
+   "value": 32990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "peugeot-e208-50",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "peugeot-e208-50.2023.new_price",
+   "value": 33990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "opel-corsa-e-50",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "opel-corsa-e-50.2020.new_price",
+   "value": 28990000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "opel-corsa-e-50",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "opel-corsa-e-50.2021.new_price",
+   "value": 29990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "opel-corsa-e-50",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "opel-corsa-e-50.2022.new_price",
+   "value": 31990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "opel-corsa-e-50",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "opel-corsa-e-50.2023.new_price",
+   "value": 32990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "renault-zoe-ze50",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "renault-zoe-ze50.2020.new_price",
+   "value": 28990000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "renault-zoe-ze50",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "renault-zoe-ze50.2021.new_price",
+   "value": 29990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "fiat-500e-42",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "fiat-500e-42.2021.new_price",
+   "value": 28990000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "fiat-500e-42",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "fiat-500e-42.2022.new_price",
+   "value": 29990000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "fiat-500e-42",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "fiat-500e-42.2023.new_price",
+   "value": 30990000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "byd-dolphin-60",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "byd-dolphin-60.2024.new_price",
+   "value": 32990000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "byd-dolphin-60",
+  "model_year": 2025,
+  "price_ore": {
+   "id": "byd-dolphin-60.2025.new_price",
+   "value": 30990000,
+   "source": "New-price history CSV",
+   "as_of": "2025-01-01",
+   "status": "estimate",
+   "basis": "Placeholder; owner's new-price history CSV replaces this",
+   "range": null
+  },
+  "valid_from": "2025-01-01",
+  "valid_to": null
  }
 ]

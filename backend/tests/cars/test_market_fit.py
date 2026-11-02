@@ -144,7 +144,10 @@ def test_thin_cohorts_take_segment_slope_and_status_rules(seed_data):
     vehicles, prices, priors = seed_data
     rows, truth = synthetic.generate(vehicles, prices, priors, n_per_cohort=8, seed=3)
     listings = parse_listings_csv(synthetic.to_csv(rows), vehicles)
-    # keep one listing for the first Kona cohort, two for the second, drop one whole variant
+    # keep one listing for the first Kona cohort, two for the second; drop every
+    # other ev-small variant (so the segment slope must come from the prior)
+    # and one ev-mid variant.
+    segment_of = {v.variant_id: v.segment for v in vehicles}
     by_cohort: dict[tuple[str, int], list] = {}
     for x in listings:
         by_cohort.setdefault((x.variant_id, x.model_year), []).append(x)
@@ -155,7 +158,9 @@ def test_thin_cohorts_take_segment_slope_and_status_rules(seed_data):
             keep_ids = set(ids[:1])
         elif key == ("hyundai-kona-64", 2020):
             keep_ids = set(ids[:2])
-        elif key[0] in ("vw-id4-pro-rwd", "mg-mg4-64"):
+        elif key[0] == "vw-id4-pro-rwd" or (
+            segment_of[key[0]] == "ev-small" and key[0] != "hyundai-kona-64"
+        ):
             keep_ids = set()  # ev-small then has only the thin Kona cohorts
         else:
             keep_ids = set(ids)

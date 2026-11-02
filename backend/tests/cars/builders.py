@@ -2,9 +2,10 @@
 
 Round numbers by design so the golden cases can be worked by hand:
 12 000 km/yr (1 000 km/month), 200 Wh/km at 100 øre/kWh charged at home
-(200 kr/month energy), 12 000 kr/yr insurance, 1 200 kr/yr service, a
-10 000 kr tyre set that never wears out, fixture tax rules (10 kr/day,
-5 000 kr re-registration).
+(200 kr/month energy), 12 000 kr/yr insurance, a 1 200 kr service every
+12 months, no wear/repair/inspection/wheel-change/toll amounts (zero
+fixtures), a 10 000 kr tyre set that never wears out, fixture tax rules
+(10 kr/day, 5 000 kr re-registration, inspection at 48 then every 24 months).
 """
 
 from __future__ import annotations
@@ -45,7 +46,10 @@ def vehicle(**over: Any) -> dict[str, Any]:
         "winter_factor": inp(1.0),
         "tyre_set": nok(10000),
         "tyre_life_km": inp(1_000_000),
-        "service_per_year": nok(1200),
+        "service_interval_months": 12,
+        "service_interval_km": 0,
+        "service_price": nok(1200),
+        "wear_per_year": nok(0),
         "fun_score": inp(5),
         "new_price": nok(400000),
     }
@@ -76,9 +80,24 @@ def market(rules: str = "tax_rules_fixture.yaml", **over: Any) -> dict[str, Any]
         "used_price_drift": inp(0),
         "rental_per_month": nok(0),
         "materiality_threshold": inp(0.05),
+        "inspection_fee": nok(0),
+        "wheel_change": nok(0),
+        "repair": repair(),
     }
     m.update(over)
     return m
+
+
+def repair(
+    bands: list[list[int]] | None = None, ev_factor: Any = 1, in_warranty_factor: Any = 1
+) -> dict[str, Any]:
+    """Repair allowance block; the default has a zero rate everywhere."""
+    return {
+        "bands_ore_per_km": bands or [[999999999, 0]],
+        "source": inp("fixture repair table", kind="str"),
+        "ev_factor": inp(ev_factor),
+        "in_warranty_factor": inp(in_warranty_factor),
+    }
 
 
 def insurance(annual_nok: int = 12000, **kw: Any) -> dict[str, Any]:

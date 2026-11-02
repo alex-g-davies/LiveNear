@@ -69,7 +69,13 @@ class VariantRecord(BaseModel):
     winter_factor: In[Decimal]
     tyre_set_ore: In[int]
     tyre_life_km: In[int]
-    service_per_year_ore: In[int]
+    service_interval_months: int = 0
+    service_interval_km: int = 0
+    service_first_months: int = 0
+    service_price_ore: In[int]
+    service_first_price_ore: In[int] | None = None
+    service_price_after_7y_ore: In[int] | None = None
+    wear_per_year_ore: In[int]
     warranty_years: int = 5
     warranty_km: int = 100_000
     fun_score: In[Decimal]
@@ -194,3 +200,10 @@ class RatesRecord(BaseModel):
     new_car_delivery_months: In[int]
     rental_per_month_ore: In[int]
     materiality_threshold: In[Decimal]
+    # 024 R2-R4
+    inspection_fee_ore: In[int]
+    wheel_change_ore: In[int]
+    repair_ev_factor: In[Decimal]
+    repair_in_warranty_factor: In[Decimal]
+    repair_bands: tuple[tuple[int, int], ...]  # (odometer up to km, øre per km)
+    repair_source: In[str]

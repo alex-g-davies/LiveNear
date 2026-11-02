@@ -40,6 +40,24 @@ COHORT_TO_VARIANT: dict[str, str] = {
     "MG4 64 2023-2024": "mg-mg4-64",
 }
 
+# Second export shape (2026-11-02): the owner pre-filters by `target_variant`
+# and there is no `cohort` / `trim_match` column. Labels -> variant ids.
+TARGET_TO_VARIANT: dict[str, str] = {
+    "Leaf 40 kWh": "nissan-leaf-40",
+    "XC40 Recharge Single Motor (69 kWh, FWD)": "volvo-xc40-sm-69",
+    "XC40 Recharge Single Motor Extended Range (82 kWh, RWD)": "volvo-xc40-sm-er-82",
+    "EV6 Long Range RWD (77 kWh)": "kia-ev6-lr-rwd",
+    "ID.3 Pro 58 kWh (Pro Performance 204 hk)": "vw-id3-pro-performance-58",
+    "ID.3 Pro 58 kWh (145-150 hk)": "vw-id3-pro-58",
+    "Model Y RWD": "tesla-modely-rwd",
+    "e-208 50 kWh": "peugeot-e208-50",
+    "Corsa-e 50 kWh": "opel-corsa-e-50",
+    "Zoe ZE50 52 kWh (R135)": "renault-zoe-ze50",
+    "Zoe ZE50 52 kWh (R110)": "renault-zoe-ze50",
+    "500e 42 kWh": "fiat-500e-42",
+    "Dolphin 60 kWh": "byd-dolphin-60",
+}
+
 
 @dataclass(frozen=True)
 class TrimRule:
@@ -69,6 +87,9 @@ TRIM_RULES: tuple[TrimRule, ...] = (
     TrimRule("tesla", "model y", r"long\s*range\s*awd", "tesla-modely-lr-awd", 2022, 2024),
     TrimRule("tesla", "model y", r"long\s*range\s*awd", "tesla-modely-lr-awd-juniper", 2025),
     TrimRule("mg", "mg4", r"\b64\s*kwh\b", "mg-mg4-64", 2023),
+    TrimRule(
+        "volkswagen", "id.3", r"\bpro\b.*\b58\s*kwh\b", "vw-id3-pro-performance-58", 2021, 2023
+    ),
 )
 
 LISTING_OUT_COLUMNS = (
@@ -193,25 +214,32 @@ def convert_listings(
 ) -> Conversion:
     """Owner used-listings export -> listings contract rows.
 
-    Kept: plain sales (`sales_form == sale`) whose `trim_match` is `yes` and
-    whose `cohort` label maps to a catalogue variant. The asking price is the
+    Two export shapes are accepted: the first has `cohort` + `trim_match`
+    columns (kept when `trim_match == yes`); the second has a
+    `target_variant` label and no trim column (the owner filtered by trim
+    before exporting). Kept: plain sales (`sales_form`/`sale_form` blank or
+    `sale`; lease take-overs and auctions are not asking prices) whose label
+    maps to a catalogue variant. The asking price is the
     price **excluding** the re-registration fee when the export has it
     (`price_basis = excl_rereg`), because the engine charges that fee as its
     own line item and a seller never receives it; otherwise the total price
     is kept and marked `incl_rereg`.
     """
-    cmap = cohort_map or COHORT_TO_VARIANT
+    cmap = cohort_map or {**COHORT_TO_VARIANT, **TARGET_TO_VARIANT}
     cat = _catalogue(vehicles)
     out = Conversion([])
     for r in rows:
-        if _norm(r.get("sales_form") or "sale") != "sale":
-            out.skipped[f"sales_form:{_norm(r.get('sales_form'))}"] += 1
+        form = _norm(r.get("sales_form") or r.get("sale_form") or "sale")
+        if form != "sale":
+            out.skipped[f"sales_form:{form}"] += 1
             continue
-        match = _norm(r.get("trim_match"))
-        if match != "yes":
-            out.skipped[f"trim_match:{match or 'blank'}"] += 1
-            continue
-        vid = cmap.get(str(r.get("cohort") or "").strip())
+        if "trim_match" in r:
+            match = _norm(r.get("trim_match"))
+            if match != "yes":
+                out.skipped[f"trim_match:{match or 'blank'}"] += 1
+                continue
+        label = str(r.get("cohort") or r.get("target_variant") or "").strip()
+        vid = cmap.get(label)
         if vid is None:
             out.skipped["cohort:unmapped"] += 1
             continue

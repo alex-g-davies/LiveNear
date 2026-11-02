@@ -36,7 +36,12 @@ def test_rule_lookup_single_and_carry_forward():
 def test_real_rules_file_loads_and_2027_vat_is_pending_not_applied():
     rules = load_tax_rules(RULES_FILE)
     kinds = {r.kind for r in rules.rules}
-    assert kinds == {"traffic_insurance_tax", "re_registration_fee", "ev_vat"}
+    assert kinds == {
+        "traffic_insurance_tax",
+        "re_registration_fee",
+        "ev_vat",
+        "periodic_inspection",
+    }
     vat, carried = rules.rule_at("ev_vat", date(2027, 6, 1))
     assert vat.id == "ev_vat_2023" and vat.params["threshold_ore"] == 50_000_000
     pend = pending_rules(RULES_FILE)
@@ -54,16 +59,31 @@ def test_overlapping_rules_are_rejected():
 
 
 def test_unverified_rule_makes_option_estimate():
-    """The shipped traffic-tax rules are unverified placeholders, so a
-    scenario using them must show Estimate even when every other input is live."""
-    d = b.scenario([b.used_cash()], market=b.market())
+    """The shipped 2025 traffic-tax rule is unverified (only the EV figure was
+    checked), so a scenario starting in 2025 must show Estimate even when every
+    other input is live; the 2026 rule is live (checked 2026-11-02)."""
+    d = b.scenario([b.used_cash(purchase_date="2025-06-01")], market=b.market())
     d["market"]["tax_rules"] = str(RULES_FILE)
+    d["user"]["start_date"] = "2025-06-01"
     d["user"]["return_on_cash_pct"] = 0
     d["market"]["materiality_threshold"] = b.inp(0.01)
     sc = scenario_from_dict(d, base_dir=BACKEND)
     opt = run_scenario(sc).options[0]
     assert opt.status == "estimate"
     assert any(i.startswith("traffic_tax_") for i in opt.material_estimates)
+
+
+def test_checked_2026_rules_give_live_option():
+    """From 1 Mar 2026 the traffic tax and the 2026 re-registration table are
+    live, so the same scenario started in 2027 carries no rule-based estimate."""
+    d = b.scenario([b.used_cash()], market=b.market())
+    d["market"]["tax_rules"] = str(RULES_FILE)
+    d["user"]["return_on_cash_pct"] = 0
+    d["market"]["materiality_threshold"] = b.inp(0.01)
+    opt = run_scenario(scenario_from_dict(d, base_dir=BACKEND)).options[0]
+    assert not any(
+        i.startswith(("traffic_tax_", "re_registration_")) for i in opt.material_estimates
+    )
 
 
 def test_live_fixture_rules_give_live_option():

@@ -54,6 +54,7 @@ class Profile(BaseModel):
     km_per_year: int = Field(default=12_000, gt=0, le=100_000)
     charging_mix: ChargingMixIn = ChargingMixIn(home_pct=70, work_free_pct=20, public_pct=10)
     municipality: str = ""
+    toll_passages_per_week: int = Field(default=0, ge=0, le=200)  # 024 R5
     export_on_exit: bool = False
     pay_mode: Literal["cash", "loan", "both"] = "loan"
     return_on_cash_pct: Decimal = Field(default=Decimal("4"), ge=0, le=30)
@@ -114,6 +115,33 @@ class ScenarioResponse(BaseModel):
     skipped: list[str]  # selections that produced no option, with the reason
     sensitivity: list[SensitivityRow]
     sensitivity_option_id: str | None
+    elapsed_ms: int
+
+
+class RecommendRequest(BaseModel):
+    """Spec 024 R11: the profile alone; the server considers the whole catalogue."""
+
+    profile: Profile
+    measure: Measure = "per_month"
+    n: int = Field(default=5, ge=1, le=10)
+    seed: int = 0
+    draws: int = Field(default=500, ge=100, le=1000)
+
+
+class RecommendRow(BaseModel):
+    rank: int  # position in the full ranking by the requested measure (1 = best)
+    reasons: list[str]
+    summary: OptionSummary
+
+
+class RecommendResponse(BaseModel):
+    ranking_measure: Measure
+    bundle_as_of: date
+    start_date: date
+    n_considered: int  # options built and ranked
+    ruled_out: dict[str, int]  # reason -> number of options it excluded
+    skipped: int  # selections that produced no option (no price, no cohort, age gap)
+    rows: list[RecommendRow]
     elapsed_ms: int
 
 

@@ -25,7 +25,8 @@ DISPLAY_LABELS = {
     "fees_and_taxes": "Fees and taxes",
     "energy": "Energy",
     "tyres": "Tyres",
-    "service": "Service",
+    "service": "Service and repairs",
+    "tolls": "Tolls",
     "exit_costs": "Cost to exit",
     "delay": "Delay cost",
     "opportunity_cost": "Opportunity cost",
@@ -128,7 +129,8 @@ def _display_at(s: Schedule, det: Deterministic, t: int) -> list[DisplayItem]:
     rows.append(("fees_and_taxes", cum("fees") + cum("re_registration") + cum("traffic_tax")))
     rows.append(("energy", cum("energy")))
     rows.append(("tyres", cum("tyres")))
-    rows.append(("service", cum("service")))
+    rows.append(("service", cum("service") + cum("wear_and_repairs") + cum("inspection")))
+    rows.append(("tolls", cum("tolls")))
     rows.append(("exit_costs", exit_costs))
     rows.append(("delay", cum("delay")))
     rows.append(("opportunity_cost", det.opportunity[t]))
@@ -258,7 +260,18 @@ INPUT_LABELS = {
     "winter_factor": "Winter factor",
     "tyre_set": "Winter tyres",
     "tyre_life_km": "Tyre life (km)",
-    "service_per_year": "Service (per year)",
+    "service_price": "Service (per visit)",
+    "service_first_price": "First service",
+    "service_price_after_7y": "Service (car 7+ years)",
+    "wear_per_year": "Wear items (per year)",
+    "repair_allowance": "Repair allowance table (per km)",
+    "repair_ev_factor": "EV repair factor",
+    "repair_in_warranty_factor": "In-warranty repair factor",
+    "inspection_fee": "Inspection fee (EU-kontroll)",
+    "wheel_change": "Wheel change (per change)",
+    "toll_offpeak": "Toll per passage (off-peak)",
+    "toll_rush": "Toll per passage (rush)",
+    "toll_ring": "Toll ring",
     "fun_score": "Fun score",
     "new_price": "New price",
     "resale_path": "Resale value path",
@@ -308,6 +321,8 @@ def input_label(input_id: str) -> str:
         return "Traffic insurance tax rule"
     if tail.startswith("re_registration"):
         return "Re-registration fee rule"
+    if "periodic_inspection" in tail:
+        return "Inspection cycle rule"
     return tail.replace("_", " ").capitalize()
 
 

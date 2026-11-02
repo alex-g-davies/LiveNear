@@ -1,4 +1,4 @@
-// Market map (spec 023 R2/R3): every model year in the catalogue as a scatter
+// Market map (spec 023 R2/R3, 024 R9): every model year in the catalogue as a scatter
 // of asking prices, a filter rail, box-select and a selection tray that feeds
 // Compare. Filters are local state; the selection is the shared one.
 
@@ -38,6 +38,7 @@ export default function MarketMap() {
   const { selection, profile } = state;
   const catalogue = vehicles.data ?? [];
 
+  const makes = useMemo(() => [...new Set(catalogue.map((v) => v.make))].sort(), [catalogue]);
   const energyTypes = useMemo(
     () => [...new Set(catalogue.map((v) => v.energy_type))] as EnergyType[],
     [catalogue],
@@ -45,6 +46,7 @@ export default function MarketMap() {
 
   // Filters (local, not persisted).
   const [search, setSearch] = useState("");
+  const [make, setMake] = useState("");
   const [yearFrom, setYearFrom] = useState("");
   const [yearTo, setYearTo] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -61,6 +63,7 @@ export default function MarketMap() {
   const mustHaves = hideFailing ? profile.limits.must_haves : [];
   const filters = useMemo<MarketFilters>(() => {
     const f: MarketFilters = {};
+    if (make) f.make = make;
     if (yearFrom && Number.isInteger(yf) && yf >= MIN_YEAR && yf <= MAX_YEAR) f.year_from = yf;
     if (yearTo && Number.isInteger(yt) && yt >= MIN_YEAR && yt <= MAX_YEAR) f.year_to = yt;
     if (maxPrice && Number.isFinite(mp) && mp > 0) f.max_price_nok = Math.round(mp);
@@ -69,7 +72,7 @@ export default function MarketMap() {
     if (mustHaves.length) f.must_have = [...mustHaves];
     return f;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [yearFrom, yearTo, maxPrice, energyOff.join(","), energyTypes.join(","), mustHaves.join(","), yf, yt, mp]);
+  }, [make, yearFrom, yearTo, maxPrice, energyOff.join(","), energyTypes.join(","), mustHaves.join(","), yf, yt, mp]);
 
   const market = useMarket(filters);
   const cohorts = market.cohorts?.cohorts ?? [];
@@ -119,6 +122,17 @@ export default function MarketMap() {
       <div className="cars-layout cars-layout--rail-left">
         <aside className="cars-layout__aside" aria-label="Filters">
           <section className="cars-card">
+            <label className="cars-field">
+              <span className="cars-field__label">Brand</span>
+              <select className="cars-select" value={make} onChange={(e) => setMake(e.target.value)}>
+                <option value="">All brands</option>
+                {makes.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="cars-field">
               <span className="cars-field__label">Find a model</span>
               <input

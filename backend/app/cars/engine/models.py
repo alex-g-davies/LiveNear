@@ -130,6 +130,8 @@ class UserInputs(BaseModel):
     km_per_year: int = Field(gt=0, le=100_000)
     charging_mix: ChargingMix
     municipality: str = ""
+    # Trips through the toll ring per week, both directions (024 R5).
+    toll_passages_per_week: int = Field(default=0, ge=0, le=200)
     pay_mode: PayMode = "loan"
     return_on_cash_pct: Decimal = Field(default=Decimal("4"), ge=0, le=30)
     down_payment_ore: int = Field(default=0, ge=0)
@@ -166,8 +168,18 @@ class VehicleInputs(BaseModel):
     # A second (winter) set, bought at purchase unless the deal includes tyres.
     tyre_set_ore: In[int]
     tyre_life_km: In[int]
-    # Service as an annual amount; leases that include service zero it.
-    service_per_year_ore: In[int]
+    # Scheduled service (024 R1): booked when either interval elapses since
+    # the previous one; 0 months = no fixed schedule (Tesla), costed through
+    # the wear allowance only. Leases that include service zero it.
+    service_interval_months: int = Field(default=0, ge=0, le=60)
+    service_interval_km: int = Field(default=0, ge=0)
+    service_first_months: int = Field(default=0, ge=0, le=60)  # 0 = same as interval
+    service_price_ore: In[int]
+    service_first_price_ore: In[int] | None = None
+    service_price_after_7y_ore: In[int] | None = None
+    # Wear items per year: wipers, cabin filter, brake fluid, 12 V battery
+    # amortised over their intervals (024 R2).
+    wear_per_year_ore: In[int]
     warranty_years: int = 5
     warranty_km: int = 100_000
     fun_score: In[Decimal]  # 0–10, shown next to cost, never folded in (R11)
@@ -260,6 +272,9 @@ class Lease(BaseModel):
     end_of_lease_fee_ore: In[int]  # return inspection / damage allowance
     delivery_months: In[int]
     pay_in_advance: bool = True
+    # Months since first registration at month 0 (used-car leases); drives
+    # the inspection cycle and the service price for older cars (024 R1, R3).
+    age_months_at_start: int = Field(default=0, ge=0, le=240)
 
 
 class Used(BaseModel):
@@ -287,12 +302,13 @@ class TaxRule(BaseModel):
 
     model_config = ConfigDict(frozen=True)
     id: str
-    kind: Literal["traffic_insurance_tax", "re_registration_fee", "ev_vat"]
+    kind: Literal["traffic_insurance_tax", "re_registration_fee", "ev_vat", "periodic_inspection"]
     effective_from: date
     effective_to: date | None = None
     params: dict[str, object]
     source_url: str
     status: Literal["live", "estimate", "unverified"] = "live"
+    checked_on: date | None = None
     note: str = ""
 
 
@@ -336,6 +352,43 @@ class InsuranceDefault(BaseModel):
     annual_ore: In[int]
 
 
+class RepairAllowance(BaseModel):
+    """Unscheduled repair allowance per km, rising with the odometer (024 R2).
+    `bands` are (odometer up to km, øre per km), ascending; the last band is
+    open-ended. `source` carries the provenance of the whole table."""
+
+    model_config = ConfigDict(frozen=True)
+    bands: tuple[tuple[int, int], ...]
+    source: In[str]
+    ev_factor: In[Decimal]  # EV repair cost relative to the (ICE) table
+    in_warranty_factor: In[Decimal]  # share of the allowance while under warranty
+
+    @model_validator(mode="after")
+    def _ascending(self) -> RepairAllowance:
+        if not self.bands:
+            raise ValueError("repair bands must not be empty")
+        if any(a[0] >= b[0] for a, b in zip(self.bands, self.bands[1:], strict=False)):
+            raise ValueError("repair bands must be ascending in km")
+        return self
+
+    def ore_per_km_at(self, odometer_km: int) -> int:
+        for up_to, ore in self.bands:
+            if odometer_km <= up_to:
+                return ore
+        return self.bands[-1][1]
+
+
+class TollRing(BaseModel):
+    """The toll ring of the user's municipality, electric-car rates (024 R5)."""
+
+    model_config = ConfigDict(frozen=True)
+    name: str
+    offpeak_ore: In[int]
+    rush_ore: In[int]
+    monthly_cap_passages: int = Field(default=0, ge=0)  # 0 = no cap
+    source: In[str]
+
+
 class MarketPolicyInputs(BaseModel):
     model_config = ConfigDict(frozen=True)
     tax_rules: TaxRuleSet
@@ -345,6 +398,11 @@ class MarketPolicyInputs(BaseModel):
     # What a month without the car costs the user (rental) while waiting.
     rental_per_month_ore: In[int]
     materiality_threshold: In[Decimal]  # share of expected TCO; see provenance
+    # 024 R2-R5
+    repair: RepairAllowance
+    inspection_fee_ore: In[int]
+    wheel_change_ore: In[int]  # per change; two a year
+    toll_ring: TollRing | None = None
 
 
 # ------------------------------------------------------------------------- option

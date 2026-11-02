@@ -118,5 +118,82 @@
   "status": "estimate",
   "basis": "5 % of expected TCO",
   "range": null
+ },
+ "inspection_fee_ore": {
+  "id": "rates.inspection_fee",
+  "value": 140000,
+  "source": "Station prices read 2026-11-02: NAF 1 419 (member) / 1 619, Bertel O. Steen from 1 390, Viking 1 070",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Middle of the published station prices; the user's station sets the real fee",
+  "range": {
+   "low": "107000",
+   "high": "161900"
+  }
+ },
+ "wheel_change_ore": {
+  "id": "rates.wheel_change",
+  "value": 60000,
+  "source": "NAF Oslo from 525 (17 in) / 675 (SUV), Bertel O. Steen 699, Noddi 699-799 (2026)",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Two changes a year at a workshop; zero if the owner changes wheels at home",
+  "range": {
+   "low": "52500",
+   "high": "79900"
+  }
+ },
+ "repair_ev_factor": {
+  "id": "rates.repair_ev_factor",
+  "value": "0.65",
+  "source": "OFV Kostnader ved bilhold 2026: EV service og reparasjoner 3 694 kr vs petrol 5 666 kr at a 550 000 kr price class",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Ratio of OFV's EV to petrol service-and-repair cost applied to an ICE repair table",
+  "range": null
+ },
+ "repair_in_warranty_factor": {
+  "id": "rates.repair_in_warranty_factor",
+  "value": "0.3",
+  "source": "Smarte Penger (Bilkostnader - reparasjon, updated 2026-08-06): repairs near zero under a new-car warranty; wear parts are not covered",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Share of the repair allowance assumed to be wear the warranty does not cover",
+  "range": null
+ },
+ "repair_bands": [
+  [
+   20000,
+   11
+  ],
+  [
+   40000,
+   22
+  ],
+  [
+   60000,
+   34
+  ],
+  [
+   80000,
+   45
+  ],
+  [
+   100000,
+   79
+  ],
+  [
+   999999999,
+   96
+  ]
+ ],
+ "repair_source": {
+  "id": "rates.repair_allowance",
+  "value": "Smarte Penger, Bilkostnader - reparasjon (updated 2026-08-06): repair cost per km by odometer for a mid-size car",
+  "source": "https://www.smartepenger.no/bilokonomi/2231-bilkostnader-reparasjon",
+  "as_of": "2026-10-31",
+  "status": "estimate",
+  "basis": "Editorial estimate for a petrol mid-size car (0.11 kr/km at 20 000 km, 0.45 at 80 000, 0.79 at 100 000, 0.96 at 110 000+); the 40 000 and 60 000 km points are interpolated; scaled by repair_ev_factor and repair_in_warranty_factor",
+  "range": null
  }
 }

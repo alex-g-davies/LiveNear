@@ -305,6 +305,61 @@ export async function postScenario(
   return readJson<ScenarioResponse>(res, "/cars/scenarios");
 }
 
+// ---- Recommendations (spec 024 R11/R12) ------------------------------------
+
+export interface RecommendRequest {
+  profile: Profile;
+  measure: Measure;
+  /** Rows wanted (1..10); tag holders outside the top n are appended. */
+  n: number;
+  seed: number;
+  /** 100..1000: the server caps draws so the whole catalogue stays under two seconds. */
+  draws: number;
+}
+
+export const RECOMMEND_REASONS = [
+  "lowest expected cost",
+  "narrowest uncertainty band",
+  "best fun score",
+  "lowest cash up front",
+] as const;
+export type RecommendReason = (typeof RECOMMEND_REASONS)[number];
+
+export interface RecommendRow {
+  /** Position in the full ranking by the requested measure (1 = best). */
+  rank: number;
+  reasons: string[];
+  summary: OptionSummary;
+}
+
+export interface RecommendResponse {
+  ranking_measure: Measure;
+  bundle_as_of: string;
+  start_date: string;
+  n_considered: number;
+  ruled_out: Record<string, number>;
+  skipped: number;
+  rows: RecommendRow[];
+  elapsed_ms: number;
+}
+
+export async function postRecommend(
+  request: RecommendRequest,
+  signal?: AbortSignal,
+): Promise<RecommendResponse> {
+  if (isMockMode()) {
+    const { buildRecommend } = await import("./mock/fixture");
+    return buildRecommend(request);
+  }
+  const res = await fetch(`${CARS_BASE}/recommend`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+    signal,
+  });
+  return readJson<RecommendResponse>(res, "/cars/recommend");
+}
+
 // ---- Sources (spec 023 R5: pending tax rules for the checklist) -------------
 
 export interface SourceHealthOut {

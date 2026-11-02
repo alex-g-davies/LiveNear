@@ -43,6 +43,7 @@ describe("profile codec (spec 022 R2)", () => {
       measure: "tco",
       checklist: ["claims_free_letter", "licence_exchange"],
     };
+    state.profile.toll_passages_per_week = 10;
     const token = encodeState(state);
     expect(token).toMatch(/^[A-Za-z0-9_-]+$/);
     expect(decodeState(token)).toEqual(state);
@@ -68,6 +69,7 @@ describe("profile codec (spec 022 R2)", () => {
           exit_odds: { p12: 50, p24: "x", p36: 250 },
           limits: { modes: ["new", "teleport"], must_haves: "awd", max_price_nok: -5 },
           insurance: { age_band: "12-17", claims_free_years: 4 },
+          toll_passages_per_week: 7.6,
         },
         selection: [{ variant_id: 1 }, { variant_id: "ok", year_from: 2024, year_to: 2022 }, { variant_id: "fine", year_from: 2022, year_to: 2024 }],
         whatIf: { loan_rate_pct: "7", km_per_year: 15000, pay_mode: "both" },
@@ -87,6 +89,14 @@ describe("profile codec (spec 022 R2)", () => {
     expect(s.whatIf).toEqual({ km_per_year: 15000 });
     expect(s.overrides).toEqual({ purchase_price: 400000 });
     expect(s.measure).toBe("per_month");
+    expect(s.profile.toll_passages_per_week).toBe(8);
+  });
+
+  it("drops out-of-range toll passages and keeps the default (024 R5)", () => {
+    const token = b64url(JSON.stringify({ profile: { toll_passages_per_week: 999 } }));
+    expect(decodeState(token).profile.toll_passages_per_week).toBe(0);
+    const neg = b64url(JSON.stringify({ profile: { toll_passages_per_week: -3 } }));
+    expect(decodeState(neg).profile.toll_passages_per_week).toBe(0);
   });
 
   it("persists to and restores from localStorage, tolerating junk", () => {

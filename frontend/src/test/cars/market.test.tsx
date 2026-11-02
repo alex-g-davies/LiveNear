@@ -15,6 +15,7 @@ vi.mock("../../cars/api", async (importOriginal) => {
     ...actual,
     getVehicles: vi.fn(async () => fixture.buildVehicles()),
     postScenario: vi.fn(async (req: import("../../cars/api").ScenarioRequest) => fixture.buildScenario(req)),
+    postRecommend: vi.fn(async (req: import("../../cars/api").RecommendRequest) => fixture.buildRecommend(req)),
     getCohorts: vi.fn(async (f: F) => fixture.buildCohorts(f)),
     getMarketPoints: vi.fn(async (f: F) => {
       if (pointsMode.value === "unavailable") {
@@ -57,6 +58,25 @@ describe("Market map (spec 023 R2/R3)", () => {
       expect(dots.length).toBeLessThan(before);
       expect(dots.every((d) => d.getAttribute("data-variant") === "renault-5-52")).toBe(true);
     }, WAIT);
+  });
+
+  it("the brand select narrows the dots and sends make= to both endpoints (024 R9)", async () => {
+    const api = await import("../../cars/api");
+    renderCars("/cars/market", EMPTY);
+    await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
+    const before = screen.getAllByTestId("market-dot").length;
+    const brand = screen.getByLabelText("Brand");
+    expect(within(brand).getByRole("option", { name: "All brands" })).toBeInTheDocument();
+    fireEvent.change(brand, { target: { value: "Kia" } });
+    await waitFor(() => {
+      const dots = screen.getAllByTestId("market-dot");
+      expect(dots.length).toBeLessThan(before);
+      expect(dots.every((d) => d.getAttribute("data-variant") === "kia-ev6-lr-rwd")).toBe(true);
+    }, WAIT);
+    const cohortCalls = vi.mocked(api.getCohorts).mock.calls;
+    const pointCalls = vi.mocked(api.getMarketPoints).mock.calls;
+    expect(cohortCalls[cohortCalls.length - 1][0]).toMatchObject({ make: "Kia" });
+    expect(pointCalls[pointCalls.length - 1][0]).toMatchObject({ make: "Kia" });
   });
 
   it("clicking a dot adds its model year; the chip can be removed; Compare navigates", async () => {

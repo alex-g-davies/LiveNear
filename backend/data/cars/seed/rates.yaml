@@ -13,3 +13,14 @@ dealer_margin_pct: {value: 6, source: "Placeholder", status: estimate, basis: "D
 new_car_delivery_months: {value: 2, source: "Placeholder", status: estimate, basis: "Dealer to confirm per model"}
 rental_per_month_nok: {value: 0, source: "Owner input", status: estimate, basis: "Zero until the owner states a rental cost"}
 materiality_threshold: {value: 0.05, source: "Engine config", status: estimate, basis: "5 % of expected TCO"}
+# --- spec 024 R2-R4: inspection, wheel changes, repair allowance -------------
+inspection_fee_nok: {value: 1400, range: [1070, 1619], source: "Station prices read 2026-11-02: NAF 1 419 (member) / 1 619, Bertel O. Steen from 1 390, Viking 1 070", status: estimate, basis: "Middle of the published station prices; the user's station sets the real fee"}
+wheel_change_nok: {value: 600, range: [525, 799], source: "NAF Oslo from 525 (17 in) / 675 (SUV), Bertel O. Steen 699, Noddi 699-799 (2026)", status: estimate, basis: "Two changes a year at a workshop; zero if the owner changes wheels at home"}
+repair_ev_factor: {value: 0.65, source: "OFV Kostnader ved bilhold 2026: EV service og reparasjoner 3 694 kr vs petrol 5 666 kr at a 550 000 kr price class", status: estimate, basis: "Ratio of OFV's EV to petrol service-and-repair cost applied to an ICE repair table"}
+repair_in_warranty_factor: {value: 0.3, source: "Smarte Penger (Bilkostnader - reparasjon, updated 2026-08-06): repairs near zero under a new-car warranty; wear parts are not covered", status: estimate, basis: "Share of the repair allowance assumed to be wear the warranty does not cover"}
+repair_allowance:
+  source: "Smarte Penger, Bilkostnader - reparasjon (updated 2026-08-06): repair cost per km by odometer for a mid-size car"
+  source_url: https://www.smartepenger.no/bilokonomi/2231-bilkostnader-reparasjon
+  status: estimate
+  basis: "Editorial estimate for a petrol mid-size car (0.11 kr/km at 20 000 km, 0.45 at 80 000, 0.79 at 100 000, 0.96 at 110 000+); the 40 000 and 60 000 km points are interpolated; scaled by repair_ev_factor and repair_in_warranty_factor"
+  bands_ore_per_km: [[20000, 11], [40000, 22], [60000, 34], [80000, 45], [100000, 79], [999999999, 96]]

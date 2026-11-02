@@ -5,8 +5,15 @@
 as_of: 2026-10-31
 defaults:
   winter_factor: {value: 1.25, source: "Placeholder winter uplift", status: estimate, basis: "NAF El Prix winter tests to confirm per model"}
-  tyre_life_km: {value: 40000, source: "Placeholder", status: estimate, basis: "Mixed summer/winter wear assumption"}
-  service_per_year_nok: {value: 3000, source: "Placeholder", status: estimate, basis: "Dealer service plan order of magnitude"}
+  tyre_life_km: {value: 37000, source: "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)", status: estimate, basis: "OFV calculation assumption, not measured per model"}
+  # Scheduled service (spec 024 R1): interval in months and km (0 km = months only),
+  # price per visit. Brand pages read 2026-11-02; prices are estimates unless the
+  # importer publishes them (Kia, Peugeot).
+  service_interval_months: 24
+  service_interval_km: 30000
+  service_first_months: 0
+  service_price_nok: {value: 5000, source: "Bertel O. Steen: typical EV main service 2 490-8 990 kr (2026)", status: estimate, basis: "Mid of the published dealer range; brand price not published"}
+  wear_per_year_nok: {value: 1200, source: "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)", status: estimate, basis: "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting"}
 variants:
   - variant_id: tesla-model3-rwd
     make: Tesla
@@ -26,6 +33,10 @@ variants:
     efficiency_wh_per_km: {value: 150, source: "Placeholder", status: estimate, basis: "Real-world mild-weather use; NAF El Prix to confirm"}
     tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
     fun_score: {value: 7.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 0
+    service_interval_km: 0
+    service_price_nok: {value: 0, source: "Tesla owner manual (no_no): no fixed service schedule", status: live}
+    wear_per_year_nok: {value: 1800, source: "Tesla owner manual: cabin filter every 2 yr, brake-fluid check every 4 yr, wipers yearly, tyre rotation; third-party Norwegian workshop estimates 2 000-3 000 kr/yr (2026)", status: estimate, basis: "Tesla publishes no Norwegian prices; wear items plus an occasional workshop visit"}
   - variant_id: tesla-model3-rwd-highland
     make: Tesla
     model: Model 3
@@ -44,6 +55,10 @@ variants:
     efficiency_wh_per_km: {value: 145, source: "Placeholder", status: estimate, basis: "Facelift is slightly more efficient; NAF El Prix to confirm"}
     tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
     fun_score: {value: 7.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 0
+    service_interval_km: 0
+    service_price_nok: {value: 0, source: "Tesla owner manual (no_no): no fixed service schedule", status: live}
+    wear_per_year_nok: {value: 1800, source: "Tesla owner manual: cabin filter every 2 yr, brake-fluid check every 4 yr, wipers yearly, tyre rotation; third-party Norwegian workshop estimates 2 000-3 000 kr/yr (2026)", status: estimate, basis: "Tesla publishes no Norwegian prices; wear items plus an occasional workshop visit"}
   - variant_id: tesla-model3-lr-awd
     make: Tesla
     model: Model 3
@@ -62,6 +77,10 @@ variants:
     efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "Pre-heat-pump cars use more in winter"}
     tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
     fun_score: {value: 8.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 0
+    service_interval_km: 0
+    service_price_nok: {value: 0, source: "Tesla owner manual (no_no): no fixed service schedule", status: live}
+    wear_per_year_nok: {value: 1800, source: "Tesla owner manual: cabin filter every 2 yr, brake-fluid check every 4 yr, wipers yearly, tyre rotation; third-party Norwegian workshop estimates 2 000-3 000 kr/yr (2026)", status: estimate, basis: "Tesla publishes no Norwegian prices; wear items plus an occasional workshop visit"}
   - variant_id: tesla-modely-lr-awd
     make: Tesla
     model: Model Y
@@ -80,6 +99,10 @@ variants:
     efficiency_wh_per_km: {value: 170, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 14000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
     fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 0
+    service_interval_km: 0
+    service_price_nok: {value: 0, source: "Tesla owner manual (no_no): no fixed service schedule", status: live}
+    wear_per_year_nok: {value: 1800, source: "Tesla owner manual: cabin filter every 2 yr, brake-fluid check every 4 yr, wipers yearly, tyre rotation; third-party Norwegian workshop estimates 2 000-3 000 kr/yr (2026)", status: estimate, basis: "Tesla publishes no Norwegian prices; wear items plus an occasional workshop visit"}
   - variant_id: hyundai-ioniq5-lr-rwd
     make: Hyundai
     model: Ioniq 5
@@ -98,6 +121,9 @@ variants:
     efficiency_wh_per_km: {value: 175, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 13000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
     fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 6500, source: "Hyundai Norway: service every 30 000 km / 24 months; price not published. Kia (same E-GMP platform) 7 990 kr per service from 1 Jul 2026", status: estimate, basis: "Just under the published Kia sister-brand price"}
   - variant_id: skoda-enyaq-80-rwd
     make: Skoda
     model: Enyaq
@@ -116,6 +142,9 @@ variants:
     efficiency_wh_per_km: {value: 180, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 13000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 to 20 in"}
     fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 0
+    service_price_nok: {value: 5500, source: "Volkswagen Norway / Møller Bil: every second year regardless of km; price not published (lease ads quote a service agreement at 400-500 kr/month)", status: estimate, basis: "Mid of the Bertel O. Steen EV range; importer price unpublished"}
   - variant_id: vw-id4-pro-rwd
     make: Volkswagen
     model: ID.4
@@ -134,6 +163,9 @@ variants:
     efficiency_wh_per_km: {value: 180, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 13000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
     fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 0
+    service_price_nok: {value: 5500, source: "Volkswagen Norway / Møller Bil: every second year regardless of km; price not published (lease ads quote a service agreement at 400-500 kr/month)", status: estimate, basis: "Mid of the Bertel O. Steen EV range; importer price unpublished"}
   - variant_id: hyundai-kona-64
     make: Hyundai
     model: Kona Electric
@@ -152,6 +184,9 @@ variants:
     efficiency_wh_per_km: {value: 155, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 9000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
     fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 6500, source: "Hyundai Norway: service every 30 000 km / 24 months; price not published. Kia (same E-GMP platform) 7 990 kr per service from 1 Jul 2026", status: estimate, basis: "Just under the published Kia sister-brand price"}
   - variant_id: tesla-modely-lr-awd-juniper
     make: Tesla
     model: Model Y
@@ -169,6 +204,10 @@ variants:
     efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "Facelift is slightly more efficient than the 2022-2024 car; NAF El Prix to confirm"}
     tyre_set_nok: {value: 14000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
     fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 0
+    service_interval_km: 0
+    service_price_nok: {value: 0, source: "Tesla owner manual (no_no): no fixed service schedule", status: live}
+    wear_per_year_nok: {value: 1800, source: "Tesla owner manual: cabin filter every 2 yr, brake-fluid check every 4 yr, wipers yearly, tyre rotation; third-party Norwegian workshop estimates 2 000-3 000 kr/yr (2026)", status: estimate, basis: "Tesla publishes no Norwegian prices; wear items plus an occasional workshop visit"}
   - variant_id: mg-mg4-64
     make: MG
     model: MG4
@@ -189,3 +228,292 @@ variants:
     efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 to 18 in"}
     fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 12
+    service_interval_km: 24000
+    service_price_nok: {value: 3500, source: "MG Europe FAQ: 12 months / 24 000 km; Norwegian price not published", status: estimate, basis: "Small-EV yearly service, below the Stellantis main-service price"}
+  - variant_id: nissan-leaf-40
+    make: Nissan
+    model: Leaf
+    trim_group: 40 kWh
+    segment: ev-small
+    model_years: [2018, 2019, 2020]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 40
+    power_kw: 110
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 215/50 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 270
+    accel_0_100_s: 7.9
+    efficiency_wh_per_km: {value: 170, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 4.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 12
+    service_interval_km: 30000
+    service_price_nok: {value: 3500, source: "Nissan Norway: LEAF 12 months / 30 000 km; price not published. NAF 5+ older-car service 4 450-5 070 kr; Kia older-car 1 990-3 690 kr", status: estimate, basis: "Yearly service on an older small EV"}
+  - variant_id: volvo-xc40-sm-69
+    make: Volvo
+    model: XC40 Recharge
+    trim_group: Single Motor 69 kWh
+    segment: ev-suv
+    model_years: [2022, 2023]
+    drive: fwd
+    body: suv
+    battery_kwh: 69
+    power_kw: 170
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 235/50 R19
+    warranty_years: 5
+    warranty_km: 150000
+    range_km_wltp: 425
+    accel_0_100_s: 7.4
+    efficiency_wh_per_km: {value: 185, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 6.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 6000, source: "Volvo (Sweden support page): every 24 months / 30 000 km; Norwegian price not published", status: estimate, basis: "Premium-brand EV main service, Bertel O. Steen range"}
+  - variant_id: volvo-xc40-sm-er-82
+    make: Volvo
+    model: XC40 Recharge
+    trim_group: Single Motor Extended Range 82 kWh
+    segment: ev-suv
+    model_years: [2024]
+    drive: rwd
+    body: suv
+    battery_kwh: 82
+    power_kw: 185
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 235/50 R19
+    warranty_years: 5
+    warranty_km: 150000
+    range_km_wltp: 515
+    accel_0_100_s: 7.3
+    efficiency_wh_per_km: {value: 180, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 6000, source: "Volvo (Sweden support page): every 24 months / 30 000 km; Norwegian price not published", status: estimate, basis: "Premium-brand EV main service, Bertel O. Steen range"}
+  - variant_id: kia-ev6-lr-rwd
+    make: Kia
+    model: EV6
+    trim_group: Long Range RWD
+    segment: ev-mid
+    model_years: [2022, 2023, 2024]
+    drive: rwd
+    body: crossover
+    battery_kwh: 77
+    power_kw: 168
+    heat_pump: true
+    auto_precondition: true
+    tyre_size: 235/55 R19
+    warranty_years: 7
+    warranty_km: 150000
+    range_km_wltp: 528
+    accel_0_100_s: 7.3
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 7990, source: "kia.no veiledende servicepriser, EV6, valid from 2026-07-01, incl. VAT", status: live}
+    service_price_after_7y_nok: {value: 3690, source: "kia.no veiledende servicepriser, cars 7+ years, stor service incl. pollen filter and brake fluid (2026)", status: live}
+  - variant_id: vw-id3-pro-performance-58
+    make: Volkswagen
+    model: ID.3
+    trim_group: Pro Performance 58 kWh
+    segment: ev-small
+    model_years: [2021, 2022, 2023]
+    drive: rwd
+    body: hatchback
+    battery_kwh: 58
+    power_kw: 150
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 215/55 R18
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 426
+    accel_0_100_s: 7.3
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 0
+    service_price_nok: {value: 5500, source: "Volkswagen Norway / Møller Bil: every second year regardless of km; price not published (lease ads quote a service agreement at 400-500 kr/month)", status: estimate, basis: "Mid of the Bertel O. Steen EV range; importer price unpublished"}
+  - variant_id: vw-id3-pro-58
+    make: Volkswagen
+    model: ID.3
+    trim_group: Pro 58 kWh
+    segment: ev-small
+    model_years: [2022, 2023]
+    drive: rwd
+    body: hatchback
+    battery_kwh: 58
+    power_kw: 107
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 215/55 R18
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 426
+    accel_0_100_s: 9.6
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 0
+    service_price_nok: {value: 5500, source: "Volkswagen Norway / Møller Bil: every second year regardless of km; price not published (lease ads quote a service agreement at 400-500 kr/month)", status: estimate, basis: "Mid of the Bertel O. Steen EV range; importer price unpublished"}
+  - variant_id: tesla-modely-rwd
+    make: Tesla
+    model: Model Y
+    trim_group: RWD
+    segment: ev-suv
+    model_years: [2023, 2024]
+    drive: rwd
+    body: suv
+    battery_kwh: 60
+    power_kw: 220
+    heat_pump: true
+    auto_precondition: true
+    tyre_size: 255/45 R19
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 455
+    accel_0_100_s: 6.9
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 0
+    service_interval_km: 0
+    service_price_nok: {value: 0, source: "Tesla owner manual (no_no): no fixed service schedule", status: live}
+    wear_per_year_nok: {value: 1800, source: "Tesla owner manual: cabin filter every 2 yr, brake-fluid check every 4 yr, wipers yearly, tyre rotation; third-party Norwegian workshop estimates 2 000-3 000 kr/yr (2026)", status: estimate, basis: "Tesla publishes no Norwegian prices; wear items plus an occasional workshop visit"}
+  - variant_id: peugeot-e208-50
+    make: Peugeot
+    model: e-208
+    trim_group: 50 kWh
+    segment: ev-small
+    model_years: [2020, 2021, 2022, 2023]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 50
+    power_kw: 100
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 340
+    accel_0_100_s: 8.1
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 25000
+    service_first_months: 12
+    service_price_nok: {value: 4290, source: "Bertel O. Steen elbilservice Peugeot: e-208 main service 4 290 kr, every 2 yr / 25 000 km (2026)", status: live}
+    service_first_price_nok: {value: 2490, source: "Bertel O. Steen elbilservice Peugeot: first service 2 490 kr at 1 yr / 12 500 km (2026)", status: live}
+    wear_per_year_nok: {value: 1900, source: "Bertel O. Steen: brake fluid 1 490 kr every 2 yr for e-208; BEMA parts list for wipers, cabin filter, 12 V battery", status: estimate, basis: "Brake fluid 745 kr/yr plus the default wear items"}
+  - variant_id: opel-corsa-e-50
+    make: Opel
+    model: Corsa-e
+    trim_group: 50 kWh
+    segment: ev-small
+    model_years: [2020, 2021, 2022, 2023]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 50
+    power_kw: 100
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 337
+    accel_0_100_s: 8.1
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 25000
+    service_first_months: 12
+    service_price_nok: {value: 4290, source: "Bertel O. Steen: Stellantis small-EV main service from 3 990 kr; Peugeot e-208 (same car) 4 290 kr (2026)", status: estimate, basis: "Sister-brand Peugeot price; Opel publishes no EV-specific figure"}
+    service_first_price_nok: {value: 2490, source: "Bertel O. Steen: Peugeot first service 2 490 kr (2026)", status: estimate, basis: "Sister-brand Peugeot price"}
+    wear_per_year_nok: {value: 1900, source: "Bertel O. Steen: brake fluid 1 490 kr every 2 yr (Peugeot e-208, same car); BEMA parts list", status: estimate, basis: "Brake fluid 745 kr/yr plus the default wear items"}
+  - variant_id: renault-zoe-ze50
+    make: Renault
+    model: Zoe
+    trim_group: ZE50 52 kWh
+    segment: ev-small
+    model_years: [2020, 2021]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 52
+    power_kw: 100
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 395
+    accel_0_100_s: 9.5
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 4.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 12
+    service_interval_km: 30000
+    service_price_nok: {value: 3500, source: "Renault dealer pages: at least 1 yr / 30 000 km; price not published", status: estimate, basis: "Yearly service on an older small EV"}
+  - variant_id: fiat-500e-42
+    make: Fiat
+    model: 500e
+    trim_group: 42 kWh
+    segment: ev-small
+    model_years: [2021, 2022, 2023]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 42
+    power_kw: 87
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 320
+    accel_0_100_s: 9.0
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 25000
+    service_first_months: 12
+    service_price_nok: {value: 3990, source: "Bertel O. Steen: Stellantis small-EV main service from 3 990 kr (2026); Fiat publishes no interval", status: estimate, basis: "Stellantis group schedule assumed (first service 1 yr, then 2 yr)"}
+    service_first_price_nok: {value: 2490, source: "Bertel O. Steen: Stellantis first service 2 490 kr (2026)", status: estimate, basis: "Stellantis group price"}
+  - variant_id: byd-dolphin-60
+    make: BYD
+    model: Dolphin
+    trim_group: 60 kWh
+    segment: ev-small
+    model_years: [2024, 2025]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 60
+    power_kw: 150
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/50 R17
+    warranty_years: 6
+    warranty_km: 150000
+    range_km_wltp: 427
+    accel_0_100_s: 7.0
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 4500, source: "BYD (Denmark release): interval 24 months / 30 000 km; Norwegian dealer listings agree; price not published", status: estimate, basis: "Small-EV main service, Bertel O. Steen range"}

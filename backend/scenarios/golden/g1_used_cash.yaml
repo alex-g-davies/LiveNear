@@ -56,6 +56,35 @@ inputs:
       source: golden fixture
       as_of: '2026-10-31'
       status: live
+    inspection_fee:
+      value_nok: 0
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+    wheel_change:
+      value_nok: 0
+      source: golden fixture
+      as_of: '2026-10-31'
+      status: live
+    repair:
+      bands_ore_per_km:
+      - [999999999, 0]
+      source:
+        value: fixture repair table
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+        kind: str
+      ev_factor:
+        value: 1
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      in_warranty_factor:
+        value: 1
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
   options:
   - id: used-cash
     label: used-cash
@@ -90,8 +119,15 @@ inputs:
         source: golden fixture
         as_of: '2026-10-31'
         status: live
-      service_per_year:
+      service_interval_months: 12
+      service_interval_km: 0
+      service_price:
         value_nok: 1200
+        source: golden fixture
+        as_of: '2026-10-31'
+        status: live
+      wear_per_year:
+        value_nok: 0
         source: golden fixture
         as_of: '2026-10-31'
         status: live

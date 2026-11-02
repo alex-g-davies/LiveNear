@@ -30,12 +30,12 @@ optimization, and forecasting.
 
 ```
 backend/      FastAPI app, isochrone proxy, data loading, tests
-  app/cars/   Norway car TCO module (specs 022, 023): engine/, market/, ingest/, rules/
+  app/cars/   Norway car TCO module (specs 022-024): engine/, market/, ingest/, rules/
 frontend/     React + Vite SPA, MapLibre map; src/cars/ for the car screens
 specs/        One spec per feature (the source of truth for what to build)
 ```
 
-## Cars module (specs 022, 023)
+## Cars module (specs 022-024)
 
 A second product surface at `/cars`: total cost of owning a car in Norway
 for newcomers. Rules that apply inside `backend/app/cars/` and
@@ -47,7 +47,7 @@ for newcomers. Rules that apply inside `backend/app/cars/` and
   the Monte Carlo arrays. Round for display only.
 - **No silent defaults.** Every default is `status: estimate` with a written
   `basis`; tax rules live only in `app/cars/rules/tax_rules.yaml` with
-  effective dates and source URLs.
+  effective dates and source URLs (toll rings in `rules/toll_rings.yaml`).
 - **Tests before formulas.** Add or update a golden case
   (`scenarios/golden/`, worked in `docs/cars/golden/`) or a property test
   before changing a line item.
