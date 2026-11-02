@@ -30,7 +30,7 @@ inputs:
       - used_5_plus
     toll_passages_per_week: 10
   market:
-    tax_rules: C:\Users\adsoc\Desktop\Coding\NorCar\LiveNear\backend\tests\cars\fixtures\tax_rules_fixture.yaml
+    tax_rules: tests/cars/fixtures/tax_rules_fixture.yaml
     charging:
       home:
         value: 100
