@@ -66,3 +66,9 @@ estimates need ≥ 8 weekly snapshots to be computed and are `estimate` until
 
 Run order: `scripts/cars_convert_owner_export.py` -> `python -m app.cars.ingest.runner --sources listings_csv --listings data/cars/private/contract/listings.csv --out data/cars/private/ingest --raw-dir data/cars/private/raw` -> `scripts/cars_build_bundle.py --listings data/cars/private/ingest/store/listings.csv --report docs/cars/backtest.md`. For the live site, upload the converted `listings.csv` to R2 at `CARS_R2_LISTINGS_KEY` (default `listings/listings.csv`) so the per-cohort listing drill-down works; the bundle itself ships with the repo.
 
+## Owner exports (2026-11-02)
+
+| Source | Data | Access | Terms decision | Date |
+|---|---|---|---|---|
+| Owner used-listings export, second batch (`target_variant` shape) | 589 rows pre-filtered by trim for 12 new variants; 577 sale rows kept (8 auctions, 4 lease take-overs skipped), 1 548 listings stored in total | Same converter (both shapes, several files per run) -> `ingest.runner` -> bundle | As above: private file, only derived cohort aggregates committed. | 2026-11-02 |
+

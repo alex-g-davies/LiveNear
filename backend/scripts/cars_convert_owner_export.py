@@ -1,7 +1,7 @@
 """Re-shape the owner's private exports into the module's CSV contracts.
 
     python scripts/cars_convert_owner_export.py \
-        --listings data/cars/private/owner_exports/<used-listings>.csv \
+        --listings data/cars/private/owner_exports/<used-listings>.csv [more.csv ...] \
         --lease    data/cars/private/owner_exports/<lease-offers>.csv \
         --new-cars data/cars/private/owner_exports/<new-stock>.csv \
         --out      data/cars/private/contract
@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    p.add_argument("--listings", type=Path)
+    p.add_argument("--listings", type=Path, nargs="+")
     p.add_argument("--lease", type=Path)
     p.add_argument("--new-cars", type=Path)
     p.add_argument("--out", type=Path, required=True)
@@ -44,7 +44,8 @@ def main(argv: list[str] | None = None) -> int:
     a.out.mkdir(parents=True, exist_ok=True)
 
     if a.listings:
-        conv = oe.convert_listings(oe.read_csv_text(a.listings.read_text("utf-8-sig")), vehicles)
+        rows = [r for f in a.listings for r in oe.read_csv_text(f.read_text("utf-8-sig"))]
+        conv = oe.convert_listings(rows, vehicles)
         (a.out / "listings.csv").write_text(
             oe.write_csv(conv.rows, oe.LISTING_OUT_COLUMNS), encoding="utf-8"
         )

@@ -189,3 +189,243 @@ variants:
     efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
     tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 to 18 in"}
     fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: nissan-leaf-40
+    make: Nissan
+    model: Leaf
+    trim_group: 40 kWh
+    segment: ev-small
+    model_years: [2018, 2019, 2020]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 40
+    power_kw: 110
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 215/50 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 270
+    accel_0_100_s: 7.9
+    efficiency_wh_per_km: {value: 170, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 4.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: volvo-xc40-sm-69
+    make: Volvo
+    model: XC40 Recharge
+    trim_group: Single Motor 69 kWh
+    segment: ev-suv
+    model_years: [2022, 2023]
+    drive: fwd
+    body: suv
+    battery_kwh: 69
+    power_kw: 170
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 235/50 R19
+    warranty_years: 5
+    warranty_km: 150000
+    range_km_wltp: 425
+    accel_0_100_s: 7.4
+    efficiency_wh_per_km: {value: 185, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 6.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: volvo-xc40-sm-er-82
+    make: Volvo
+    model: XC40 Recharge
+    trim_group: Single Motor Extended Range 82 kWh
+    segment: ev-suv
+    model_years: [2024]
+    drive: rwd
+    body: suv
+    battery_kwh: 82
+    power_kw: 185
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 235/50 R19
+    warranty_years: 5
+    warranty_km: 150000
+    range_km_wltp: 515
+    accel_0_100_s: 7.3
+    efficiency_wh_per_km: {value: 180, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: kia-ev6-lr-rwd
+    make: Kia
+    model: EV6
+    trim_group: Long Range RWD
+    segment: ev-mid
+    model_years: [2022, 2023, 2024]
+    drive: rwd
+    body: crossover
+    battery_kwh: 77
+    power_kw: 168
+    heat_pump: true
+    auto_precondition: true
+    tyre_size: 235/55 R19
+    warranty_years: 7
+    warranty_km: 150000
+    range_km_wltp: 528
+    accel_0_100_s: 7.3
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: vw-id3-pro-performance-58
+    make: Volkswagen
+    model: ID.3
+    trim_group: Pro Performance 58 kWh
+    segment: ev-small
+    model_years: [2021, 2022, 2023]
+    drive: rwd
+    body: hatchback
+    battery_kwh: 58
+    power_kw: 150
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 215/55 R18
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 426
+    accel_0_100_s: 7.3
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: vw-id3-pro-58
+    make: Volkswagen
+    model: ID.3
+    trim_group: Pro 58 kWh
+    segment: ev-small
+    model_years: [2022, 2023]
+    drive: rwd
+    body: hatchback
+    battery_kwh: 58
+    power_kw: 107
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 215/55 R18
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 426
+    accel_0_100_s: 9.6
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 10000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 18 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: tesla-modely-rwd
+    make: Tesla
+    model: Model Y
+    trim_group: RWD
+    segment: ev-suv
+    model_years: [2023, 2024]
+    drive: rwd
+    body: suv
+    battery_kwh: 60
+    power_kw: 220
+    heat_pump: true
+    auto_precondition: true
+    tyre_size: 255/45 R19
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 455
+    accel_0_100_s: 6.9
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 12000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 7.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: peugeot-e208-50
+    make: Peugeot
+    model: e-208
+    trim_group: 50 kWh
+    segment: ev-small
+    model_years: [2020, 2021, 2022, 2023]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 50
+    power_kw: 100
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 340
+    accel_0_100_s: 8.1
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: opel-corsa-e-50
+    make: Opel
+    model: Corsa-e
+    trim_group: 50 kWh
+    segment: ev-small
+    model_years: [2020, 2021, 2022, 2023]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 50
+    power_kw: 100
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 337
+    accel_0_100_s: 8.1
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: renault-zoe-ze50
+    make: Renault
+    model: Zoe
+    trim_group: ZE50 52 kWh
+    segment: ev-small
+    model_years: [2020, 2021]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 52
+    power_kw: 100
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 395
+    accel_0_100_s: 9.5
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 4.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: fiat-500e-42
+    make: Fiat
+    model: 500e
+    trim_group: 42 kWh
+    segment: ev-small
+    model_years: [2021, 2022, 2023]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 42
+    power_kw: 87
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/45 R17
+    warranty_years: 5
+    warranty_km: 100000
+    range_km_wltp: 320
+    accel_0_100_s: 9.0
+    efficiency_wh_per_km: {value: 160, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}
+  - variant_id: byd-dolphin-60
+    make: BYD
+    model: Dolphin
+    trim_group: 60 kWh
+    segment: ev-small
+    model_years: [2024, 2025]
+    drive: fwd
+    body: hatchback
+    battery_kwh: 60
+    power_kw: 150
+    heat_pump: true
+    auto_precondition: false
+    tyre_size: 205/50 R17
+    warranty_years: 6
+    warranty_km: 150000
+    range_km_wltp: 427
+    accel_0_100_s: 7.0
+    efficiency_wh_per_km: {value: 165, source: "Placeholder", status: estimate, basis: "NAF El Prix to confirm"}
+    tyre_set_nok: {value: 8000, source: "Placeholder", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Owner to set"}

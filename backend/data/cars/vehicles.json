@@ -786,5 +786,948 @@
   },
   "range_km_wltp": 435,
   "accel_0_100_s": "7.9"
+ },
+ {
+  "variant_id": "nissan-leaf-40",
+  "make": "Nissan",
+  "model": "Leaf",
+  "trim_group": "40 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2018,
+   2019,
+   2020
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": "40",
+  "power_kw": 110,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "215/50 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "nissan-leaf-40.efficiency",
+   "value": 170,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "nissan-leaf-40.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "nissan-leaf-40.tyre_set",
+   "value": 800000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "nissan-leaf-40.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "nissan-leaf-40.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "nissan-leaf-40.fun_score",
+   "value": "4.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 270,
+  "accel_0_100_s": "7.9"
+ },
+ {
+  "variant_id": "volvo-xc40-sm-69",
+  "make": "Volvo",
+  "model": "XC40 Recharge",
+  "trim_group": "Single Motor 69 kWh",
+  "segment": "ev-suv",
+  "model_years": [
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "suv",
+  "battery_kwh": "69",
+  "power_kw": 170,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "235/50 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "volvo-xc40-sm-69.efficiency",
+   "value": 185,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "volvo-xc40-sm-69.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "volvo-xc40-sm-69.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "volvo-xc40-sm-69.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "volvo-xc40-sm-69.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 150000,
+  "fun_score": {
+   "id": "volvo-xc40-sm-69.fun_score",
+   "value": "6.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 425,
+  "accel_0_100_s": "7.4"
+ },
+ {
+  "variant_id": "volvo-xc40-sm-er-82",
+  "make": "Volvo",
+  "model": "XC40 Recharge",
+  "trim_group": "Single Motor Extended Range 82 kWh",
+  "segment": "ev-suv",
+  "model_years": [
+   2024
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "suv",
+  "battery_kwh": "82",
+  "power_kw": 185,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "235/50 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "volvo-xc40-sm-er-82.efficiency",
+   "value": 180,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "volvo-xc40-sm-er-82.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "volvo-xc40-sm-er-82.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "volvo-xc40-sm-er-82.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "volvo-xc40-sm-er-82.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 150000,
+  "fun_score": {
+   "id": "volvo-xc40-sm-er-82.fun_score",
+   "value": "6.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 515,
+  "accel_0_100_s": "7.3"
+ },
+ {
+  "variant_id": "kia-ev6-lr-rwd",
+  "make": "Kia",
+  "model": "EV6",
+  "trim_group": "Long Range RWD",
+  "segment": "ev-mid",
+  "model_years": [
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "crossover",
+  "battery_kwh": "77",
+  "power_kw": 168,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "235/55 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "kia-ev6-lr-rwd.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "kia-ev6-lr-rwd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "kia-ev6-lr-rwd.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "kia-ev6-lr-rwd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "kia-ev6-lr-rwd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 7,
+  "warranty_km": 150000,
+  "fun_score": {
+   "id": "kia-ev6-lr-rwd.fun_score",
+   "value": "7.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 528,
+  "accel_0_100_s": "7.3"
+ },
+ {
+  "variant_id": "vw-id3-pro-performance-58",
+  "make": "Volkswagen",
+  "model": "ID.3",
+  "trim_group": "Pro Performance 58 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "hatchback",
+  "battery_kwh": "58",
+  "power_kw": 150,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "215/55 R18",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "vw-id3-pro-performance-58.efficiency",
+   "value": 160,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "vw-id3-pro-performance-58.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "vw-id3-pro-performance-58.tyre_set",
+   "value": 1000000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "vw-id3-pro-performance-58.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "vw-id3-pro-performance-58.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "vw-id3-pro-performance-58.fun_score",
+   "value": "6.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 426,
+  "accel_0_100_s": "7.3"
+ },
+ {
+  "variant_id": "vw-id3-pro-58",
+  "make": "Volkswagen",
+  "model": "ID.3",
+  "trim_group": "Pro 58 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "hatchback",
+  "battery_kwh": "58",
+  "power_kw": 107,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "215/55 R18",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "vw-id3-pro-58.efficiency",
+   "value": 160,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "vw-id3-pro-58.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "vw-id3-pro-58.tyre_set",
+   "value": 1000000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "vw-id3-pro-58.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "vw-id3-pro-58.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "vw-id3-pro-58.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 426,
+  "accel_0_100_s": "9.6"
+ },
+ {
+  "variant_id": "tesla-modely-rwd",
+  "make": "Tesla",
+  "model": "Model Y",
+  "trim_group": "RWD",
+  "segment": "ev-suv",
+  "model_years": [
+   2023,
+   2024
+  ],
+  "energy_type": "ev",
+  "drive": "rwd",
+  "body": "suv",
+  "battery_kwh": "60",
+  "power_kw": 220,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "255/45 R19",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "tesla-modely-rwd.efficiency",
+   "value": 160,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "tesla-modely-rwd.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "tesla-modely-rwd.tyre_set",
+   "value": 1200000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "tesla-modely-rwd.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "tesla-modely-rwd.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "tesla-modely-rwd.fun_score",
+   "value": "7.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 455,
+  "accel_0_100_s": "6.9"
+ },
+ {
+  "variant_id": "peugeot-e208-50",
+  "make": "Peugeot",
+  "model": "e-208",
+  "trim_group": "50 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2020,
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": "50",
+  "power_kw": 100,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "205/45 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "peugeot-e208-50.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "peugeot-e208-50.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "peugeot-e208-50.tyre_set",
+   "value": 800000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "peugeot-e208-50.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "peugeot-e208-50.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "peugeot-e208-50.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 340,
+  "accel_0_100_s": "8.1"
+ },
+ {
+  "variant_id": "opel-corsa-e-50",
+  "make": "Opel",
+  "model": "Corsa-e",
+  "trim_group": "50 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2020,
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": "50",
+  "power_kw": 100,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "205/45 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "opel-corsa-e-50.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "opel-corsa-e-50.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "opel-corsa-e-50.tyre_set",
+   "value": 800000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "opel-corsa-e-50.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "opel-corsa-e-50.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "opel-corsa-e-50.fun_score",
+   "value": "5.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 337,
+  "accel_0_100_s": "8.1"
+ },
+ {
+  "variant_id": "renault-zoe-ze50",
+  "make": "Renault",
+  "model": "Zoe",
+  "trim_group": "ZE50 52 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2020,
+   2021
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": "52",
+  "power_kw": 100,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "205/45 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "renault-zoe-ze50.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "renault-zoe-ze50.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "renault-zoe-ze50.tyre_set",
+   "value": 800000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "renault-zoe-ze50.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "renault-zoe-ze50.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "renault-zoe-ze50.fun_score",
+   "value": "4.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 395,
+  "accel_0_100_s": "9.5"
+ },
+ {
+  "variant_id": "fiat-500e-42",
+  "make": "Fiat",
+  "model": "500e",
+  "trim_group": "42 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": "42",
+  "power_kw": 87,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "205/45 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "fiat-500e-42.efficiency",
+   "value": 160,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "fiat-500e-42.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "fiat-500e-42.tyre_set",
+   "value": 800000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "fiat-500e-42.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "fiat-500e-42.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "fiat-500e-42.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 320,
+  "accel_0_100_s": "9.0"
+ },
+ {
+  "variant_id": "byd-dolphin-60",
+  "make": "BYD",
+  "model": "Dolphin",
+  "trim_group": "60 kWh",
+  "segment": "ev-small",
+  "model_years": [
+   2024,
+   2025
+  ],
+  "energy_type": "ev",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": "60",
+  "power_kw": 150,
+  "heat_pump": true,
+  "auto_precondition": false,
+  "tyre_size": "205/50 R17",
+  "weight_kg": null,
+  "efficiency_wh_per_km": {
+   "id": "byd-dolphin-60.efficiency",
+   "value": 165,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix to confirm",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "byd-dolphin-60.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "byd-dolphin-60.tyre_set",
+   "value": 800000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "byd-dolphin-60.tyre_life_km",
+   "value": 40000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mixed summer/winter wear assumption",
+   "range": null
+  },
+  "service_per_year_ore": {
+   "id": "byd-dolphin-60.service_per_year",
+   "value": 300000,
+   "source": "Placeholder",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Dealer service plan order of magnitude",
+   "range": null
+  },
+  "warranty_years": 6,
+  "warranty_km": 150000,
+  "fun_score": {
+   "id": "byd-dolphin-60.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Owner to set",
+   "range": null
+  },
+  "range_km_wltp": 427,
+  "accel_0_100_s": "7.0"
  }
 ]

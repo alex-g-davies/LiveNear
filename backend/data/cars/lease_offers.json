@@ -87,6 +87,93 @@
   "status": "live"
  },
  {
+  "offer_id": "lease-183373",
+  "variant_id": "vw-id3-pro-performance-58",
+  "model_year": 2023,
+  "term_months": 12,
+  "monthly_ore": {
+   "id": "lease-183373.monthly",
+   "value": 699900,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "upfront_ore": {
+   "id": "lease-183373.upfront",
+   "value": 100000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "fees_ore": {
+   "id": "lease-183373.fees",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Establishment and invoice fees are not in the offer export; confirm on the written quote",
+   "range": null
+  },
+  "km_cap_per_year": {
+   "id": "lease-183373.km_cap",
+   "value": 15000,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "excess_km_fee_ore": {
+   "id": "lease-183373.excess_km_fee",
+   "value": 150,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Typical Norwegian private-lease excess-km charge; not in the offer export",
+   "range": null
+  },
+  "includes": [],
+  "early_exit": {
+   "kind": "default_estimate",
+   "percent": null,
+   "by_month_ore": null,
+   "recovery_pct": {
+    "id": "lease-183373.early_exit_recovery",
+    "value": "60",
+    "source": "Build spec default rule",
+    "as_of": "2026-11-01",
+    "status": "estimate",
+    "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
+    "range": null
+   }
+  },
+  "end_of_lease_fee_ore": {
+   "id": "lease-183373.end_fee",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "estimate",
+   "basis": "Return/inspection fee not in the offer export",
+   "range": null
+  },
+  "delivery_months": {
+   "id": "lease-183373.delivery_months",
+   "value": 0,
+   "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+   "as_of": "2026-11-01",
+   "status": "live",
+   "basis": null,
+   "range": null
+  },
+  "source": "https://www.ayvens.com/nb-no/privatleasing/tilbud/183373/volkswagen-id.3/",
+  "as_of": "2026-11-01",
+  "status": "live"
+ },
+ {
   "offer_id": "lease-201805",
   "variant_id": "tesla-modely-lr-awd",
   "model_year": 2023,

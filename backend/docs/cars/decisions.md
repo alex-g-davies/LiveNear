@@ -119,11 +119,45 @@ Dated decisions that are not derivable from the code. Newest first.
   TanStack Query. Both are deliberate deviations from the owner's build spec
   for consistency with LiveNear.
 
+## 2026-11-02 — Second vehicle batch (spec 024 R0)
+
+- Twelve variants added from the owner's second used-listings export
+  (`finn_used_target_models_2026-11-02.csv`, 589 rows, 577 kept): Nissan Leaf
+  40 kWh 2018–2020, Volvo XC40 Recharge Single Motor 69 kWh 2022–2023 and
+  Extended Range 82 kWh 2024, Kia EV6 Long Range RWD 2022–2024, VW ID.3 Pro
+  Performance 58 kWh 2021–2023 and Pro 58 kWh (107 kW) 2022–2023, Tesla
+  Model Y RWD 2023–2024, Peugeot e-208 50 kWh and Opel Corsa-e 50 kWh
+  2020–2023, Renault Zoe ZE50 2020–2021, Fiat 500e 42 kWh 2021–2023, BYD
+  Dolphin 60 kWh 2024–2025. Catalogue is now 22 variants, 52 cohorts.
+- **Zoe R110 and R135 share one variant.** The owner labelled them
+  separately (3 and 13 listings); the motors differ (80 vs 100 kW) but the
+  battery, body and price band are the same, and 3 listings cannot carry a
+  cohort. Recorded here so the split can be restored if volumes grow.
+- **The XC40 Extended Range (82 kWh, RWD) is its own variant**, not pooled
+  with the 69 kWh FWD car: different battery, drive and list price.
+- **Second export shape.** The new file carries a `target_variant` label and
+  no `trim_match` column (the owner filtered by trim before exporting), and a
+  `sale_form` column where `Leasing` (lease take-overs) and `Auksjon`
+  (auctions) are not asking prices and are skipped. The converter accepts
+  both shapes and several files in one run.
+- Specs for the new variants (power, range, 0–100, tyre size, warranty) are
+  manufacturer figures recalled for the Norwegian trims; efficiency, tyre
+  set and fun score are placeholders flagged `estimate`, as for the first
+  batch. List prices in `seed/new_prices.csv` are placeholders too (the
+  anchor is capped at the new price, so a wrong placeholder can only pull a
+  cohort value down, never invent value).
+- Fit `eb-v1` on 1 548 listings: LOO MAPE 5.2 %, 80 % coverage 77.5 %
+  (Wilson 75.3–79.5 %), gate PASS. Thin cohorts (estimate): EV6 2024 (2),
+  ID.3 Pro 107 kW 2023 (2), Zoe 2021 (4), 500e 2021 (4), Dolphin 2025 (4).
+- The 33 ads present in both exports were `trim_match: no` rows in the
+  first (not in the catalogue then), so no ad has two snapshots yet; the
+  ask→sale and drift estimates still wait for repeat sightings.
+
 ## Open
 
 - Tax-rule values in `rules/tax_rules.yaml` are `unverified` placeholders
   except the 2023 EV VAT rule. Verify against Skatteetaten and set `live`.
-- Manufacturer list prices by model year for the nine starting variants
+- Manufacturer list prices by model year for the 22 catalogue variants
   (`data/cars/seed/new_prices.csv`) are placeholders; the retention level
   per variant depends on them.
 - Lease offers: establishment/invoice fees, excess-km charge and return fee
