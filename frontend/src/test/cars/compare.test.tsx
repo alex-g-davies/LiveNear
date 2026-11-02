@@ -10,6 +10,7 @@ vi.mock("../../cars/api", async (importOriginal) => {
     ...actual,
     getVehicles: vi.fn(async () => fixture.buildVehicles()),
     postScenario: vi.fn(async (req: import("../../cars/api").ScenarioRequest) => fixture.buildScenario(req)),
+    postRecommend: vi.fn(async (req: import("../../cars/api").RecommendRequest) => fixture.buildRecommend(req)),
   };
 });
 

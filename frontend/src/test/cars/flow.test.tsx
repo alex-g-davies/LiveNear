@@ -11,6 +11,7 @@ vi.mock("../../cars/api", async (importOriginal) => {
     ...actual,
     getVehicles: vi.fn(async () => fixture.buildVehicles()),
     postScenario: vi.fn(async (req: import("../../cars/api").ScenarioRequest) => fixture.buildScenario(req)),
+    postRecommend: vi.fn(async (req: import("../../cars/api").RecommendRequest) => fixture.buildRecommend(req)),
   };
 });
 
@@ -24,10 +25,10 @@ describe("Cars flow across the four screens (spec 022 R1/R11/R12)", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Your situation" })).toBeInTheDocument();
     expect(screen.getByText("Car costs for newcomers to Norway")).toBeInTheDocument();
     await waitFor(
-      () => expect(screen.getByRole("checkbox", { name: "Tesla Model 3 Long Range RWD" })).toBeChecked(),
+      () => expect(screen.getByRole("button", { name: "Remove Tesla Model 3 Long Range RWD" })).toBeInTheDocument(),
       WAIT,
     );
-    expect(screen.getByRole("checkbox", { name: "MG MG4 XPower" })).not.toBeChecked();
+    expect(screen.queryByRole("button", { name: "Remove MG MG4 XPower" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Compare options" }));
     expect(await screen.findByRole("heading", { level: 1, name: "Compare options" })).toBeInTheDocument();

@@ -10,6 +10,7 @@ import Badge from "../components/Badge";
 import CompareHeader from "../components/CompareHeader";
 import MeasureSelect from "../components/MeasureSelect";
 import RangeBar from "../components/RangeBar";
+import { RecommendStrip } from "../components/Recommendations";
 import { formatMonths, formatNokSigned } from "../lib/format";
 import { MODES, type Mode } from "../lib/profile";
 import { MODE_FILTER_LABELS, MODE_LABELS, measureDef } from "../lib/measures";
@@ -43,6 +44,7 @@ export default function CompareTable() {
   return (
     <>
       <CompareHeader view="table" />
+      <RecommendStrip />
       <div className="cars-layout">
         <section className="cars-card cars-card--flush cars-layout__main" aria-labelledby="ranked">
           <div className="cars-card__bar">

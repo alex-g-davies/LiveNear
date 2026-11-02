@@ -975,3 +975,273 @@
     height: 44px;
   }
 }
+
+/* Selection tray (spec 024 R10) */
+.cars-tray {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.cars-tray__empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--c-muted);
+}
+.cars-tray__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cars-tray__chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 4px 4px 4px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-bg, #f6f8fa);
+}
+.cars-tray__name {
+  font-size: 14px;
+  font-weight: 500;
+}
+.cars-tray__years {
+  display: flex;
+  gap: 10px;
+}
+.cars-tray__remove {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--c-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.cars-tray__remove:hover,
+.cars-tray__remove:focus-visible {
+  background: #eaeef2;
+  color: var(--c-ink);
+}
+.cars-tray__add {
+  position: relative;
+  max-width: 520px;
+}
+.cars-tray__list {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  margin: 4px 0 0;
+  padding: 6px 0;
+  list-style: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: var(--c-card);
+  box-shadow: 0 8px 24px rgba(27, 31, 36, 0.12);
+}
+.cars-tray__list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cars-tray__group + .cars-tray__group {
+  border-top: 1px solid var(--c-border-soft);
+  margin-top: 4px;
+  padding-top: 4px;
+}
+.cars-tray__make {
+  display: block;
+  padding: 6px 12px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.cars-tray__option {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cars-tray__option--active,
+.cars-tray__option:hover {
+  background: var(--c-primary-soft);
+}
+.cars-tray__option--taken {
+  color: var(--c-muted);
+  cursor: default;
+}
+.cars-tray__none {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--c-muted);
+}
+.cars-btn--sm {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+/* Recommendations (spec 024 R12): "Start here" card and the Compare strip */
+.cars-rec__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  counter-reset: rec;
+}
+.cars-rec__row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  grid-template-areas: "rank main value" "rank tags tags";
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-bg, #f6f8fa);
+}
+.cars-rec__rank {
+  grid-area: rank;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.cars-rec__main {
+  grid-area: main;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  align-items: baseline;
+  min-width: 0;
+}
+.cars-rec__name {
+  font-size: 15px;
+  font-weight: 500;
+}
+.cars-rec__mode {
+  font-size: 13px;
+  color: var(--c-muted);
+}
+.cars-rec__value {
+  grid-area: value;
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cars-rec__value small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--c-muted);
+}
+.cars-rec__tags {
+  grid-area: tags;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.cars-rec__tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--c-primary);
+  border-radius: 11px;
+  background: var(--c-primary-soft);
+  color: var(--c-primary-dark);
+  font-size: 12px;
+}
+.cars-rec__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.cars-strip {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  background: var(--c-card);
+}
+.cars-strip__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.cars-strip__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cars-strip__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cars-strip__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 4px 0;
+  font-size: 13px;
+  border-top: 1px solid var(--c-border-soft);
+}
+.cars-strip__row:first-child {
+  border-top: 0;
+}
+.cars-strip__rank {
+  width: 22px;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+.cars-strip__name {
+  font-weight: 500;
+}
+.cars-strip__value {
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+.cars-strip__in {
+  color: var(--c-muted);
+  font-size: 12px;
+  padding: 0 6px;
+}
+.cars-strip__foot {
+  margin: 6px 0 0;
+}
+@media (max-width: 640px) {
+  .cars-rec__row {
+    grid-template-columns: 28px minmax(0, 1fr);
+    grid-template-areas: "rank main" "rank value" "rank tags";
+  }
+}

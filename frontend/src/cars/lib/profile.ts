@@ -61,6 +61,8 @@ export interface CarProfile {
   start_date: string | null;
   /** When the user arrives/arrived in Norway (ISO date); drives checklist due dates (023 R5). */
   arrival_date: string | null;
+  /** Trips through a toll ring per week, both directions (024 R5); 0 = no toll item. */
+  toll_passages_per_week: number;
 }
 
 export interface SelectionItem {
@@ -105,6 +107,7 @@ export const DEFAULT_PROFILE: CarProfile = {
   preferred_measure: "per_month",
   start_date: null,
   arrival_date: null,
+  toll_passages_per_week: 0,
 };
 
 export const DEFAULT_STATE: CarState = {
@@ -194,6 +197,9 @@ export function sanitizeProfile(raw: unknown): CarProfile {
     preferred_measure: oneOf(raw.preferred_measure, MEASURES, d.preferred_measure),
     start_date: isoDate(raw.start_date),
     arrival_date: isoDate(raw.arrival_date),
+    toll_passages_per_week: Math.round(
+      num(raw.toll_passages_per_week, d.toll_passages_per_week, 0, 200),
+    ),
   };
 }
 

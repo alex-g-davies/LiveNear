@@ -16,6 +16,9 @@ import type {
   MeasureResult,
   OptionResult,
   OptionSummary,
+  RecommendRequest,
+  RecommendResponse,
+  RecommendRow,
   RuledOut,
   ScenarioRequest,
   ScenarioResponse,
@@ -660,6 +663,62 @@ export function buildScenario(req: ScenarioRequest): ScenarioResponse {
     sensitivity,
     sensitivity_option_id: sensitivityId,
     elapsed_ms: 42,
+  };
+}
+
+// ---- Recommendations (spec 024 R11): rank the whole fixture catalogue for the
+// profile and tag each row the way the server does (each tag once).
+
+export function buildRecommend(req: RecommendRequest): RecommendResponse {
+  const selection = VEHICLES.map((v) => ({
+    variant_id: v.variant_id,
+    year_from: Math.min(...v.model_years),
+    year_to: Math.max(...v.model_years),
+  }));
+  const sc = buildScenario({
+    profile: req.profile,
+    selection,
+    what_if: null,
+    overrides: {},
+    measure: req.measure,
+    seed: req.seed,
+    draws: req.draws,
+  });
+  const m = req.measure;
+  const options = sc.options;
+  const reasons = new Map<string, string[]>(options.map((o) => [o.result.option_id, []]));
+  const tag = (o: OptionSummary | undefined, reason: string) => {
+    if (o) reasons.get(o.result.option_id)!.push(reason);
+  };
+  const by = (f: (o: OptionSummary) => number, pick: "min" | "max") =>
+    options.reduce<OptionSummary | undefined>((best, o) => {
+      if (!best) return o;
+      const a = f(o);
+      const b = f(best);
+      return (pick === "min" ? a < b : a > b) ? o : best;
+    }, undefined);
+  tag(options[0], "lowest expected cost");
+  tag(by((o) => o.result.measures[m].expected.p90 - o.result.measures[m].expected.p10, "min"), "narrowest uncertainty band");
+  tag(by((o) => Number(o.result.fun_score), "max"), "best fun score");
+  tag(by((o) => o.result.cash_up_front, "min"), "lowest cash up front");
+  const n = Math.max(1, Math.min(10, req.n));
+  const picked = [...options.slice(0, n), ...options.slice(n).filter((o) => reasons.get(o.result.option_id)!.length)];
+  const rows: RecommendRow[] = picked.map((o) => ({
+    rank: options.indexOf(o) + 1,
+    reasons: reasons.get(o.result.option_id)!,
+    summary: o,
+  }));
+  const ruled: Record<string, number> = {};
+  for (const r of sc.ruled_out) for (const reason of r.reasons) ruled[reason] = (ruled[reason] ?? 0) + 1;
+  return {
+    ranking_measure: m,
+    bundle_as_of: BUNDLE_AS_OF,
+    start_date: sc.start_date,
+    n_considered: options.length,
+    ruled_out: ruled,
+    skipped: sc.skipped.length,
+    rows,
+    elapsed_ms: 31,
   };
 }
 
