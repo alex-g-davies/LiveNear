@@ -1,0 +1,55 @@
+# Toll rings by municipality, electric passenger car (rate group 1), spec 024 R5.
+# Rates in NOK per passage as published by the toll company; `effective_from`
+# is the date on the page. The engine blends off-peak and rush 50/50 and
+# flags the item Estimate (see rules/loader.py). Read on 2026-11-02.
+as_of: 2026-11-02
+rings:
+  - id: oslo
+    municipalities: [Oslo, Bærum]
+    name: "Oslo toll ring (Fjellinjen), electric car"
+    offpeak_nok: 21
+    rush_nok: 26
+    monthly_cap_passages: 120
+    effective_from: 2026-01-01
+    source_url: https://www.fjellinjen.no/en/tariffs-and-toll-stations
+    status: live
+    note: >-
+      Same rate at all stations and rings; rush 06:30-09:00 and 15:00-17:00 on
+      weekdays. The page does not say whether the listed prices are before or
+      after the 20 % AutoPASS agreement discount. Monthly cap 120 passages on
+      Osloringen + Indre ring with AutoPASS.
+  - id: bergen
+    municipalities: [Bergen]
+    name: "Bergen toll ring (Bypakke Bergen, Ferde), electric car with AutoPASS"
+    offpeak_nok: 17.60
+    rush_nok: 35.20
+    monthly_cap_passages: 60
+    effective_from: 2026-03-25
+    source_url: https://ferde.no/bomanlegg-og-priser/bypakke-bergen
+    status: live
+    note: >-
+      Rates with an AutoPASS agreement (22.00 / 44.00 without); rush Mon-Fri
+      06:30-09:00 and 14:30-16:30 at marked stations only.
+  - id: trondheim
+    municipalities: [Trondheim]
+    name: "Trondheim toll ring (Miljøpakken, Vegamot), electric car with AutoPASS, high-rate stations"
+    offpeak_nok: 12.32
+    rush_nok: 24.64
+    monthly_cap_passages: 110
+    effective_from: 2025-09-01
+    source_url: https://www.vegamot.no/takster-og-bomstasjoner/miljopakken-trondheim/
+    status: live
+    note: >-
+      High-rate stations (Sør, Sluppen, Øst, Klæbu); the low-rate stations are
+      8.96 / 11.76. Rush 07:00-09:00 and 15:00-17:00.
+  - id: nord-jaeren
+    municipalities: [Stavanger, Sandnes, Sola, Randaberg]
+    name: "Nord-Jæren toll ring (Bymiljøpakken, Ferde), electric car with AutoPASS"
+    offpeak_nok: 16.80
+    rush_nok: 16.80
+    monthly_cap_passages: 75
+    effective_from: 2026-08-04
+    source_url: https://ferde.no/bomanlegg-og-priser/nord-jaeren
+    status: live
+    note: >-
+      No rush differentiation since 2020; 30.00 without an AutoPASS agreement.

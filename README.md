@@ -189,7 +189,7 @@ limits, ~500 m isochrone-origin snapping, and the `MAPBOX_DAILY_CALL_BUDGET`
 breaker (spec 004) keep worst-case usage inside the free tier. Watch the
 Mapbox Statistics page early on; rotate the token if it ever leaks.
 
-## Cars: Norway car total-cost-of-ownership (specs [`022`](specs/022-car-tco), [`023`](specs/023-market-checklist))
+## Cars: Norway car total-cost-of-ownership (specs [`022`](specs/022-car-tco), [`023`](specs/023-market-checklist), [`024`](specs/024-recommendations-maintenance))
 
 A second surface at `/cars` for people moving to Norway: which car, got
 which way (buy new, lease, used 1–3 years, used 5+ years), costs least for

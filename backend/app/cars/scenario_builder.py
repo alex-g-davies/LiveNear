@@ -39,6 +39,7 @@ from .engine.models import (
     MarketPolicyInputs,
     Option,
     PercentOfRemaining,
+    RepairAllowance,
     Scenario,
     TaxRuleSet,
     Used,
@@ -47,6 +48,7 @@ from .engine.models import (
 )
 from .engine.money import mul, nok, pct
 from .market.predict import anchor_value, value_path
+from .rules import toll_ring_for
 from .schemas import Profile, SelectionItem
 
 MID_YEAR_MONTH = 7
@@ -77,7 +79,13 @@ def _vehicle_inputs(v: VariantRecord, model_year: int) -> VehicleInputs:
         winter_factor=v.winter_factor,
         tyre_set_ore=v.tyre_set_ore,
         tyre_life_km=v.tyre_life_km,
-        service_per_year_ore=v.service_per_year_ore,
+        service_interval_months=v.service_interval_months,
+        service_interval_km=v.service_interval_km,
+        service_first_months=v.service_first_months,
+        service_price_ore=v.service_price_ore,
+        service_first_price_ore=v.service_first_price_ore,
+        service_price_after_7y_ore=v.service_price_after_7y_ore,
+        wear_per_year_ore=v.wear_per_year_ore,
         warranty_years=v.warranty_years,
         warranty_km=v.warranty_km,
         fun_score=v.fun_score,
@@ -157,6 +165,7 @@ def build_scenario(
         km_per_year=profile.km_per_year,
         charging_mix=ChargingMix(**profile.charging_mix.model_dump()),
         municipality=profile.municipality,
+        toll_passages_per_week=profile.toll_passages_per_week,
         pay_mode="cash" if profile.pay_mode == "cash" else "loan",
         return_on_cash_pct=profile.return_on_cash_pct,
         down_payment_ore=nok(profile.down_payment_nok),
@@ -181,6 +190,15 @@ def build_scenario(
         used_price_drift=b.market.used_price_drift,
         rental_per_month_ore=r.rental_per_month_ore,
         materiality_threshold=r.materiality_threshold,
+        repair=RepairAllowance(
+            bands=r.repair_bands,
+            source=r.repair_source,
+            ev_factor=r.repair_ev_factor,
+            in_warranty_factor=r.repair_in_warranty_factor,
+        ),
+        inspection_fee_ore=r.inspection_fee_ore,
+        wheel_change_ore=r.wheel_change_ore,
+        toll_ring=toll_ring_for(profile.municipality),
     )
     options: list[Option] = []
     notes: list[str] = []
@@ -270,6 +288,11 @@ def build_scenario(
                     early_exit=_early_exit(o),
                     end_of_lease_fee_ore=o.end_of_lease_fee_ore,
                     delivery_months=o.delivery_months,
+                    age_months_at_start=(
+                        age_months_on(start, o.model_year)
+                        if getattr(o, "condition", "new") == "used"
+                        else 0
+                    ),
                 )
                 np_ = b.new_price(v.variant_id, o.model_year)
                 basis_price = np_.price_ore.value if np_ else nok(400_000)

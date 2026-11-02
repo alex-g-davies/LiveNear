@@ -45,6 +45,9 @@ ITEM_LABELS: dict[str, str] = {
     "energy": "Energy",
     "tyres": "Tyres",
     "service": "Service",
+    "wear_and_repairs": "Wear and repairs",
+    "inspection": "Periodic inspection (EU-kontroll)",
+    "tolls": "Road tolls",
     "delay": "Delay cost",
     "resale_value": "Value back at exit",
     "loan_payoff": "Loan repaid at sale",
@@ -321,28 +324,117 @@ def build_schedule(user: UserInputs, market: MarketPolicyInputs, option: Option)
             en[k] = mul(home_p, kwh_home[k]) + mul(pub_p, kwh_public[k])
     add("energy", "cash", en, used)
 
-    # ---- tyres: winter set at purchase unless included; replacements by km -------
+    # ---- tyres: winter set at purchase unless included; replacements by km;
+    # two wheel changes a year (024 R4) ------------------------------------------
     with ctx.item("tyres") as used:
         ty = [0] * MONTHS
         if "tyres" not in lease_includes:
             set_cost = ctx.use(veh.tyre_set_ore)
             life = ctx.use(veh.tyre_life_km)
+            wheel_change = ctx.use(market.wheel_change_ore)
             ty[0] = set_cost
             replaced = 0
             for k in range(1, MONTHS):
                 if km_at[k] // life > replaced:
                     replaced = km_at[k] // life
                     ty[k] += set_cost
+                if k % 6 == 0:
+                    ty[k] += wheel_change
     add("tyres", "cash", ty, used)
 
-    # ---- service: annual amount spread monthly -----------------------------------
+    age0 = _age_months_at_start(deal)  # months since first registration at month 0
+    odo0 = deal.km_at_purchase if isinstance(deal, Used) else 0
+
+    # ---- service: booked when either interval elapses since the last one (024 R1)
     with ctx.item("service") as used:
         sv = [0] * MONTHS
-        if "service" not in lease_includes:
-            per_year = ctx.use(veh.service_per_year_ore)
+        history_unknown = False
+        if "service" not in lease_includes and veh.service_interval_months > 0:
+            price = ctx.use(veh.service_price_ore)
+            first_price = (
+                ctx.use(veh.service_first_price_ore)
+                if veh.service_first_price_ore is not None
+                else None
+            )
+            older_price = (
+                ctx.use(veh.service_price_after_7y_ore)
+                if veh.service_price_after_7y_ore is not None
+                else None
+            )
+            every_m = veh.service_interval_months
+            every_km = veh.service_interval_km
+            first_m = veh.service_first_months or every_m
+            last_m, last_km, done = 0, 0, 0
             for k in range(1, MONTHS):
-                sv[k] = share(per_year, 1, 12)
-    add("service", "cash", sv, used)
+                gap_m = first_m if (done == 0 and age0 == 0) else every_m
+                due = (k - last_m >= gap_m) or (every_km > 0 and km_at[k] - last_km >= every_km)
+                if not due:
+                    continue
+                amount = price
+                if done == 0 and age0 == 0 and first_price is not None:
+                    amount = first_price
+                if older_price is not None and age0 + k >= 84:
+                    amount = older_price
+                sv[k] = amount
+                last_m, last_km, done = k, km_at[k], done + 1
+            # A private seller's service history is unknown: the next service
+            # may be due sooner than one full interval.
+            history_unknown = isinstance(deal, Used) and deal.seller_type == "private"
+    add("service", "cash", sv, used, extra_estimate=history_unknown)
+
+    # ---- wear items per year + repair allowance rising with the odometer (024 R2)
+    with ctx.item("wear_and_repairs") as used:
+        wr = [0] * MONTHS
+        wear = 0 if "service" in lease_includes else ctx.use(veh.wear_per_year_ore)
+        rep = market.repair
+        ctx.use(rep.source)
+        ev_factor = ctx.use(rep.ev_factor) if veh.energy_type == "ev" else Decimal(1)
+        in_warranty_factor = ctx.use(rep.in_warranty_factor)
+        warranty_months = veh.warranty_years * 12
+        for k in range(1, MONTHS):
+            km_month = km_at[k] - km_at[k - 1]
+            odo = odo0 + km_at[k]
+            in_warranty = (age0 + k) <= warranty_months and odo <= veh.warranty_km
+            factor = ev_factor * (in_warranty_factor if in_warranty else Decimal(1))
+            wr[k] = share(wear, 1, 12) + mul(rep.ore_per_km_at(odo) * km_month, factor)
+    add("wear_and_repairs", "cash", wr, used)
+
+    # ---- periodic inspection: rule cycle from first registration (024 R3) -------
+    with ctx.item("inspection") as used:
+        insp = [0] * MONTHS
+        rule, carried = market.tax_rules.rule_at("periodic_inspection", anchor)
+        fee = ctx.use(market.inspection_fee_ore)
+        ctx.note(
+            rule.id,
+            rule.params,
+            rule.source_url,
+            rule.effective_from,
+            "live" if rule.status == "live" and not carried else "estimate",
+            rule.note or ("rule carried forward past its dated window" if carried else None),
+        )
+        first_after = int(rule.params["first_after_months"])  # type: ignore[arg-type]
+        every = int(rule.params["every_months"])  # type: ignore[arg-type]
+        for k in range(1, MONTHS):
+            age = age0 + k
+            if age >= first_after and (age - first_after) % every == 0:
+                insp[k] = fee
+    add("inspection", "cash", insp, used, extra_estimate=carried)
+
+    # ---- road tolls: passages per week × blended EV rate, monthly cap (024 R5) ---
+    with ctx.item("tolls") as used:
+        tl = [0] * MONTHS
+        ring = market.toll_ring
+        if ring is not None and user.toll_passages_per_week > 0:
+            ctx.use(ring.source)
+            off = ctx.use(ring.offpeak_ore)
+            rush = ctx.use(ring.rush_ore)
+            per_month = Decimal(user.toll_passages_per_week) * 52 / 12
+            if ring.monthly_cap_passages > 0:
+                per_month = min(per_month, Decimal(ring.monthly_cap_passages))
+            monthly = mul(off + rush, per_month / 2)
+            for k in range(1, MONTHS):
+                tl[k] = monthly
+    add("tolls", "cash", tl, used)
 
     bases = StochasticBases(
         insurance_base=ins,
@@ -370,6 +462,15 @@ def build_schedule(user: UserInputs, market: MarketPolicyInputs, option: Option)
         # Months past the first term assume a repeat lease: an estimate (R3).
         items["lease_payments"].estimate = True
     return sched
+
+
+def _age_months_at_start(deal) -> int:
+    """Months since first registration at month 0 of the schedule."""
+    if isinstance(deal, Used):
+        return deal.age_months_at_purchase
+    if isinstance(deal, Lease):
+        return deal.age_months_at_start
+    return 0
 
 
 def _re_registration_fee(params: dict[str, object], veh, age_months: int) -> int:

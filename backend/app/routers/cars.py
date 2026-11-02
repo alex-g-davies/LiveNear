@@ -18,6 +18,7 @@ from datetime import UTC, date, datetime
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel
 
 from ..bounded_cache import BoundedCache
 from ..cars import data_bundle
@@ -35,8 +36,12 @@ from ..cars.schemas import (
     MarketPoint,
     MarketPointsResponse,
     OptionSummary,
+    RecommendRequest,
+    RecommendResponse,
+    RecommendRow,
     ScenarioRequest,
     ScenarioResponse,
+    SelectionItem,
     SourcesResponse,
     VehicleOut,
 )
@@ -48,6 +53,7 @@ router = APIRouter(prefix="/api/cars", tags=["cars"])
 
 SCENARIO_LIMIT = os.getenv("CARS_SCENARIO_LIMIT", "30/minute")
 _SCENARIO_CACHE: BoundedCache[str, ScenarioResponse] = BoundedCache(256)
+_RECOMMEND_CACHE: BoundedCache[str, RecommendResponse] = BoundedCache(64)
 
 # Keys the browser may put in `overrides` to persist Curves-view assumptions
 # that have no Profile field (the frontend's "Save as my assumptions").
@@ -59,6 +65,7 @@ _WHAT_IF_OVERRIDE_KEYS = {
 
 def clear_cache() -> None:
     _SCENARIO_CACHE.clear()
+    _RECOMMEND_CACHE.clear()
 
 
 def _bundle(cfg: Settings) -> Bundle:
@@ -263,7 +270,7 @@ def market_points(
     )
 
 
-def _request_key(req: ScenarioRequest, start: date, bundle_as_of: date) -> str:
+def _request_key(req: BaseModel, start: date, bundle_as_of: date) -> str:
     raw = json.dumps(
         {"r": req.model_dump(mode="json"), "s": start.isoformat(), "b": bundle_as_of.isoformat()},
         sort_keys=True,
@@ -335,6 +342,97 @@ def scenarios(
         elapsed_ms=int((time.perf_counter() - t0) * 1000),
     )
     _SCENARIO_CACHE[key] = resp
+    return resp
+
+
+REASON_LOWEST = "lowest expected cost"
+REASON_NARROWEST = "narrowest uncertainty band"
+REASON_FUN = "best fun score"
+REASON_CASH = "lowest cash up front"
+
+
+def _reasons(options, measure: str) -> dict[str, list[str]]:
+    """Tags per option id (024 R11): rank 1, narrowest P10-P90 band of the
+    expected measure, best fun score, lowest cash up front. Ties go to the
+    better-ranked option, so every tag names exactly one row."""
+    out: dict[str, list[str]] = {o.option_id: [] for o in options}
+    if not options:
+        return out
+    out[options[0].option_id].append(REASON_LOWEST)
+    narrow = min(
+        options, key=lambda o: o.measures[measure].expected.p90 - o.measures[measure].expected.p10
+    )
+    out[narrow.option_id].append(REASON_NARROWEST)
+    fun = max(options, key=lambda o: Decimal(o.fun_score))
+    out[fun.option_id].append(REASON_FUN)
+    cash = min(options, key=lambda o: o.cash_up_front)
+    out[cash.option_id].append(REASON_CASH)
+    return out
+
+
+@router.post("/recommend", response_model=RecommendResponse)
+@limiter.limit(SCENARIO_LIMIT)
+def recommend(
+    request: Request, body: RecommendRequest, cfg: Settings = Depends(get_settings)
+) -> RecommendResponse:
+    """Rank every option the catalogue and the profile's limits allow (024 R11)."""
+    b = _bundle(cfg)
+    start = body.profile.start_date or _today()
+    key = _request_key(body, start, b.meta.bundle_as_of)
+    cached = _RECOMMEND_CACHE.get(key)
+    if cached is not None:
+        return cached
+    t0 = time.perf_counter()
+    selection = [
+        SelectionItem(
+            variant_id=v.variant_id, year_from=min(v.model_years), year_to=max(v.model_years)
+        )
+        for v in b.vehicles
+    ]
+    try:
+        sc, notes, meta = build_scenario(
+            b, body.profile, selection, load_tax_rules(), start, seed=body.seed, draws=body.draws
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from None
+    res = run_scenario(sc, body.measure)
+    reasons = _reasons(res.options, body.measure)
+    ruled: dict[str, int] = {}
+    for r in res.ruled_out:
+        for reason in r.reasons:
+            ruled[reason] = ruled.get(reason, 0) + 1
+    picked = [o for o in res.options[: body.n]]
+    for o in res.options[body.n :]:
+        if reasons[o.option_id]:
+            picked.append(o)  # a tag holder outside the top n still shows
+    rank_of = {o.option_id: i + 1 for i, o in enumerate(res.options)}
+    rows = []
+    for o in picked:
+        m = meta.get(o.option_id.removesuffix(":cash"), {})
+        rows.append(
+            RecommendRow(
+                rank=rank_of[o.option_id],
+                reasons=reasons[o.option_id],
+                summary=OptionSummary(
+                    result=o,
+                    variant_id=m.get("variant_id", ""),
+                    option_kind=m.get("kind", o.mode),
+                    seller_type=m.get("seller"),
+                    lease_offer_id=m.get("offer"),
+                ),
+            )
+        )
+    resp = RecommendResponse(
+        ranking_measure=body.measure,
+        bundle_as_of=b.meta.bundle_as_of,
+        start_date=start,
+        n_considered=len(res.options),
+        ruled_out=ruled,
+        skipped=len(notes),
+        rows=rows,
+        elapsed_ms=int((time.perf_counter() - t0) * 1000),
+    )
+    _RECOMMEND_CACHE[key] = resp
     return resp
 
 

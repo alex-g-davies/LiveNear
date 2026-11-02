@@ -13,36 +13,41 @@
 
 rules:
   # --- Trafikkforsikringsavgift: a daily tax collected with the insurance --
+  # Rates apply to policies starting or renewing from 1 March of the year
+  # (Skatteetaten). Only the electric-car figure is checked; the catalogue is
+  # electric-only. Petrol/hybrid use the ordinary passenger-car rate.
   - id: traffic_tax_2025
     kind: traffic_insurance_tax
-    effective_from: 2025-01-01
-    effective_to: 2026-01-01
+    effective_from: 2025-03-01
+    effective_to: 2026-03-01
     params:            # øre per day by energy type
-      ev: 1034
-      phev: 1034
-      hybrid: 1034
-      ice: 1034
+      ev: 896
+      phev: 652
+      hybrid: 652
+      ice: 652
     source_url: https://www.skatteetaten.no/satser/trafikkforsikringsavgift/
     status: unverified
+    checked_on: 2026-11-02
     note: >-
-      Placeholder: 2025 passenger-car rate recalled as roughly kr 10.34/day for
-      petrol, diesel (with particle filter) and electric; diesel without a
-      factory filter is higher. Verify every figure on the Skatteetaten page
-      before marking live.
+      Electric car 8.96 kr/day for 1 Mar 2025 - 28 Feb 2026 per the Skatteetaten
+      rate table read on 2026-11-02; the 2025 petrol rate was not read and
+      carries the 2026 figure, hence unverified.
   - id: traffic_tax_2026
     kind: traffic_insurance_tax
-    effective_from: 2026-01-01
+    effective_from: 2026-03-01
     effective_to: null
     params:
-      ev: 1060
-      phev: 1060
-      hybrid: 1060
-      ice: 1060
+      ev: 916
+      phev: 652
+      hybrid: 652
+      ice: 652
     source_url: https://www.skatteetaten.no/satser/trafikkforsikringsavgift/
-    status: unverified
+    status: live
+    checked_on: 2026-11-02
     note: >-
-      Placeholder pending the 2026 rates (state budget). Replace with the
-      published figures and set status live.
+      Electric car 9.16 kr/day, other passenger cars under 7 500 kg 6.52 kr/day
+      (diesel without a particle filter 8.10) for policies from 1 Mar 2026.
+      The 2027 proposal (9.41) is listed under `pending`.
 
   # --- Omregistreringsavgift: paid by the buyer of a used car ---------------
   - id: re_registration_2025
@@ -69,18 +74,40 @@ rules:
     effective_from: 2026-01-01
     effective_to: null
     params:
+      # Passenger cars over 1 200 kg (every EV in the catalogue). Skatteetaten
+      # bands by first-registration year; mapped to age bands for 2026:
+      # registered 2023-2026 (0-3 years) 7 505 kr, 2015-2022 (4-11 years)
+      # 4 532 kr, 2014 and older (12+ years) 1 942 kr. Electric cars pay the
+      # same table (exemption repealed 1 Jul 2022).
       age_bands_ore:
         - {min_years: 0, ore: 750500}
         - {min_years: 4, ore: 453200}
-        - {min_years: 12, ore: 170000}
+        - {min_years: 12, ore: 194200}
       ev_factor: "1"
     source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
-    status: unverified
+    status: live
+    checked_on: 2026-11-02
     note: >-
-      0-3 and 4-11 year bands observed on 2 000+ dealer listings in October
-      2026 (7 505 kr for 2024 model years, 4 532 kr for 2019-2022); the 12+
-      band is a recalled placeholder. Verify bands and weight classes on the
-      Skatteetaten rate table before marking live.
+      2026 table read on 2026-11-02. The age-band mapping is exact for 2026
+      and drifts by one year for later start dates until the 2027 table is
+      added.
+
+  # --- Periodisk kjøretøykontroll (EU-kontroll): not a tax, but a dated legal
+  # cycle the engine books a fee against (spec 024 R3) ------------------------
+  - id: periodic_inspection_m1
+    kind: periodic_inspection
+    effective_from: 2020-01-01
+    effective_to: null
+    params:
+      first_after_months: 48
+      every_months: 24
+    source_url: https://www.vegvesen.no/kjoretoy/eie-og-vedlikeholde/eu-kontroll/nar-kan-du-ta-eu-kontroll/
+    status: live
+    checked_on: 2026-11-02
+    note: >-
+      Passenger cars (M1) must pass within four years of first registration and
+      then at the latest every second year. The fee itself is a market price in
+      rates.yaml (inspection_fee_nok).
 
   # --- VAT on new electric cars --------------------------------------------
   - id: ev_vat_2023

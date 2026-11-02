@@ -24,3 +24,10 @@ rules:
     params: {rate_pct: 25, threshold_ore: 50000000}
     source_url: fixture
     status: live
+  - id: fx_periodic_inspection
+    kind: periodic_inspection
+    effective_from: 2020-01-01
+    effective_to: null
+    params: {first_after_months: 48, every_months: 24}
+    source_url: fixture
+    status: live

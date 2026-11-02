@@ -153,6 +153,68 @@ Dated decisions that are not derivable from the code. Newest first.
   first (not in the catalogue then), so no ad has two snapshots yet; the
   ask→sale and drift estimates still wait for repeat sightings.
 
+## 2026-11-02 — Maintenance model, running costs, recommendations (spec 024)
+
+User feedback said the maintenance numbers looked low. They were: one
+3 000 kr/yr placeholder for every car, no age or km dependence, and no wear,
+repairs, inspection, wheel changes or tolls at all. Sources read on
+2026-11-02 are listed in `sources.md`.
+
+- **Service is an event, not a spread.** Each variant carries the importer's
+  interval (months and km) and a price per visit; a visit is booked when
+  either interval elapses since the previous one, counting from month 0.
+  Kia (7 990 kr, 2 yr/30 000 km; 3 690 kr for cars 7+ years) and Peugeot
+  (2 490 kr first service at 1 yr, then 4 290 kr every 2 yr/25 000 km) are
+  published prices and `live`; the other brands publish intervals but no
+  Norwegian price, so their price is an estimate anchored on the published
+  sister-brand or dealer-range figure. Tesla has no fixed schedule and is
+  costed through the wear allowance only. A used car from a private seller
+  flags the service item Estimate (service history unknown).
+- **Wear and repairs.** A per-year wear amount (wipers, cabin filter, brake
+  fluid, 12 V battery, from the BEMA 2025 parts list plus labour) and a
+  repair allowance per km from Smarte Penger's odometer table (0.11 kr/km at
+  20 000 km to 0.96 at 110 000+), scaled by 0.65 (OFV 2026: EV service and
+  repairs are 65 % of petrol) and by 0.3 while the brand warranty runs
+  (repairs are near zero under warranty; wear is not covered). The 40 000
+  and 60 000 km points are interpolated. All estimates; OFV publishes no
+  age split, so the odometer curve is the only age signal available.
+- **Inspection** follows Statens vegvesen's cycle (within 48 months of
+  first registration, then every 24) as a dated rule in `tax_rules.yaml`
+  (`periodic_inspection`), with the fee (1 400 kr, station range 1 070 to
+  1 619) in `rates.yaml`. Model-year mid-year stands in for the
+  first-registration month.
+- **Tyres**: life 37 000 km (OFV assumption) and two wheel changes a year
+  at 600 kr (NAF/BOS/Noddi range).
+- **Tolls** are opt-in through a new profile field (passages per week) and a
+  per-municipality table (`rules/toll_rings.yaml`: Oslo/Bærum, Bergen,
+  Trondheim, Nord-Jæren) at the published electric-car rates, blended 50/50
+  off-peak/rush and capped at the monthly cap. The blend is an assumption,
+  so the item is always Estimate. AutoPASS tag discounts, the hour rule,
+  parking and ferries are not modelled.
+- **Tax rules corrected** against Skatteetaten: traffic-insurance tax for
+  EVs 8.96 kr/day from 1 Mar 2025 and 9.16 from 1 Mar 2026 (`live`; the
+  2027 proposal 9.41 is `pending`); 2026 re-registration bands 7 505 / 4 532
+  / 1 942 kr (`live`). The earlier placeholders (10.34/10.60 kr/day,
+  1 700 kr oldest band) were wrong. Rates apply to policies from 1 March,
+  so the rule windows start on 1 March rather than 1 January.
+- **Display**: Compare and Detail show one "Service and repairs" row
+  (service + wear and repairs + inspection) and a "Tolls" row; the line
+  items stay separate on Detail.
+- **Golden g7** works the service events, the 7-year price, the warranty
+  boundary of the repair curve, inspections at 48 and 72 months of age,
+  wheel changes and a capped toll charge by hand; g1–g6 keep their expected
+  values with the new items set to zero in their fixtures.
+- **Recommendations** (`POST /api/cars/recommend`) rank every option the
+  catalogue and the user's limits allow (all variants × model years ×
+  allowed modes) by the chosen measure and return the top n plus the
+  holders of three more tags (narrowest band, best fun score, lowest cash up
+  front). Draws are capped at 1 000 so the full catalogue stays inside the
+  two-second budget; the response reuses `OptionSummary`, so every row
+  carries its Live/Estimate status and material-estimate labels.
+- **Selection UI**: the Situation picker became a chip tray with a
+  typeahead, the Market map gained a brand select on the existing `make`
+  filter.
+
 ## Open
 
 - Tax-rule values in `rules/tax_rules.yaml` are `unverified` placeholders

@@ -1,0 +1,204 @@
+# Spec 024 — Maintenance model, running costs, brand filter, selection tray, recommendations
+
+Status: Draft
+Owner: <you>
+Related: 022-car-tco (engine, market model, API, core screens), 023-market-checklist
+(Market map, Checklist). Source: user feedback collected by the owner on
+2026-11-02 and the owner's second used-listings export.
+
+## Overview
+
+Four pieces of user feedback and one data delivery:
+
+1. "Some of the data sets (maintenance) seemed low." They are: service is one
+   placeholder per year for every car, there is no age or km dependence, and
+   wear, repairs, inspection, wheel changes and tolls are missing entirely.
+2. "The Market plot should filter by brand."
+3. "The model list on Your situation will get out of hand as models are added."
+4. "The tool should give recommendations from the data."
+5. The owner's second export adds twelve variants (Leaf, XC40, EV6, ID.3,
+   Model Y RWD, e-208, Corsa-e, Zoe, 500e, Dolphin).
+
+Order of delivery is 5 → 1 → 2 → 3 → 4: the data first, then the numbers
+people already see, then the two small UI changes, then recommendations,
+which benefit from the larger catalogue and the corrected costs.
+
+## Context
+
+- Engine line items today (`engine/schedule.py`): purchase, fees,
+  re-registration, lease/loan payments, insurance, traffic tax, energy, tyres
+  (winter set at purchase + replacement by km), service (annual amount spread
+  monthly), delay, and the exit terms. Everything is integer øre, provenance
+  per input, and every default is an estimate with a basis.
+- Published Norwegian sources found on 2026-11-02 (URLs in
+  `docs/cars/sources.md`): OFV "Kostnader ved bilhold 2026" (new car, three
+  years, no age split; EV service and repairs 3 366–5 786 kr/yr by price
+  class, tyres at 37 000 km life including two wheel changes a year);
+  Kia's published EV service prices (7 990 kr every 2 yr/30 000 km for the
+  EV6; 1 990/3 690 kr for cars 7+ years); Bertel O. Steen's Stellantis EV
+  prices (first service 2 490 kr at 1 yr/12 500 km, then 4 290 kr every
+  2 yr/25 000 km, brake fluid 1 490 kr every 2 yr); Smarte Penger's repair
+  cost per km by odometer (0.11 kr/km at 20 000 km rising to 0.96 kr/km at
+  110 000+ km, not EV-specific); Statens vegvesen's inspection cycle (first
+  within four years of first registration, then every two years) with
+  station prices 1 070–1 619 kr; city toll rates for electric cars effective
+  2026 (Oslo 21/26 kr, Bergen 17.60/35.20 kr, Trondheim 12.32/24.64 kr,
+  Nord-Jæren 16.80 kr) with hourly and monthly caps; Skatteetaten's 2026
+  traffic-insurance tax for EVs (9.16 kr/day from 1 Mar 2026; 8.96 from
+  1 Mar 2025; 9.41 proposed for 2027) and the 2026 re-registration table
+  (7 505 / 4 532 / 1 942 kr by first-registration year band, over 1 200 kg).
+- Brand warranties and service intervals as sold in Norway were confirmed
+  for every catalogue make (Tesla 5 yr/100 000 km, no fixed service
+  interval; Hyundai 5 yr unlimited, 2 yr/30 000 km; Kia 7 yr/150 000 km,
+  2 yr/30 000 km; VW and Skoda 5 yr/100 000 km, every 2 yr; Nissan
+  5 yr/100 000 km, 1 yr/30 000 km; Volvo 5 yr/150 000 km, 2 yr/30 000 km;
+  Peugeot/Opel/Fiat 5 yr/100 000 km; MG 7 yr/150 000 km, 1 yr/24 000 km;
+  BYD 6 yr/150 000 km, 2 yr/30 000 km). Where a brand publishes no price
+  the seed carries an estimate with the comparable published price as basis.
+
+## Requirements
+
+### Data
+
+- **R0 — Second vehicle batch.** The owner's `target_variant` export shape
+  converts alongside the first shape; twelve variants join the catalogue
+  with importer warranties; the bundle is refitted and the backtest report
+  regenerated. Delivered in commit `024 R0`.
+
+### Maintenance and running costs (engine)
+
+- **R1 — Scheduled service by interval.** `VehicleInputs` gains a service
+  block: `service_interval_months`, `service_interval_km`,
+  `service_price_ore` (per service), optional `service_first_price_ore`
+  (a cheaper first service, as Stellantis prices it) and optional
+  `service_price_after_7y_ore` (Kia's published older-car price). The engine
+  books a service in the month either interval elapses since the previous
+  one, counting from month 0 (a sold car is assumed serviced at sale; for a
+  private used purchase the next service is due at the interval from
+  purchase and the item is an estimate). A lease that includes service
+  zeroes it, as today. Brands with no fixed interval (Tesla) carry
+  `service_interval_months: 0` and are costed through R2 only.
+- **R2 — Wear and repairs allowance.** New cash item `wear_and_repairs`:
+  (a) a per-year wear amount per variant (`wear_per_year_ore`: wipers,
+  cabin filter, brake fluid and a 12 V battery amortised over their
+  published intervals, seeded from the parts prices found), and (b) a
+  repair allowance per km that rises with the odometer, from a rates table
+  (`repair_kr_per_km_by_odometer` bands, `repair_ev_factor`,
+  `repair_in_warranty_factor`). The in-warranty factor applies while the
+  vehicle warranty (years and km) still runs. Every value is an estimate
+  with the source and basis in `rates.yaml`.
+- **R3 — Periodic inspection.** New cash item `inspection`: the rule
+  `periodic_inspection` in `rules/tax_rules.yaml` (first inspection within
+  48 months of first registration, then every 24 months, source Statens
+  vegvesen) and `inspection_fee_nok` in `rates.yaml` (estimate with the
+  station price range as its band). The engine books the fee in the month
+  the next inspection falls due, using the model year's mid-year as the
+  first-registration month when the listing has none.
+- **R4 — Tyres and wheel changes.** Tyre life default becomes 37 000 km
+  (OFV), and `wheel_change_nok` (two changes a year, estimate from the
+  NAF/BOS prices) is added to the `tyres` item each year. Dekkhotell
+  storage is not modelled (optional and local).
+- **R5 — Tolls.** New profile field `toll_passages_per_week` (default 0)
+  and a `tolls` seed (`data/cars/seed/tolls.yaml`): per-municipality EV
+  rate per passage off-peak and rush, the hour rule, the monthly cap and
+  the source URL. New cash item `tolls` = passages × 52/12 × a 50/50
+  off-peak/rush blend, capped by the monthly cap, zero when the
+  municipality has no toll ring on file or passages are 0. The Situation
+  screen gains the field next to municipality with the hint "trips through
+  the toll ring per week, both directions count".
+- **R6 — Tax rule corrections.** Traffic-insurance tax for EVs: 8.96 kr/day
+  from 2025-03-01, 9.16 from 2026-03-01 (`live`, checked 2026-11-02), 9.41
+  from 2027-03-01 as `pending` (proposal). Re-registration 2026 bands:
+  7 505 / 4 532 / 1 942 kr (`live`, checked 2026-11-02); 2025 values stay
+  `unverified`. Rules remain the only place these numbers live.
+- **R7 — Display and provenance.** The Compare and Detail screens show a
+  "Service and repairs" display row (service + wear and repairs +
+  inspection) and a "Tolls" row; line items stay separate on Detail with
+  their inputs, sources, status and bases. Input labels for every new input
+  id are added to `INPUT_LABELS`.
+- **R8 — Golden cases.** The six existing golden cases keep their expected
+  values (their fixtures set the new items to zero explicitly). A new golden
+  case `g7_maintenance` with a worked example in `docs/cars/golden/`
+  exercises service events, the first-service price, the warranty
+  boundary of the repair allowance, inspections at 48 and 72 months of age
+  and wheel changes. Property tests: cumulative service and inspection
+  schedules are non-decreasing; a car with more km never has a lower
+  repair allowance; leases that include service have zero service.
+
+### Market and selection (frontend)
+
+- **R9 — Brand filter.** The Market filter rail gains a "Brand" select built
+  from the catalogue, wired to the existing `make` query parameter of both
+  market endpoints; the text search keeps matching model and trim.
+- **R10 — Selection tray on Situation.** The per-variant checkbox list is
+  replaced by a compact "Your selection" tray: one chip per selected variant
+  with its year range (editable) and a remove button, an "Add a car"
+  search-as-you-type box over the catalogue grouped by make (keyboard
+  navigable, 44 px targets), and the "Browse the market" link. Compare's
+  "Edit selection" affordance points to `/cars/market`. Behaviour of
+  `selection` in state and URL is unchanged.
+
+### Recommendations
+
+- **R11 — Recommend endpoint.** `POST /api/cars/recommend` takes the same
+  profile as `/scenarios` (no selection), builds every option the catalogue
+  and the user's limits allow (all variants × model years × allowed modes,
+  with the `both` pay mode expanded as today), ranks by the requested
+  measure and returns the top `n` (default 5, max 10) as `OptionSummary`
+  rows plus per-row reasons: lowest expected cost, narrowest P10–P90 band,
+  best fun score within budget, lowest cash up front. Rate limit
+  `CARS_SCENARIO_LIMIT`; memoised like scenarios; draws capped at 1 000 for
+  this endpoint to stay inside the two-second budget with the full
+  catalogue. Response carries `n_considered`, `ruled_out` counts by reason,
+  and the status/material-estimate labels of each row.
+- **R12 — Recommendations UI.** A "Start here" card on Situation (shown once
+  the profile validates) with the top three and a button to put them in the
+  selection, and a "Recommended for you" strip on Compare with the same
+  rows and a link to put any of them in the selection. Every row shows the
+  Live/Estimate badge and its material-estimate labels, so a car ranked on
+  placeholder prices is visibly flagged.
+
+### Cross-cutting
+
+- **R13 — Tests.** Backend: service event schedule, first-service price,
+  repair allowance bands and warranty boundary, inspection cycle, tolls with
+  cap, tax-rule lookup for the corrected dates, recommend endpoint shape and
+  limits, runtime-import guard still passes. Frontend: brand filter narrows
+  dots and sends `make`; tray add/remove/years and typeahead keyboard flow;
+  recommendations card renders from the mock fixture and adds to selection.
+- **R14 — Docs.** `docs/cars/sources.md` gets the maintenance, inspection,
+  toll and tax sources with URLs and dates; `decisions.md` records the
+  modelling choices (repair curve scaling, Tesla as wear-only, blend for
+  tolls); README and CLAUDE.md mention spec 024.
+
+## Out of Scope (explicit)
+
+- Dekkhotell, parking fees, ferry fares, car washing: local and optional.
+- Automated price lists and lease portals, the weekly ingest workflow and
+  the quarantine review UI (spec 025).
+- Norwegian UI.
+
+## Acceptance Criteria
+
+- [ ] R0: the live `/api/cars/vehicles` lists 22 variants and the Market map
+      shows the new cohorts.
+- [ ] R1–R4: on Detail for a used 2019 Leaf at 15 000 km/yr the Service and
+      repairs row is a multiple of the old 3 000 kr/yr figure, every input
+      in it carries a source and a basis, and the g7 worked example matches
+      the engine to the øre.
+- [ ] R5: entering Oslo and 10 passages a week adds a Tolls row that matches
+      10 × 52/12 × the blended 2026 rate, capped at 120 passages a month.
+- [ ] R6: `/api/cars/sources` lists no unverified traffic-tax rule for 2026.
+- [ ] R9/R10: filtering the Market map to one brand sends `make=` and the
+      Situation tray shows only the selected cars with working year edits.
+- [ ] R11/R12: with the default profile, "Start here" returns three cars in
+      under two seconds and pressing the button puts them in the selection.
+- [ ] R13: `pytest`, `npm run test` and the Docker smoke pass in CI.
+
+## Verification notes
+
+- R1–R6 → `backend/tests/cars/test_golden.py` (g7), `test_properties.py`,
+  `test_rules_and_io.py`.
+- R9/R10/R12 → `frontend/src/test/cars/market.test.tsx`,
+  `situation.test.tsx`, `recommend.test.tsx`.
+- R11 → `backend/tests/cars/test_api_cars.py` (recommend section).

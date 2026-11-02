@@ -11,3 +11,10 @@ rules:
     effective_to: null
     params: {ev: 2, phev: 2, hybrid: 2, ice: 2}
     source_url: fixture
+  - id: fx_periodic_inspection
+    kind: periodic_inspection
+    effective_from: 2020-01-01
+    effective_to: null
+    params: {first_after_months: 48, every_months: 24}
+    source_url: fixture
+    status: live
