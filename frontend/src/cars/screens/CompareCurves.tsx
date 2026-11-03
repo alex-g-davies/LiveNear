@@ -19,14 +19,13 @@ import { useCarState } from "../state";
 export const DEFAULT_LOAN_RATE_PCT = 6.5;
 
 export default function CompareCurves() {
-  const { state, setMeasure, setWhatIf, saveWhatIf, scenario, request } = useCarState();
+  const { state, setMeasure, setWhatIf, saveWhatIf, scenario, request, exitMonth, setExitMonth } = useCarState();
   const { profile, whatIf, overrides } = state;
   const def = measureDef(state.measure);
   const data = scenario.data;
   const colorOf = useColorOf(state.selection, data);
   const [showBands, setShowBands] = useState(true);
-  const [exitYears, setExitYears] = useState(2.5);
-  const exitMonth = Math.round(exitYears * 12);
+  const exitYears = exitMonth / 12;
 
   const savedRate = typeof overrides.loan_rate === "number" ? overrides.loan_rate : DEFAULT_LOAN_RATE_PCT;
   const savedDrift =
@@ -211,7 +210,7 @@ export default function CompareCurves() {
               step={0.25}
               className="cars-slider cars-slider--ink"
               value={exitYears}
-              onChange={(e) => setExitYears(Number(e.target.value))}
+              onChange={(e) => setExitMonth(Number(e.target.value) * 12)}
             />
           </label>
 

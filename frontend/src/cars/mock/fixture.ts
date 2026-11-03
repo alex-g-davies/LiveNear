@@ -296,6 +296,7 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
   const cashUp = new Array<number>(MONTHS).fill(0);
   const kmAt = new Array<number>(MONTHS).fill(0);
   const resale = new Array<number>(MONTHS).fill(0);
+  const displaySeries: Record<string, number[]> = {};
   const cashUpFront = mode === "lease" ? upfrontRent : cashTied + fees0;
 
   for (let t = 0; t < MONTHS; t++) {
@@ -310,6 +311,7 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
     kmAt[t] = Math.round(km0 + (km * t) / 12);
     resale[t] = mode === "lease" ? 0 : resaleAt(t);
     if (t === 12 || t === 24 || t === 36 || t === 48) display[String(t) as ExitMonthKey] = items;
+    for (const it of items) (displaySeries[it.key] ??= new Array<number>(MONTHS).fill(0))[t] = it.ore;
   }
 
   const sigma = (t: number) => (mode === "lease" ? 0.02 : 0.05 + 0.04 * (t / 12));
@@ -505,8 +507,18 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
     measures,
     line_items: lineItems,
     display,
+    display_series: displaySeries,
     inputs: inputs as InputView[],
+    purchase_price: mode === "lease" ? null : pp,
     resale_p50: mode === "lease" ? null : resale,
+    resale_band:
+      mode === "lease"
+        ? null
+        : {
+            p10: resale.map((v, t) => Math.round(v * (1 - 1.28 * sigma(t)))),
+            p50: [...resale],
+            p90: resale.map((v, t) => Math.round(v * (1 + 1.28 * sigma(t)))),
+          },
   };
   return {
     summary: {

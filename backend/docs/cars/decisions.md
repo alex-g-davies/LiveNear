@@ -215,6 +215,30 @@ repairs, inspection, wheel changes or tolls at all. Sources read on
   typeahead, the Market map gained a brand select on the existing `make`
   filter.
 
+## 2026-11-03 — Detail screen reads one exit point (spec 024 R15–R17)
+
+Feedback: the inputs table ran off the page, the Detail tiles did not match
+the breakdown, and the purchase and sale assumptions were not visible.
+
+- **Central path on Detail.** The tile, chart marker, strip and breakdown
+  are the deterministic (P50-input) path at the marked month, not the
+  Monte Carlo median. The two differ by a few percent because the resale
+  and running-cost draws are not symmetric around the central inputs; the
+  breakdown can only be the central path (line items are a schedule), so
+  the tile follows it and the simulated P10–P90 range is printed beside it.
+  Compare keeps ranking on the simulated expected value, and the "Expected"
+  tile on Detail still shows that number so the two screens tie out.
+- **Exit point is session state**, shared by Compare curves and Detail and
+  never persisted or put in the URL: it is a viewing choice, not an
+  assumption.
+- **Sale price band** is the single-car predictive interval the engine
+  already draws from (`p50 · exp(±1.2816 σ)`), so "likely X to Y" on the
+  strip is the same distribution the TCO band uses.
+- **Display units** are produced by the API (`display_value`, `unit`) from a
+  unit table keyed by input id tail, so the engine keeps integer øre and
+  the browser never guesses which inputs are money. Overrides stay in
+  engine units on the wire; the screen converts typed kroner.
+
 ## Open
 
 - Tax-rule values in `rules/tax_rules.yaml` are `unverified` placeholders
