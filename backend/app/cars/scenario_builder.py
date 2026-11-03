@@ -17,6 +17,7 @@ Every value carries provenance from the bundle; defaults are estimates.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import date
 from decimal import Decimal
 
@@ -149,6 +150,20 @@ def _early_exit(o: LeaseOfferRecord):
     return DefaultEarlyExit(recovery_pct=ee.recovery_pct)
 
 
+def group_selection(selection: Iterable[SelectionItem]) -> list[tuple[str, list[tuple[int, int]]]]:
+    """One entry per variant, in first-seen order, with every year range asked for.
+
+    The Market map and the recommendation strip add single model years, so a
+    variant can arrive as several items (2019 and 2021 but not 2020). Building
+    per item would add its lease offers and buy-new option once per item under
+    the same option id; grouping keeps one option per (variant, year, kind).
+    """
+    out: dict[str, list[tuple[int, int]]] = {}
+    for sel in selection:
+        out.setdefault(sel.variant_id, []).append((sel.year_from, sel.year_to))
+    return list(out.items())
+
+
 def build_scenario(
     b: Bundle,
     profile: Profile,
@@ -204,18 +219,16 @@ def build_scenario(
     notes: list[str] = []
     meta: dict[str, dict] = {}
     allowed = set(profile.limits.modes)
-    for sel in selection:
+    for variant_id, ranges in group_selection(selection):
         try:
-            v = b.vehicle(sel.variant_id)
+            v = b.vehicle(variant_id)
         except KeyError:
-            notes.append(f"{sel.variant_id}: unknown variant")
+            notes.append(f"{variant_id}: unknown variant")
             continue
-        years = [y for y in v.model_years if sel.year_from <= y <= sel.year_to]
+        years = [y for y in v.model_years if any(lo <= y <= hi for lo, hi in ranges)]
         if not years:
-            notes.append(
-                f"{v.make} {v.model} {v.trim_group}: "
-                f"no model years in {sel.year_from}–{sel.year_to}"
-            )
+            lo, hi = min(r[0] for r in ranges), max(r[1] for r in ranges)
+            notes.append(f"{v.make} {v.model} {v.trim_group}: no model years in {lo}–{hi}")
             continue
         label_base = f"{v.make} {v.model} {v.trim_group}"
         newest = max(v.model_years)

@@ -19,6 +19,7 @@ import { useLocation } from "react-router-dom";
 import type { ScenarioRequest } from "./api";
 import { useScenario, type ScenarioState } from "./hooks/useScenario";
 import { useVehicles, type VehiclesState } from "./hooks/useVehicles";
+import { capSelection } from "./lib/market";
 import {
   DEFAULT_STATE,
   URL_PARAM,
@@ -128,7 +129,13 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
     (updater: (p: CarProfile) => CarProfile) => setState((s) => ({ ...s, profile: updater(s.profile) })),
     [],
   );
-  const setSelection = useCallback((selection: SelectionItem[]) => setState((s) => ({ ...s, selection })), []);
+  // Every entry point disables itself at the cap; this clamp is the backstop
+  // (a Market-map box select can propose many models at once) so the request
+  // never exceeds what the server accepts (024 R18).
+  const setSelection = useCallback(
+    (selection: SelectionItem[]) => setState((s) => ({ ...s, selection: capSelection(selection) })),
+    [],
+  );
   const setWhatIf = useCallback((whatIf: WhatIf | null) => setState((s) => ({ ...s, whatIf })), []);
   // Save: return, km and pay mode have homes in the profile; loan rate and
   // used-price drift do not, so they persist as engine overrides.

@@ -8,6 +8,7 @@ import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 
 import type { VehicleOut } from "../api";
+import { CAP_HINT, MAX_COMPARE_VARIANTS, variantCount } from "../lib/market";
 import type { SelectionItem } from "../lib/profile";
 
 interface Props {
@@ -51,11 +52,12 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
     for (const v of matches) map.set(v.make, [...(map.get(v.make) ?? []), v]);
     return [...map.entries()];
   }, [matches]);
+  const full = variantCount(selection) >= MAX_COMPARE_VARIANTS;
   const activeIdx = Math.min(active, Math.max(0, matches.length - 1));
   const activeId = matches[activeIdx]?.variant_id;
 
   const add = (v: VehicleOut) => {
-    if (selectedIds.has(v.variant_id)) return;
+    if (selectedIds.has(v.variant_id) || full) return;
     onChange([
       ...selection,
       { variant_id: v.variant_id, year_from: Math.min(...v.model_years), year_to: Math.max(...v.model_years) },
@@ -162,7 +164,8 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
             type="text"
             role="combobox"
             className="cars-input"
-            placeholder="Type a make, model or trim"
+            placeholder={full ? "Selection is full" : "Type a make, model or trim"}
+            disabled={full}
             autoComplete="off"
             aria-autocomplete="list"
             aria-expanded={open}
@@ -179,7 +182,12 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
             onKeyDown={onKey}
           />
         </label>
-        {open && (
+        {full && (
+          <p className="cars-hint" role="status" data-testid="tray-full">
+            {CAP_HINT}
+          </p>
+        )}
+        {open && !full && (
           <ul id={listId} role="listbox" className="cars-tray__list" aria-label="Catalogue">
             {groups.map(([make, list]) => (
               <li key={make} role="group" aria-label={make} className="cars-tray__group">

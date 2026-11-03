@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { StartHereCard } from "../components/Recommendations";
 import SelectionTray from "../components/SelectionTray";
+import { MAX_COMPARE_VARIANTS, variantCount } from "../lib/market";
 import { MODE_LABELS } from "../lib/measures";
 import {
   AGE_BANDS,
@@ -521,7 +522,7 @@ export default function Situation() {
             <p className="cars-hint">
               The cars and model years to put side by side. Add one by name here, or pick from the Market
               map.
-              {selection.length > 0 && ` ${selection.length} selected.`}
+              {selection.length > 0 && ` ${variantCount(selection)} of ${MAX_COMPARE_VARIANTS} cars selected.`}
             </p>
           </div>
           <SelectionTray

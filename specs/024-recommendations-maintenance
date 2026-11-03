@@ -194,6 +194,27 @@ which benefit from the larger catalogue and the corrected costs.
   tax rules per energy type). Overrides typed in kroner are converted back
   to øre before they are sent.
 
+### Selection cap (user feedback 2026-11-03, second round)
+
+- **R18 — Every recommendation can be compared.** The scenario request
+  used to refuse more than twelve selection items, while "Start here" and
+  the "Recommended for you" strip rank all 22 catalogue variants and add
+  them one model year at a time. Adding a fourth or fifth car produced a
+  `422`, and because the Compare table keeps the last good result the new
+  cars never appeared in the ranking. Now the cap is on distinct variants
+  (`MAX_COMPARE_VARIANTS = 30` in `schemas.py`, mirrored in
+  `frontend/src/cars/lib/market.ts`), chosen so the whole catalogue fits
+  (a test asserts it; 55 options at 2 000 draws run in under two seconds
+  locally). The builder groups selection items by variant before building,
+  so a variant picked as two non-adjacent model years (the Market map and
+  the strip both do this) no longer builds its lease and buy-new options
+  twice, which the engine rejected as duplicate option ids. The Situation
+  tray, the Market map and both recommendation surfaces disable their add
+  controls at the cap and say "You can compare up to 30 cars at once.
+  Remove one to add another."; `setSelection` clamps as a backstop so a
+  box select can never send more. FastAPI validation errors are shown as
+  "field: message" instead of a bare status code.
+
 ## Out of Scope (explicit)
 
 - Dekkhotell, parking fees, ferry fares, car washing: local and optional.
@@ -222,6 +243,11 @@ which benefit from the larger catalogue and the corrected costs.
       measure set to total cost the tile equals the breakdown total; the
       inputs table shows "131 308 kr", not "13130779", and needs no
       horizontal scroll at 1180 px.
+- [ ] R18: pressing Add on every row of "Recommended for you" and selecting
+      all 22 variants in the Situation tray still returns a ranking with
+      every added car in it; at 30 cars the Add controls are disabled with
+      the cap message; picking an MG4 as 2023 and 2026 only (not 2024)
+      yields one lease option per offer, not two.
 
 ## Verification notes
 
@@ -230,3 +256,5 @@ which benefit from the larger catalogue and the corrected costs.
 - R9/R10/R12 → `frontend/src/test/cars/market.test.tsx`,
   `situation.test.tsx`, `recommend.test.tsx`.
 - R11 → `backend/tests/cars/test_api_cars.py` (recommend section).
+- R18 → `backend/tests/cars/test_api_cars.py` (spec 024 R18 section),
+  `frontend/src/test/cars/cap.test.tsx`.

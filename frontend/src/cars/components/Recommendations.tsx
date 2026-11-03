@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 import type { RecommendRow } from "../api";
 import { buildRecommendRequest, useRecommend } from "../hooks/useRecommend";
-import { addPairs, isSelected } from "../lib/market";
+import { CAP_HINT, addPairs, isSelected, wouldExceedCap } from "../lib/market";
 import { MODE_LABELS, measureDef } from "../lib/measures";
 import { useCarState } from "../state";
 import Badge from "./Badge";
@@ -40,6 +40,7 @@ export function StartHereCard() {
   const allIn = pairs.length > 0 && pairs.every(([vid, y]) => isSelected(selection, vid, y));
   const rowsKey = rows.map((r) => r.summary.result.option_id).join("|");
   const added = addedKey === rowsKey && allIn;
+  const over = !allIn && wouldExceedCap(selection, pairs.map(([vid]) => vid));
 
   const onAdd = () => {
     setSelection(addPairs(selection, pairs));
@@ -113,11 +114,16 @@ export function StartHereCard() {
             <button
               type="button"
               className={`cars-btn ${added ? "" : "cars-btn--primary"}`}
-              disabled={added}
+              disabled={added || over}
               onClick={onAdd}
             >
               {added ? "Added to your selection" : `Add these ${rows.length === 1 ? "one" : rows.length === 2 ? "two" : "three"} to my selection`}
             </button>
+            {over && (
+              <span className="cars-hint" role="status">
+                {CAP_HINT}
+              </span>
+            )}
             {rec.data && ruledOutHint(rec.data.ruled_out) && (
               <span className="cars-hint">{ruledOutHint(rec.data.ruled_out)}</span>
             )}
@@ -157,6 +163,7 @@ export function RecommendStrip() {
             const res = r.summary.result;
             const vid = r.summary.variant_id;
             const inSel = isSelected(selection, vid, res.model_year);
+            const over = !inSel && wouldExceedCap(selection, [vid]);
             return (
               <li key={res.option_id} className="cars-strip__row" data-testid="strip-row">
                 <span className="cars-strip__rank" aria-hidden="true">
@@ -179,6 +186,8 @@ export function RecommendStrip() {
                     type="button"
                     className="cars-btn cars-btn--outline cars-btn--sm"
                     aria-label={`Add ${rowName(r)} ${res.model_year}`}
+                    disabled={over}
+                    title={over ? CAP_HINT : undefined}
                     onClick={() => setSelection(addPairs(selection, [[vid, res.model_year]]))}
                   >
                     Add
@@ -190,6 +199,10 @@ export function RecommendStrip() {
         </ol>
       )}
       <p className="cars-hint cars-strip__foot">
+        {rows.some((r) => !isSelected(selection, r.summary.variant_id, r.summary.result.model_year)) &&
+        wouldExceedCap(selection, [])
+          ? `${CAP_HINT} `
+          : ""}
         Added cars appear in the table once the scenario re-runs. <Link to="/cars">Change your situation</Link>.
       </p>
     </section>

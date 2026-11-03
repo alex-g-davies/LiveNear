@@ -47,7 +47,7 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
     expect(screen.getByRole("button", { name: "Remove Renault 5 52 kWh" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove Kia EV6 Long Range RWD" })).toBeNull();
     expect(screen.getAllByLabelText("From")).toHaveLength(BASE_STATE.selection.length);
-    expect(screen.getByText("2 selected.", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("2 of 30 cars selected.", { exact: false })).toBeInTheDocument();
   });
 
   it("adds a car from the typeahead with the keyboard, grouped by make", async () => {

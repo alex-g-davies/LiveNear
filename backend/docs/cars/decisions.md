@@ -239,6 +239,31 @@ the breakdown, and the purchase and sale assumptions were not visible.
   the browser never guesses which inputs are money. Overrides stay in
   engine units on the wire; the screen converts typed kroner.
 
+## 2026-11-03 — Selection cap counts variants and fits the catalogue (spec 024 R18)
+
+Two `422`s reached users once recommendations existed: the scenario
+request capped selection *items* at twelve, and a variant picked as two
+non-adjacent model years built its lease and buy-new options once per item,
+which the engine rejects as duplicate ids.
+
+- **Cap on distinct variants, not items.** The Market map and the
+  recommendation strip pick single model years, so one variant may arrive as
+  several ranges; counting items punished that. `MAX_COMPARE_VARIANTS = 30`
+  is above the catalogue (22) so every recommendation can be added; the list
+  itself allows four items per variant. The frontend mirrors the constant and
+  disables its add controls at the cap rather than letting the server refuse.
+- **No automatic draw reduction.** A big comparison could run fewer draws to
+  stay fast, but then the same car's band would change with the number of
+  cars beside it. The full catalogue at 2 000 draws is 1.8 s locally; the
+  cap, not the draw count, bounds the run.
+- **Group before build.** `group_selection` unions the year ranges per
+  variant in first-seen order, so lease and buy-new options are built once
+  and the `skipped` notes name one range per variant.
+- **Keep the last good result on error** stays as is (it is what makes the
+  what-if sliders smooth), but the error text now names the field and the
+  reason instead of a status code, and the Compare header already says it
+  is showing the last good result.
+
 ## Open
 
 - Tax-rule values in `rules/tax_rules.yaml` are `unverified` placeholders

@@ -10,8 +10,10 @@ import MarketScatter from "../components/MarketScatter";
 import { useMarket } from "../hooks/useMarket";
 import { formatDate } from "../lib/format";
 import {
+  CAP_HINT,
   COLOR_BYS,
   ENERGY_LABELS,
+  MAX_COMPARE_VARIANTS,
   X_AXES,
   Y_AXES,
   addPairs,
@@ -21,6 +23,7 @@ import {
   matchesSearch,
   removeVariant,
   togglePair,
+  variantCount,
   yearRangeLabel,
   type ColorBy,
   type XAxis,
@@ -351,6 +354,11 @@ export default function MarketMap() {
             )}
             <div className="cars-actions">
               {selection.length === 0 && <span className="cars-hint">Pick at least one car to compare.</span>}
+              {variantCount(selection) >= MAX_COMPARE_VARIANTS && (
+                <span className="cars-hint" role="status" data-testid="market-full">
+                  {CAP_HINT}
+                </span>
+              )}
               <button type="button" className="cars-btn" onClick={() => setSelection([])} disabled={selection.length === 0}>
                 Clear
               </button>
