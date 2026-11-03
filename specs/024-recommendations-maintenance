@@ -171,6 +171,29 @@ which benefit from the larger catalogue and the corrected costs.
   modelling choices (repair curve scaling, Tesla as wear-only, blend for
   tolls); README and CLAUDE.md mention spec 024.
 
+### Detail screen follow-up (user feedback 2026-11-03)
+
+- **R15 — One exit point on Detail.** Detail carries the same "Mark an exit
+  point" slider as Compare curves and both read one shared, session-only
+  value (default 2.5 years). The first tile, the chart marker, the buying
+  and selling strip and "Where the money goes" are all computed on the
+  central path at that month, so they agree with each other to the krone;
+  the simulated P10–P90 range sits beside the tile. The API returns
+  `display_series` (every display row at months 0..60), `purchase_price`
+  and `resale_band` (P10/P50/P90 of the sale value by month) so the screen
+  needs no new request when the slider moves.
+- **R16 — Purchase and sale assumptions.** A "Buying and selling" strip
+  shows the purchase price with its source and status, the expected sale
+  price at the marked exit with its likely range, and the value lost (price
+  minus sale price plus the cost to sell). Leases show rent, rent paid to
+  the exit and the cost to hand the car back instead.
+- **R17 — Inputs table fits the page.** The table uses a fixed layout with
+  wrapping cells (no sideways overflow on desktop), source URLs become
+  links, and values are shown in display units (`display_value`, `unit`,
+  `display_range` from the API: kroner not øre, per-year / per-km units,
+  tax rules per energy type). Overrides typed in kroner are converted back
+  to øre before they are sent.
+
 ## Out of Scope (explicit)
 
 - Dekkhotell, parking fees, ferry fares, car washing: local and optional.
@@ -194,6 +217,11 @@ which benefit from the larger catalogue and the corrected costs.
 - [ ] R11/R12: with the default profile, "Start here" returns three cars in
       under two seconds and pressing the button puts them in the selection.
 - [ ] R13: `pytest`, `npm run test` and the Docker smoke pass in CI.
+- [ ] R15–R17: on Detail, moving the exit slider changes the first tile,
+      the chart marker, the sale price and the breakdown together; with the
+      measure set to total cost the tile equals the breakdown total; the
+      inputs table shows "131 308 kr", not "13130779", and needs no
+      horizontal scroll at 1180 px.
 
 ## Verification notes
 

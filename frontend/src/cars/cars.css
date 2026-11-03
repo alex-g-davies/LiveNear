@@ -689,8 +689,36 @@
   padding-top: 6px;
   padding-bottom: 6px;
 }
+.cars-table--inputs {
+  /* Fits its card: fixed layout with wrapping cells instead of a sideways scroll. */
+  min-width: 0;
+  table-layout: fixed;
+}
+.cars-table--inputs th:nth-child(1) {
+  width: 19%;
+}
+.cars-table--inputs th:nth-child(2) {
+  width: 17%;
+}
+.cars-table--inputs th:nth-child(4) {
+  width: 12%;
+}
+.cars-table--inputs th:nth-child(5) {
+  width: 118px;
+}
 .cars-table--inputs td {
   vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.cars-inputs__basis {
+  margin-top: 2px;
+  font-size: 13px;
+}
+.cars-link--wrap {
+  overflow-wrap: anywhere;
+}
+.cars-override__unit {
+  margin-left: 4px;
 }
 .cars-swatch {
   width: 10px;
@@ -899,6 +927,37 @@
   font-weight: 600;
   white-space: nowrap;
 }
+.cars-tile--accent {
+  border-color: var(--c-primary);
+  box-shadow: inset 3px 0 0 var(--c-primary);
+}
+/* Buying and selling strip on Detail */
+.cars-deal {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.cars-deal__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--c-border-soft);
+  border-radius: 8px;
+  background: var(--c-bg);
+  min-width: 0;
+}
+.cars-deal__value {
+  font-size: 20px;
+  font-weight: 600;
+}
+.cars-deal__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
 .cars-bar {
   display: grid;
   grid-template-columns: 140px minmax(0, 1fr) 100px;
@@ -950,6 +1009,13 @@
   }
   .cars-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cars-deal {
+    grid-template-columns: 1fr;
+  }
+  .cars-table--inputs {
+    table-layout: auto;
+    min-width: 640px;
   }
   .cars-tile__value {
     font-size: 20px;

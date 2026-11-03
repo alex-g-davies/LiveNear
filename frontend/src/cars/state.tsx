@@ -36,6 +36,8 @@ import {
 
 export const SCENARIO_SEED = 42;
 export const SCENARIO_DRAWS = 2000;
+/** 2.5 years: the exit point both Compare curves and Detail start on. */
+export const DEFAULT_EXIT_MONTH = 30;
 
 export interface CarStateApi {
   state: CarState;
@@ -52,6 +54,10 @@ export interface CarStateApi {
   toggleChecklist: (id: string) => void;
   /** Explicit persist (the Save draft button); returns false if storage failed. */
   saveDraft: () => boolean;
+  /** Exit point marked on Compare curves and Detail (months 6..60); shared so
+   *  the two screens show the same month. Session-only, never persisted. */
+  exitMonth: number;
+  setExitMonth: (month: number) => void;
   request: ScenarioRequest | null;
   scenario: ScenarioState;
   vehicles: VehiclesState;
@@ -165,6 +171,11 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
     [],
   );
   const saveDraft = useCallback(() => saveState(state), [state]);
+  const [exitMonth, setExitMonthRaw] = useState(DEFAULT_EXIT_MONTH);
+  const setExitMonth = useCallback(
+    (month: number) => setExitMonthRaw(Math.min(60, Math.max(6, Math.round(month)))),
+    [],
+  );
 
   // The scenario runs on every screen except the form itself (typing there
   // would spam the backend for results nobody is looking at yet).
@@ -206,6 +217,8 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setMeasure,
       toggleChecklist,
       saveDraft,
+      exitMonth,
+      setExitMonth,
       request,
       scenario,
       vehicles,
@@ -222,6 +235,8 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
       setMeasure,
       toggleChecklist,
       saveDraft,
+      exitMonth,
+      setExitMonth,
       request,
       scenario,
       vehicles,

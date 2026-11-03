@@ -84,7 +84,13 @@ export interface InputView {
   id: string;
   /** Readable name from the API; screens show this, never the id. */
   label: string;
+  /** Raw engine value (øre for money); overrides are sent in these units. */
   value: string;
+  /** "kr", "kr/year", "%", "km" … or null when the value is text. Absent in the mock. */
+  unit?: string | null;
+  /** Value in display units, e.g. "131 308 kr". Screens prefer this over `value`. */
+  display_value?: string;
+  display_range?: [string, string] | null;
   source: string;
   as_of: string;
   status: Status;
@@ -119,8 +125,14 @@ export interface OptionResult {
   measures: Record<Measure, MeasureResult>;
   line_items: LineItemView[];
   display: Record<ExitMonthKey, DisplayItem[]>;
+  /** Display row key -> value at month 0..60; the rows of `display` at any month. */
+  display_series: Record<string, number[]>;
   inputs: InputView[];
+  /** Price paid in øre; null for leases. */
+  purchase_price: number | null;
   resale_p50: number[] | null;
+  /** Single-car P10/P50/P90 of the resale value by month; null for leases. */
+  resale_band: Band | null;
 }
 
 export interface OptionSummary {
