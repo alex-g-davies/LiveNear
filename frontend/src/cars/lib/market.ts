@@ -177,6 +177,33 @@ export function addPairs(selection: SelectionItem[], pairs: Iterable<[string, nu
   return out;
 }
 
+/** Distinct variants one scenario may compare. Mirrors MAX_COMPARE_VARIANTS
+ * in backend/app/cars/schemas.py (spec 024 R18); the server refuses more. */
+export const MAX_COMPARE_VARIANTS = 30;
+export const CAP_HINT = `You can compare up to ${MAX_COMPARE_VARIANTS} cars at once. Remove one to add another.`;
+
+export function variantCount(selection: SelectionItem[]): number {
+  return new Set(selection.map((s) => s.variant_id)).size;
+}
+
+/** True when adding these variants would push the selection past the cap. */
+export function wouldExceedCap(selection: SelectionItem[], variantIds: Iterable<string>): boolean {
+  const ids = new Set(selection.map((s) => s.variant_id));
+  for (const id of variantIds) ids.add(id);
+  return ids.size > MAX_COMPARE_VARIANTS;
+}
+
+/** Keep the first MAX_COMPARE_VARIANTS variants (in first-seen order) and drop
+ * the rest, so a box select on the Market map can never produce a request the
+ * server would refuse. Every year range of a kept variant stays. */
+export function capSelection(selection: SelectionItem[]): SelectionItem[] {
+  const kept = new Set<string>();
+  for (const s of selection) {
+    if (kept.size < MAX_COMPARE_VARIANTS || kept.has(s.variant_id)) kept.add(s.variant_id);
+  }
+  return kept.size === variantCount(selection) ? selection : selection.filter((s) => kept.has(s.variant_id));
+}
+
 export function togglePair(selection: SelectionItem[], variantId: string, year: number): SelectionItem[] {
   const years = selectedYears(selection, variantId);
   if (years.has(year)) years.delete(year);

@@ -277,12 +277,27 @@ export function isMockMode(): boolean {
   }
 }
 
+/** FastAPI validation errors arrive as a list of {loc, msg}; show the first
+ * few as "where: what" without pydantic's "Value error," prefix. */
+export function describeValidation(errors: unknown[]): string {
+  const parts: string[] = [];
+  for (const e of errors.slice(0, 3)) {
+    if (!e || typeof e !== "object") continue;
+    const { loc, msg } = e as { loc?: unknown; msg?: unknown };
+    const text = typeof msg === "string" ? msg.replace(/^Value error, /, "") : "invalid value";
+    const where = Array.isArray(loc) ? loc.filter((x) => x !== "body").join(".") : "";
+    parts.push(where ? `${where}: ${text}` : text);
+  }
+  return parts.join("; ") || "invalid request";
+}
+
 async function readJson<T>(res: Response, path: string): Promise<T> {
   if (!res.ok) {
     let detail = "";
     try {
       const body = (await res.json()) as { detail?: unknown };
       if (typeof body.detail === "string") detail = `: ${body.detail}`;
+      else if (Array.isArray(body.detail)) detail = `: ${describeValidation(body.detail)}`;
     } catch {
       /* no body */
     }

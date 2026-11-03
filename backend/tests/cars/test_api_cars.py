@@ -275,3 +275,67 @@ def test_market_points_unavailable_mode_is_empty_not_503(make_client):
         assert r.json()["listings_mode"] == "unavailable" and r.json()["points"] == []
     finally:
         data_bundle.clear_cache()
+
+
+# --- spec 024 R18: the whole catalogue fits one comparison ---------------------
+
+
+def _full_ranges(client):
+    return [
+        {
+            "variant_id": v["variant_id"],
+            "year_from": min(v["model_years"]),
+            "year_to": max(v["model_years"]),
+        }
+        for v in client.get("/api/cars/vehicles").json()
+    ]
+
+
+def test_whole_catalogue_fits_one_scenario(client):
+    from app.cars.schemas import MAX_COMPARE_VARIANTS
+
+    full = _full_ranges(client)
+    assert 0 < len(full) <= MAX_COMPARE_VARIANTS, len(full)
+    r = client.post("/api/cars/scenarios", json=_req(selection=full, draws=200))
+    assert r.status_code == 200, r.text
+    ids = [o["result"]["option_id"] for o in r.json()["options"]]
+    assert ids and len(ids) == len(set(ids))
+    # Every recommendation can therefore be added to the comparison.
+    rec = client.post("/api/cars/recommend", json={"profile": PROFILE, "draws": 100}).json()
+    assert rec["n_considered"] == len(ids)
+
+
+def test_more_variants_than_the_cap_is_a_readable_422(client):
+    from app.cars.schemas import MAX_COMPARE_VARIANTS
+
+    too_many = [
+        {"variant_id": f"v{i}", "year_from": 2020, "year_to": 2021}
+        for i in range(MAX_COMPARE_VARIANTS + 1)
+    ]
+    r = client.post("/api/cars/scenarios", json=_req(selection=too_many))
+    assert r.status_code == 422
+    msg = r.json()["detail"][0]["msg"]
+    assert f"up to {MAX_COMPARE_VARIANTS} cars" in msg and str(MAX_COMPARE_VARIANTS + 1) in msg
+
+
+def test_split_year_ranges_build_each_option_once(client):
+    """A variant picked as 2023 and 2025 (not 2024) arrives as two items; its
+    lease offers and buy-new option must not be duplicated."""
+    vehicles = client.get("/api/cars/vehicles").json()
+    with_lease = next(v for v in vehicles if v["variant_id"] == "mg-mg4-64")
+    years = sorted(with_lease["model_years"])
+    assert len(years) >= 3, years
+    split = [
+        {"variant_id": "mg-mg4-64", "year_from": years[0], "year_to": years[0]},
+        {"variant_id": "mg-mg4-64", "year_from": years[-1], "year_to": years[-1]},
+    ]
+    merged = [{"variant_id": "mg-mg4-64", "year_from": years[0], "year_to": years[-1]}]
+    a = client.post("/api/cars/scenarios", json=_req(selection=split, draws=100)).json()
+    b = client.post("/api/cars/scenarios", json=_req(selection=merged, draws=100)).json()
+    ids_a = [o["result"]["option_id"] for o in a["options"]]
+    ids_b = [o["result"]["option_id"] for o in b["options"]]
+    assert len(ids_a) == len(set(ids_a))
+    assert any(":lease:" in i for i in ids_a), ids_a
+    # The merged range also covers the middle year, so it is a superset.
+    assert set(ids_a) <= set(ids_b)
+    assert {i for i in ids_b if f":{years[1]}:" in i} - set(ids_a)

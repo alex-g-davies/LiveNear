@@ -11,7 +11,7 @@ from datetime import date
 from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .bundle_schema import ListingsMode, SourceHealth
 from .engine.models import Mode
@@ -19,6 +19,12 @@ from .engine.result import OptionResult
 from .engine.run import RuledOut, SensitivityRow
 
 Measure = Literal["per_month", "tco", "npc", "cash_up_front", "per_km"]
+
+# Spec 024 R18: one scenario may compare this many distinct variants. The
+# whole catalogue must fit (a test asserts it) so every recommendation can
+# be added to the comparison; `frontend/src/cars/lib/market.ts` mirrors the
+# number so the screens stop adding cars before the server would refuse.
+MAX_COMPARE_VARIANTS = 30
 
 
 class ExitOddsIn(BaseModel):
@@ -85,12 +91,25 @@ class WhatIfIn(BaseModel):
 
 class ScenarioRequest(BaseModel):
     profile: Profile
-    selection: list[SelectionItem] = Field(min_length=1, max_length=12)
+    # Items, not variants: the Market map and the recommendation strip pick
+    # single model years, so one variant can arrive as several ranges.
+    selection: list[SelectionItem] = Field(min_length=1, max_length=4 * MAX_COMPARE_VARIANTS)
     what_if: WhatIfIn | None = None
     overrides: dict[str, str | int | float] = Field(default_factory=dict)  # input id -> value
     measure: Measure = "per_month"
     seed: int = 0
     draws: int = Field(default=2000, ge=100, le=5000)
+
+    @field_validator("selection")
+    @classmethod
+    def _cap_distinct_variants(cls, v: list[SelectionItem]) -> list[SelectionItem]:
+        n = len({s.variant_id for s in v})
+        if n > MAX_COMPARE_VARIANTS:
+            raise ValueError(
+                f"you can compare up to {MAX_COMPARE_VARIANTS} cars at once, not {n}; "
+                "remove some and try again"
+            )
+        return v
 
 
 class OptionSummary(BaseModel):
