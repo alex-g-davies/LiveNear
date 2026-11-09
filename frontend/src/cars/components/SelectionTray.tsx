@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import type { VehicleOut } from "../api";
 import { CAP_HINT, MAX_COMPARE_VARIANTS, variantCount } from "../lib/market";
 import type { SelectionItem } from "../lib/profile";
+import { drivePath } from "../../lib/productRoutes";
 
 interface Props {
   vehicles: VehicleOut[];
@@ -93,7 +94,7 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
       {selection.length === 0 && !loading && (
         <p className="cars-tray__empty" role="status">
           No cars yet. Add one here or{" "}
-          <Link to="/cars/market" className="cars-link">
+          <Link to={drivePath("/market")} className="cars-link">
             browse the market
           </Link>
           .

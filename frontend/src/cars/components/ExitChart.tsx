@@ -33,9 +33,9 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
   const innerW = W - M.left - M.right;
   const innerH = H - M.top - M.bottom;
   const series = [
-    { key: "this", label: "This option", opt: option, stroke: "#1F2328", width: 3, dash: undefined },
-    { key: "lease", label: "Best lease, same model", opt: bestLease, stroke: "#6E7781", width: 2, dash: "7 5" },
-    { key: "new", label: "Best new, same model", opt: bestNew, stroke: "#8C959F", width: 2, dash: "2 4" },
+    { key: "this", label: "This option", opt: option, stroke: "var(--c-ink)", width: 3, dash: undefined },
+    { key: "lease", label: "Best lease, same model", opt: bestLease, stroke: "var(--c-neutral-500)", width: 2, dash: "7 5" },
+    { key: "new", label: "Best new, same model", opt: bestNew, stroke: "var(--c-neutral-400)", width: 2, dash: "2 4" },
   ].filter((s): s is typeof s & { opt: OptionSummary } => s.opt !== null);
 
   const months: number[] = [];
@@ -72,7 +72,7 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
         <g transform={`translate(${M.left},${M.top})`}>
           {y.ticks(4).map((tv) => (
             <g key={tv} transform={`translate(0,${y(tv)})`}>
-              <line x1={0} x2={innerW} stroke={tv === 0 ? "#D0D7DE" : "#EAEEF2"} />
+              <line x1={0} x2={innerW} stroke={tv === 0 ? "var(--c-border)" : "var(--c-border-soft)"} />
               <text x={-8} dy="0.32em" textAnchor="end" className="cars-curves__tick">
                 {def.key === "per_km" ? def.format(tv) : `${Math.round(tv / 100).toLocaleString("nb-NO")}`}
               </text>
@@ -100,14 +100,14 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
               </path>
             ))}
           <g data-testid="exit-marker" transform={`translate(${markerX},0)`}>
-            <line y1={0} y2={innerH} stroke="#0B5CD5" strokeDasharray="4 4" strokeWidth={1.5} />
-            {Number.isFinite(thisAtMarker) && <circle cy={y(thisAtMarker)} r={5} fill="#0B5CD5" stroke="#fff" strokeWidth={2} />}
+            <line y1={0} y2={innerH} stroke="var(--c-primary)" strokeDasharray="4 4" strokeWidth={1.5} />
+            {Number.isFinite(thisAtMarker) && <circle cy={y(thisAtMarker)} r={5} fill="var(--c-primary)" stroke="var(--c-card)" strokeWidth={2} />}
             <text
               y={-4}
               textAnchor={markerX > innerW * 0.8 ? "end" : "start"}
               dx={markerX > innerW * 0.8 ? -6 : 6}
               className="cars-curves__tick"
-              fill="#0B5CD5"
+              fill="var(--c-primary)"
             >
               Leave at {formatYears(marker / 12)}
             </text>
@@ -117,7 +117,7 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
               <text y={18} textAnchor="middle" className="cars-curves__tick">
                 {k} mo
               </text>
-              <rect x={-12} y={52 - barH(k)} width={24} height={barH(k)} fill="#AFB8C1">
+              <rect x={-12} y={52 - barH(k)} width={24} height={barH(k)} fill="var(--c-neutral-300)">
                 <title>{`Odds of leaving at ${k} months: ${Math.round(exitOdds[k] * 100)} %`}</title>
               </rect>
             </g>

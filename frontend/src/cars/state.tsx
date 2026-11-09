@@ -16,6 +16,7 @@ import {
 } from "react";
 import { useLocation } from "react-router-dom";
 
+import { isDriveForm, isDrivePath, rememberDriveSearch, rememberedDriveSearch, replaceDriveSearch } from "../lib/productRoutes";
 import type { ScenarioRequest } from "./api";
 import { useScenario, type ScenarioState } from "./hooks/useScenario";
 import { useVehicles, type VehiclesState } from "./hooks/useVehicles";
@@ -76,6 +77,25 @@ function readInitial(): CarState {
   return loadState() ?? DEFAULT_STATE;
 }
 
+/** Save to storage and update `?c=`. The address bar is only touched while
+ * DriveCheap still owns the URL (025 R9). */
+function persist(state: CarState): void {
+  saveState(state);
+  try {
+    const onDrive = isDrivePath(window.location.pathname);
+    const params = new URLSearchParams(onDrive ? window.location.search : rememberedDriveSearch());
+    const token = encodeState(state);
+    if (token) params.set(URL_PARAM, token);
+    else params.delete(URL_PARAM);
+    const qs = params.toString();
+    const search = qs ? `?${qs}` : "";
+    rememberDriveSearch(search);
+    replaceDriveSearch(search);
+  } catch {
+    /* encoding unavailable; storage already holds the state */
+  }
+}
+
 export function buildRequest(state: CarState): ScenarioRequest {
   return {
     profile: state.profile,
@@ -100,26 +120,29 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
 
   // Persist: debounced localStorage write + `?c=` in the address bar.
   const first = useRef(true);
+  const pending = useRef<CarState | null>(null);
   useEffect(() => {
     if (first.current) {
       first.current = false;
       return;
     }
+    pending.current = state;
     const t = window.setTimeout(() => {
-      saveState(state);
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const token = encodeState(state);
-        if (token) params.set(URL_PARAM, token);
-        else params.delete(URL_PARAM);
-        const qs = params.toString();
-        window.history.replaceState(null, "", `${window.location.pathname}${qs ? `?${qs}` : ""}`);
-      } catch {
-        /* history unavailable */
-      }
+      pending.current = null;
+      persist(state);
     }, 300);
     return () => window.clearTimeout(t);
   }, [state]);
+
+  // Switching products unmounts this provider: keep an unedited `?c=` link
+  // for the way back (025 R8) and flush any save still waiting (R9).
+  useEffect(() => {
+    if (isDrivePath(window.location.pathname)) rememberDriveSearch(window.location.search);
+    return () => {
+      if (pending.current) persist(pending.current);
+      pending.current = null;
+    };
+  }, []);
 
   const updateProfile = useCallback(
     (patch: Partial<CarProfile>) => setState((s) => ({ ...s, profile: { ...s.profile, ...patch } })),
@@ -186,7 +209,7 @@ export function CarStateProvider({ children, initialState }: ProviderProps) {
 
   // The scenario runs on every screen except the form itself (typing there
   // would spam the backend for results nobody is looking at yet).
-  const onForm = /^\/cars\/?$/.test(location.pathname);
+  const onForm = isDriveForm(location.pathname);
   const request = useMemo(
     () => (onForm || state.selection.length === 0 ? null : buildRequest(state)),
     [onForm, state],

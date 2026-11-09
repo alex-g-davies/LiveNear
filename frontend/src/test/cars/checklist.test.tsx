@@ -41,7 +41,7 @@ describe("Newcomer checklist (spec 023 R4-R7)", () => {
   beforeEach(() => window.localStorage.clear());
 
   it("renders the eleven items in three groups with ticks from state", async () => {
-    renderCars("/cars/checklist", WITH_ARRIVAL);
+    renderCars("/drive-cheap/checklist", WITH_ARRIVAL);
     expect(screen.getByRole("heading", { level: 1, name: "Newcomer checklist" })).toBeInTheDocument();
     for (const title of ["Before you choose", "Before you sign", "After you get the car"]) {
       expect(screen.getByRole("heading", { level: 2, name: title })).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("Newcomer checklist (spec 023 R4-R7)", () => {
   });
 
   it("derives due dates from the arrival and start dates and the pending EV rule", async () => {
-    renderCars("/cars/checklist", WITH_ARRIVAL);
+    renderCars("/drive-cheap/checklist", WITH_ARRIVAL);
     const licence = screen.getByTestId("check-licence_exchange");
     expect(licence.textContent).toContain("Due 2027-03-15");
     expect(licence.textContent).toContain("Statens vegvesen");
@@ -82,33 +82,33 @@ describe("Newcomer checklist (spec 023 R4-R7)", () => {
       ...BASE_STATE,
       profile: { ...BASE_STATE.profile, limits: { ...BASE_STATE.profile.limits, modes: ["new"] } },
     };
-    renderCars("/cars/checklist", state);
+    renderCars("/drive-cheap/checklist", state);
     const licence = screen.getByTestId("check-licence_exchange");
     expect(licence.textContent).not.toContain("Due 20");
-    expect(screen.getByRole("link", { name: /Add your arrival date/ })).toHaveAttribute("href", "/cars");
+    expect(screen.getByRole("link", { name: /Add your arrival date/ })).toHaveAttribute("href", "/drive-cheap");
     expect(screen.getByTestId("check-lease_terms").textContent).toContain("only if you lease");
     expect(screen.getByTestId("check-prefer_dealer").textContent).toContain("only if you go used");
     expect(screen.getByTestId("check-toll_tag").textContent).not.toContain("only if");
   });
 
   it("shows the impact panel from the scenario's sensitivity rows", async () => {
-    renderCars("/cars/checklist", BASE_STATE);
+    renderCars("/drive-cheap/checklist", BASE_STATE);
     await waitFor(() => expect(screen.getByTestId("impact-insurance_quotes")).toBeInTheDocument(), WAIT);
     expect(screen.getByTestId("impact-insurance_quotes").textContent).toMatch(/^± [\d  ]+ kr \/ yr$/);
     expect(screen.getByTestId("impact-claims_free_letter").textContent).toMatch(/^up to [-+][\d  ]+ kr \/ yr$/);
     expect(screen.getByRole("link", { name: "See how each changes your ranking" })).toHaveAttribute(
       "href",
-      "/cars/compare",
+      "/drive-cheap/compare",
     );
   });
 
   it("points to Compare when no scenario has run", () => {
-    renderCars("/cars/checklist", { ...DEFAULT_STATE, selection: [] });
-    expect(screen.getByRole("link", { name: "Run a comparison" })).toHaveAttribute("href", "/cars/compare");
+    renderCars("/drive-cheap/checklist", { ...DEFAULT_STATE, selection: [] });
+    expect(screen.getByRole("link", { name: "Run a comparison" })).toHaveAttribute("href", "/drive-cheap/compare");
   });
 
   it("download reports when object URLs are unavailable and otherwise builds the file", () => {
-    renderCars("/cars/checklist", WITH_ARRIVAL);
+    renderCars("/drive-cheap/checklist", WITH_ARRIVAL);
     fireEvent.click(screen.getByRole("button", { name: "Download checklist" }));
     expect(screen.getByRole("status").textContent).toMatch(/Saved norway-car-checklist\.md|not available/);
   });
@@ -127,7 +127,7 @@ describe("checklist helpers (spec 023 R5, R7)", () => {
     const licence = CHECKLIST_ITEMS.find((i) => i.id === "licence_exchange")!;
     const ev = CHECKLIST_ITEMS.find((i) => i.id === "ev_tax_changes")!;
     const base = { arrivalDate: null, startDate: null, today: "2026-11-01", pendingEvRule: undefined };
-    expect(dueFor(licence, base)).toMatchObject({ kind: "missing", to: "/cars" });
+    expect(dueFor(licence, base)).toMatchObject({ kind: "missing", to: "/drive-cheap" });
     expect(dueFor(licence, { ...base, arrivalDate: "2026-05-01" })).toMatchObject({ kind: "date", iso: "2027-05-01" });
     expect(dueFor(ev, base)).toBeNull();
     expect(dueFor(ev, { ...base, pendingEvRule: null })).toBeNull();
@@ -176,12 +176,12 @@ describe("checklist helpers (spec 023 R5, R7)", () => {
 
 describe("Situation additions (spec 023 R3, R5)", () => {
   it("has the arrival date field and a Browse the market link", () => {
-    renderCars("/cars", WITH_ARRIVAL);
+    renderCars("/drive-cheap", WITH_ARRIVAL);
     const field = screen.getByLabelText(/arrive in Norway/) as HTMLInputElement;
     expect(field.value).toBe("2026-03-15");
     fireEvent.change(field, { target: { value: "2026-04-01" } });
     expect((screen.getByLabelText(/arrive in Norway/) as HTMLInputElement).value).toBe("2026-04-01");
-    expect(screen.getByRole("link", { name: "Browse the market" })).toHaveAttribute("href", "/cars/market");
+    expect(screen.getByRole("link", { name: "Browse the market" })).toHaveAttribute("href", "/drive-cheap/market");
     expect(screen.getByRole("button", { name: "Compare options" })).toBeInTheDocument();
   });
 });

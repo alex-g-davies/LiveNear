@@ -16,6 +16,7 @@ import { MODES, type Mode } from "../lib/profile";
 import { MODE_FILTER_LABELS, MODE_LABELS, measureDef } from "../lib/measures";
 import { useCarState } from "../state";
 import { useColorOf } from "../lib/colors";
+import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
 
 export default function CompareTable() {
   const { state, setMeasure, scenario, request } = useCarState();
@@ -79,7 +80,7 @@ export default function CompareTable() {
 
           {!request && (
             <p className="cars-empty">
-              No cars selected yet. <Link to="/cars">Pick some on Your situation</Link>.
+              No cars selected yet. <Link to={DRIVE_PATH}>Pick some on Your situation</Link>.
             </p>
           )}
           {request && !data && scenario.loading && <p className="cars-empty">Computing options…</p>}
@@ -116,7 +117,7 @@ export default function CompareTable() {
                       <tr key={r.option_id} data-testid="option-row">
                         <td className="cars-table__rank">{i + 1}</td>
                         <td>
-                          <Link to={`/cars/option/${encodeURIComponent(r.option_id)}`} className="cars-table__car">
+                          <Link to={drivePath(`/option/${encodeURIComponent(r.option_id)}`)} className="cars-table__car">
                             <span
                               aria-hidden="true"
                               className="cars-swatch"

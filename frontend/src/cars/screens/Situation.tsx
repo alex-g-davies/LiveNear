@@ -21,6 +21,7 @@ import {
   type MustHave,
 } from "../lib/profile";
 import { useCarState } from "../state";
+import { drivePath } from "../../lib/productRoutes";
 
 const EXIT_FIELDS: { key: ExitKey; label: string }[] = [
   { key: "p12", label: "About 1 year" },
@@ -28,7 +29,7 @@ const EXIT_FIELDS: { key: ExitKey; label: string }[] = [
   { key: "p36", label: "About 3 years" },
   { key: "p48", label: "4+ years" },
 ];
-const ODDS_SHADES = ["#8C959F", "#6E7781", "#57606A", "#424A53"];
+const ODDS_SHADES = ["var(--c-neutral-400)", "var(--c-neutral-500)", "var(--c-neutral-600)", "var(--c-neutral-700)"];
 
 const MUST_LABELS: Record<MustHave, string> = {
   heat_pump: "Heat pump",
@@ -553,14 +554,14 @@ export default function Situation() {
         <button type="button" className="cars-btn" onClick={onSave}>
           Save draft
         </button>
-        <Link to="/cars/market" className="cars-btn cars-btn--outline">
+        <Link to={drivePath("/market")} className="cars-btn cars-btn--outline">
           Browse the market
         </Link>
         <button
           type="button"
           className="cars-btn cars-btn--primary"
           disabled={!canContinue}
-          onClick={() => navigate("/cars/compare")}
+          onClick={() => navigate(drivePath("/compare"))}
         >
           Compare options
         </button>

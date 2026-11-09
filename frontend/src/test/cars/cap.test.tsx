@@ -60,7 +60,7 @@ describe("Selection cap (spec 024 R18)", () => {
   });
 
   it("the tray stops adding at the cap and says so; the Start here button follows", async () => {
-    renderCars("/cars", { ...BASE_STATE, selection: fake(MAX_COMPARE_VARIANTS) });
+    renderCars("/drive-cheap", { ...BASE_STATE, selection: fake(MAX_COMPARE_VARIANTS) });
     await waitFor(() => expect(screen.getAllByTestId("tray-chip")).toHaveLength(MAX_COMPARE_VARIANTS), WAIT);
     expect(screen.getByText(`${MAX_COMPARE_VARIANTS} of ${MAX_COMPARE_VARIANTS} cars selected.`, { exact: false })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Add a car" })).toBeDisabled();
@@ -76,7 +76,7 @@ describe("Selection cap (spec 024 R18)", () => {
   });
 
   it("below the cap the tray and the card behave as before", async () => {
-    renderCars("/cars", BASE_STATE);
+    renderCars("/drive-cheap", BASE_STATE);
     await waitFor(() => expect(screen.getAllByTestId("tray-chip")).toHaveLength(BASE_STATE.selection.length), WAIT);
     expect(screen.getByRole("combobox", { name: "Add a car" })).toBeEnabled();
     expect(screen.queryByTestId("tray-full")).toBeNull();

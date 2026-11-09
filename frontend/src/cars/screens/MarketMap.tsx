@@ -31,6 +31,7 @@ import {
 } from "../lib/market";
 import { useCarState } from "../state";
 import "../market.css";
+import { drivePath } from "../../lib/productRoutes";
 
 const MIN_YEAR = 2010;
 const MAX_YEAR = 2030;
@@ -366,7 +367,7 @@ export default function MarketMap() {
                 type="button"
                 className="cars-btn cars-btn--primary"
                 disabled={selection.length === 0}
-                onClick={() => navigate("/cars/compare")}
+                onClick={() => navigate(drivePath("/compare"))}
               >
                 Compare selection
               </button>

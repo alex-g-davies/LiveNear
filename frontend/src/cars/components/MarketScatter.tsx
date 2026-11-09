@@ -188,20 +188,20 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
           <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
             {xAxis === "year" &&
               yearTicks.map((yr) => (
-                <line key={`grid-${yr}`} x1={x(yr)} x2={x(yr)} y1={0} y2={innerH} stroke="#F0F2F4" />
+                <line key={`grid-${yr}`} x1={x(yr)} x2={x(yr)} y1={0} y2={innerH} stroke="var(--c-grid)" />
               ))}
             {y.ticks(6).map((tv) => (
               <g key={tv} transform={`translate(0,${y(tv)})`}>
-                <line x1={0} x2={innerW} stroke={tv === 0 ? "#D0D7DE" : "#EEF1F4"} />
+                <line x1={0} x2={innerW} stroke={tv === 0 ? "var(--c-border)" : "var(--c-grid)"} />
                 <text x={-10} dy="0.32em" textAnchor="end" className="cars-curves__tick">
                   {compactY(yAxis, tv)}
                 </text>
               </g>
             ))}
-            <line x1={0} x2={0} y1={0} y2={innerH} stroke="#D0D7DE" />
+            <line x1={0} x2={0} y1={0} y2={innerH} stroke="var(--c-border)" />
             {xTicks.map((tv) => (
               <g key={`xt-${tv}`} transform={`translate(${x(tv)},${innerH})`}>
-                <line y1={0} y2={5} stroke="#D0D7DE" />
+                <line y1={0} y2={5} stroke="var(--c-border)" />
                 <text y={20} textAnchor="middle" className="cars-curves__tick">
                   {compactX(xAxis, tv)}
                 </text>
@@ -234,7 +234,7 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
                   r={r}
                   fill={color}
                   fillOpacity={on ? 1 : 0.35}
-                  stroke={on ? "#1F2328" : "none"}
+                  stroke={on ? "var(--c-ink)" : "none"}
                   strokeWidth={on ? 2 : 0}
                   tabIndex={0}
                   role="button"

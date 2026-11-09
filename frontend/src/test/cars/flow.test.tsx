@@ -21,7 +21,7 @@ describe("Cars flow across the four screens (spec 022 R1/R11/R12)", () => {
   it("situation -> compare table -> curves -> detail -> back", async () => {
     // Start with no selection: the default (first four variants) is applied
     // once the vehicle catalogue lands.
-    renderCars("/cars", DEFAULT_STATE);
+    renderCars("/drive-cheap", DEFAULT_STATE);
     expect(screen.getByRole("heading", { level: 1, name: "Your situation" })).toBeInTheDocument();
     expect(screen.getByText("Car costs for newcomers to Norway")).toBeInTheDocument();
     await waitFor(
@@ -55,7 +55,7 @@ describe("Cars flow across the four screens (spec 022 R1/R11/R12)", () => {
   });
 
   it("redirects unknown /cars paths to the form", async () => {
-    renderCars("/cars/nope/deeper");
+    renderCars("/drive-cheap/nope/deeper");
     expect(await screen.findByRole("heading", { level: 1, name: "Your situation" })).toBeInTheDocument();
   });
 });

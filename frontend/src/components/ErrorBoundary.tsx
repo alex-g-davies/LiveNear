@@ -28,8 +28,8 @@ export default class ErrorBoundary extends Component<Props, State> {
     return (
       <div className="crash">
         <div className="crash__card" role="alert">
-          <img src="/brand/logo.png" alt={BRAND_NAME} className="crash__logo" />
-          <p className="crash__msg">Something went wrong rendering the map.</p>
+          <img src="/brand/livenear-logo.svg" alt={BRAND_NAME} className="crash__logo" />
+          <p className="crash__msg">Something went wrong loading this page.</p>
           <button
             type="button"
             className="crash__reload"

@@ -33,7 +33,7 @@ describe("Option detail (spec 022 R11, 024 follow-up)", () => {
     const baseline = buildScenario(buildRequest(BASE_STATE));
     const used = baseline.options.find((o) => o.option_kind === "used_1_3")!;
     const id = used.result.option_id;
-    renderCars(`/cars/option/${id}`);
+    renderCars(`/drive-cheap/option/${id}`);
 
     await waitFor(() => expect(screen.getByRole("heading", { level: 1, name: used.result.label })).toBeInTheDocument(), WAIT);
     expect(screen.getByText("Net cost per month if you leave at 2.5 years")).toBeInTheDocument();
@@ -70,7 +70,7 @@ describe("Option detail (spec 022 R11, 024 follow-up)", () => {
     const baseline = buildScenario(buildRequest(BASE_STATE));
     const used = baseline.options.find((o) => o.option_kind === "used_1_3")!;
     const r = used.result;
-    renderCars(`/cars/option/${r.option_id}`, { ...BASE_STATE, measure: "tco" });
+    renderCars(`/drive-cheap/option/${r.option_id}`, { ...BASE_STATE, measure: "tco" });
     await waitFor(() => expect(screen.getByTestId("tile-at-exit")).toBeInTheDocument(), WAIT);
 
     // Default exit point is 2.5 years (month 30), the same as Compare curves.
@@ -97,7 +97,7 @@ describe("Option detail (spec 022 R11, 024 follow-up)", () => {
   it("shares the exit point with Compare curves", async () => {
     const baseline = buildScenario(buildRequest(BASE_STATE));
     const id = baseline.options[0].result.option_id;
-    renderCars("/cars/compare/curves");
+    renderCars("/drive-cheap/compare/curves");
     await waitFor(() => expect(screen.getByLabelText(/Mark an exit point/)).toBeInTheDocument(), WAIT);
     fireEvent.change(screen.getByLabelText(/Mark an exit point/), { target: { value: "3.5" } });
     await waitFor(() => expect(screen.getByText("Ranking if you leave at 3.5 years")).toBeInTheDocument(), WAIT);
@@ -112,7 +112,7 @@ describe("Option detail (spec 022 R11, 024 follow-up)", () => {
   it("shows the lease strip for a lease and no purchase price", async () => {
     const baseline = buildScenario(buildRequest(BASE_STATE));
     const lease = baseline.options.find((o) => o.option_kind === "lease")!;
-    renderCars(`/cars/option/${lease.result.option_id}`);
+    renderCars(`/drive-cheap/option/${lease.result.option_id}`);
     await waitFor(() => expect(screen.getByText("What you pay for the lease")).toBeInTheDocument(), WAIT);
     expect(screen.getByText("Monthly rent")).toBeInTheDocument();
     expect(screen.queryByText("Buying and selling")).toBeNull();
@@ -121,7 +121,7 @@ describe("Option detail (spec 022 R11, 024 follow-up)", () => {
 
   it("measure selector changes the tiles", async () => {
     const baseline = buildScenario(buildRequest(BASE_STATE));
-    renderCars(`/cars/option/${baseline.options[0].result.option_id}`);
+    renderCars(`/drive-cheap/option/${baseline.options[0].result.option_id}`);
     await waitFor(() => expect(screen.getByTestId("tile-expected")).toBeInTheDocument(), WAIT);
     const before = screen.getByTestId("tile-expected").textContent;
     fireEvent.change(screen.getByLabelText("Cost measure"), { target: { value: "tco" } });
@@ -139,7 +139,7 @@ describe("Option detail (spec 022 R11, 024 follow-up)", () => {
   });
 
   it("explains a missing option instead of crashing", async () => {
-    renderCars("/cars/option/does-not-exist");
+    renderCars("/drive-cheap/option/does-not-exist");
     await waitFor(() => expect(screen.getByText(/not in the current results/)).toBeInTheDocument(), WAIT);
     expect(screen.getByRole("link", { name: "Back to all options" })).toBeInTheDocument();
   });

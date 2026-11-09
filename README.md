@@ -189,9 +189,13 @@ limits, ~500 m isochrone-origin snapping, and the `MAPBOX_DAILY_CALL_BUDGET`
 breaker (spec 004) keep worst-case usage inside the free tier. Watch the
 Mapbox Statistics page early on; rotate the token if it ever leaks.
 
-## Cars: Norway car total-cost-of-ownership (specs [`022`](specs/022-car-tco), [`023`](specs/023-market-checklist), [`024`](specs/024-recommendations-maintenance))
+## DriveCheap: Norway car total-cost-of-ownership (specs [`022`](specs/022-car-tco), [`023`](specs/023-market-checklist), [`024`](specs/024-recommendations-maintenance), [`025`](specs/025-site-restructure))
 
-A second surface at `/cars` for people moving to Norway: which car, got
+The landing page at `/` links to both products: LiveNear (the map) at
+`/live-near` and DriveCheap at `/drive-cheap`. Older `/?state=…` and `/cars…`
+links redirect there.
+
+DriveCheap is for people moving to Norway: which car, got
 which way (buy new, lease, used 1–3 years, used 5+ years), costs least for
 the time they will actually keep it, with P10–P90 bands and a source, date
 and Live/Estimate status on every number. Nothing personal is stored

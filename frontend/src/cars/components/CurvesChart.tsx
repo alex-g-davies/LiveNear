@@ -132,16 +132,16 @@ export default function CurvesChart({ options, measure, showBands, exitMonth, co
         <g transform={`translate(${MARGIN.left},${MARGIN.top})`}>
           {yTicks.map((tv) => (
             <g key={tv} transform={`translate(0,${y(tv)})`}>
-              <line x1={0} x2={innerW} stroke={tv === 0 ? "#D0D7DE" : "#EEF1F4"} />
+              <line x1={0} x2={innerW} stroke={tv === 0 ? "var(--c-border)" : "var(--c-grid)"} />
               <text x={-10} dy="0.32em" textAnchor="end" className="cars-curves__tick">
                 {compactValue(def, tv)}
               </text>
             </g>
           ))}
-          <line x1={0} x2={0} y1={0} y2={innerH} stroke="#D0D7DE" />
+          <line x1={0} x2={0} y1={0} y2={innerH} stroke="var(--c-border)" />
           {xTicks.map((yr) => (
             <g key={yr} transform={`translate(${x(yr)},${innerH})`}>
-              <line y1={0} y2={5} stroke="#D0D7DE" />
+              <line y1={0} y2={5} stroke="var(--c-border)" />
               <text y={20} textAnchor="middle" className="cars-curves__tick">
                 {yr} yr
               </text>
@@ -176,7 +176,7 @@ export default function CurvesChart({ options, measure, showBands, exitMonth, co
             x2={exitX}
             y1={0}
             y2={innerH}
-            stroke="#1F2328"
+            stroke="var(--c-ink)"
             strokeDasharray="3 3"
             data-testid="exit-marker"
           />

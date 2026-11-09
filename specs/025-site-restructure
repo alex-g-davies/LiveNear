@@ -1,0 +1,153 @@
+# Spec 025 — Site Restructure: LiveNear and DriveCheap
+
+Status: Draft
+Owner: <you>
+Related: GitHub #15; 010 (branding, target sizes, one h1), 018 (LiveNear
+name and assets), 022 R1 (routing, partly superseded here), 021 (token guard)
+
+## Overview
+
+The site solves two separate problems but presents them as a map with a
+car tool hidden at an unlinked URL. This spec gives each its own named
+product, **LiveNear** (home prices and commutes) and **DriveCheap** (cost of
+owning a car in Norway), under a new landing page, a way to switch between
+them, and one visual identity based on LiveNear's.
+
+## Context
+
+The map and `/cars` share no shell and no links in either direction, and
+cars has its own palette. The map parses its URL once at module load, so
+leaving and returning restores stale state; that becomes reachable as soon
+as navigation between products exists. The server only falls back to the
+SPA under `/cars`, so any new path needs a server route.
+
+## Requirements
+
+### Routes
+
+- **R1 — Product URLs.** `/` is a landing page. The map is at `/live-near`.
+  The car tool is at `/drive-cheap`, with its existing sub-routes
+  (`/market`, `/checklist`, `/compare`, `/compare/curves`,
+  `/option/:optionId`) beneath it. This supersedes the routing paths and
+  "`/` stays the map" in 022 R1; the rest of 022 R1 stands.
+- **R2 — Old map links.** `/` with at least one valid map parameter (as
+  recognised by `parseAppUrl`) replaces to `/live-near` with the query
+  intact. `/` with no valid map parameter shows the landing page.
+- **R3 — Old car links.** Any `/cars` or `/cars/...` URL replaces to the
+  same location under `/drive-cheap`, preserving percent-encoding, query
+  (including `?c=` and `?mock=1`) and hash. Matching is case-insensitive.
+- **R4 — Unknown paths.** In the app, any other non-`/api` path replaces
+  to `/`.
+- **R5 — Server fallback.** A hard reload of `/live-near`, or of any path
+  under `/drive-cheap` or `/cars`, serves the SPA. Static assets and `/api`
+  are unaffected, and other unknown paths still return 404 from the
+  server. Fallback registration is testable without importing the
+  production app.
+- **R6 — Code loading.** The landing page does not download the map or car
+  bundles until needed; both products load on demand, and are preloaded when
+  the user hovers or focuses a link to them. A failed chunk shows the
+  existing error card. Map popup styling is unchanged by the new CSS order.
+
+### Moving between products
+
+- **R7 — Product switcher.** Both products show a switcher linking to
+  LiveNear and DriveCheap, marking the current one, inside the map's
+  existing panel and the DriveCheap header. It adds no bar that reduces
+  map height, stays visible when the mobile panel is collapsed, and meets
+  010 R5 target sizes. Each product links back to the landing page through
+  its logo.
+- **R8 — State survives switching.** Leaving a product and returning within
+  the same page load restores its latest URL state, including for a `?c=`
+  link never edited. Last-used URLs are held in memory only and are never
+  written to storage, because map URLs contain work coordinates.
+- **R9 — No cross-product URL writes.** A pending map or car URL update
+  never writes onto another route. Pending car saves are flushed, not lost,
+  when leaving DriveCheap.
+- **R10 — Location prompt.** The map geolocates only on its first mount in
+  a page load with no recognised parameters. Returning to the map never
+  re-prompts.
+
+### Landing page
+
+- **R11 — Landing content.** The landing page names both products, says in
+  one sentence each what problem it solves, and links to each, with the
+  coverage stated honestly (LiveNear: United States; DriveCheap: Norway).
+  Exactly one h1. It works at phone width and without the map bundle.
+  The page reads "LiveNear & DriveCheap" as the site name.
+
+### Identity
+
+- **R12 — Names.** The car product reads DriveCheap everywhere user-facing,
+  and LiveNear stays one word (018 R1). The title is set per route: landing
+  "LiveNear & DriveCheap", map "LiveNear", cars "DriveCheap". The crash card
+  uses copy that is correct for any product.
+- **R13 — Logos.** A matching SVG mark and wordmark exist for each product,
+  in the shared palette and legible at panel-header size. Claude drafts
+  them; **the owner approves them before they replace any current asset.**
+  The map pin (`mark-512.png`) keeps its art.
+- **R14 — Shared palette.** One token set in `styles.css` drives both
+  products. It adds `--accent: #2b6fa8` for text and primary controls, since
+  `#3182bd` is about 4.15:1 on white. Car tokens derive from shared tokens,
+  except where a distinct meaning exists (estimate/live status, stronger
+  borders). Car charts and CSS have no remaining colour literals outside
+  the token block, and the car screens no longer name the unloaded Inter font.
+- **R15 — Metadata.** `og:url` and `og:image` use
+  `https://livenear.onrender.com`, replacing the suspended service, and the
+  description covers both products. CLAUDE.md and README describe the new
+  routes and names.
+
+### Continuity
+
+- **R16 — Unchanged internals.** `/api/cars`, the `cars` folder names,
+  `livenear.*` storage keys (so saved profiles survive), the map's and car
+  tool's URL parameters, data files and engine are unchanged.
+
+## Non-functional / Constraints
+
+- No personal data is persisted server-side, and no new storage of map URLs
+  (R8). The hard constraints in CLAUDE.md are unchanged.
+- No new runtime dependency.
+
+## Acceptance Criteria
+
+- [ ] `/` shows the landing page; `/?state=WA` lands on `/live-near?state=WA`
+      and `/?state=XX` stays on the landing page (R1, R2, R11).
+- [ ] `/cars/option/a%2Fb?c=x#y` lands on `/drive-cheap/option/a%2Fb?c=x#y`
+      (R3).
+- [ ] An unknown app path lands on `/` (R4).
+- [ ] Reloading `/live-near`, `/drive-cheap/market` and `/cars/compare` on
+      the production build serves the app; a static asset still serves and
+      `/nope` returns 404 (R5).
+- [ ] The built `dist/index.html` does not reference MapLibre (R6), and the
+      landing page's network log shows no map chunk until a link is used.
+- [ ] Map popups look as they did before lazy loading (R6).
+- [ ] The switcher appears on both products, in the collapsed mobile panel,
+      and at 44 px target size; the map height is unchanged (R7).
+- [ ] With map and car state set, switching back and forth restores both,
+      with no location prompt on return (R8, R10).
+- [ ] A map or car update pending during a route change does not alter the
+      new route's URL, and a pending car save is kept (R9).
+- [ ] Tab titles and crash-card copy are correct on each route (R12).
+- [ ] The owner has approved logos, and they are in place (R13).
+- [ ] No colour literals remain outside the token block in car CSS and
+      charts; primary controls pass 4.5:1 contrast (R14).
+- [ ] Shared links show the current origin in metadata (R15).
+- [ ] A saved profile from before this change still loads (R16).
+- [ ] `npm run test`, `npm run build`, `pytest`, `ruff check .` pass, and CI
+      smoke-tests `/live-near`, `/drive-cheap/market` and `/cars/compare`.
+
+## Out of Scope (explicit)
+
+- A custom domain; renaming the Render service or GitHub repository.
+- Per-product social cards or favicons.
+- New car or map features, and Norway on the map (GitHub #14).
+- Internal renames of `cars` to DriveCheap in code, or of the API.
+
+## Verification notes
+
+R1-R4, R9 → `routes.test.tsx` and writer-guard tests; R5 →
+`test_spa_fallback.py` and CI smoke; R6 → build check plus a visual popup
+check; R7, R8, R10, R11 → by hand in the container build at desktop and
+phone widths; R12-R15 → visual and grep sweep; R16 → load a saved profile
+and run existing suites. The human verifies; the implementing agent does
+not self-certify done.

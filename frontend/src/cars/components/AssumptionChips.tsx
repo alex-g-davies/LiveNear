@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { formatKm, formatPct } from "../lib/format";
 import { useCarState } from "../state";
+import { DRIVE_PATH } from "../../lib/productRoutes";
 
 const MUST_LABEL: Record<string, string> = {
   heat_pump: "heat pump",
@@ -22,7 +23,7 @@ export default function AssumptionChips() {
   const variants = new Set(selection.map((s) => s.variant_id)).size;
   return (
     <div className="cars-chips" aria-label="Your assumptions">
-      <Link to="/cars" className="cars-chip cars-chip--link">
+      <Link to={DRIVE_PATH} className="cars-chip cars-chip--link">
         Selection: {variants} {variants === 1 ? "car" : "cars"}
       </Link>
       <span className="cars-chip">
@@ -45,7 +46,7 @@ export default function AssumptionChips() {
         </span>
       )}
       {whatIf && <span className="cars-chip cars-chip--whatif">What-if active</span>}
-      <Link to="/cars" className="cars-chips__edit">
+      <Link to={DRIVE_PATH} className="cars-chips__edit">
         Edit
       </Link>
     </div>

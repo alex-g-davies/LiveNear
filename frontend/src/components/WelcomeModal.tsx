@@ -49,7 +49,7 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange }: Pr
         <header className="about__head">
           {/* The slogan banner, not the plain wordmark — this is the one
               landing surface where the tagline earns its space (018 R2). */}
-          <img src="/brand/banner.png" alt={BRAND_NAME} className="welcome__logo" />
+          <img src="/brand/livenear-logo.svg" alt={BRAND_NAME} className="welcome__logo" />
           <button type="button" className="about__close" aria-label="Close" onClick={onClose}>
             ×
           </button>

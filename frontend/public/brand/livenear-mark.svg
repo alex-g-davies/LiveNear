@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="LiveNear">
+  <path d="M32 63C26 52 7 43 7 27a25 25 0 1 1 50 0c0 16-19 25-25 36Z" fill="#2b6fa8"/>
+  <circle cx="32" cy="27" r="19" fill="#e8f1f8"/>
+  <path d="M15 19 30 9l3 13-14 9M33 22l16-5M36 44l-3-22" fill="none" stroke="#ffffff" stroke-width="1.8"/>
+  <path d="M35 36c8 0 10-3 9-7-1-3-2-5 0-10" fill="none" stroke="#0f766e" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="m20 31 12-11 12 11-1.8 2L41 31.900V43H23V31.900L21.800 33Z" fill="#1a2230"/>
+  <path d="M27.500 33.500h3.500V37h-3.500zM33 33.500h3.500V37H33z" fill="#e8f1f8"/>
+  <circle cx="44" cy="17" r="5" fill="#f5a623" stroke="#ffffff" stroke-width="1.500"/>
+</svg>
