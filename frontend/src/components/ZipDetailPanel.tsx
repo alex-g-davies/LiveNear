@@ -2,14 +2,8 @@ import { useEffect, useState } from "react";
 
 import type { ZipValue } from "../api/client";
 import { type BudgetSpec, monthlyPaymentForPrice } from "../lib/affordability";
-import {
-  formatCount,
-  formatMonthly,
-  formatPct,
-  formatRatio,
-  formatUsd,
-  placeLabel,
-} from "../lib/format";
+import { formatCount, formatPct, formatRatio } from "../lib/format";
+import { type Locale, US_LOCALE } from "../lib/locale";
 import type { WikiSummary } from "../lib/wiki";
 import { deltaPct } from "../lib/zipStats";
 import PriceChart from "./PriceChart";
@@ -49,19 +43,29 @@ interface Props {
   pinnedRecord: ZipValue | undefined;
   onPin: () => void;
   onUnpin: () => void;
+  locale?: Locale;
+  /** Size behind an estimated price (026 R9); null where prices aren't estimated. */
+  referenceM2?: number | null;
+  /** Name for an area with no record (026 R3). */
+  fallbackName?: string | null;
 }
 
-function budgetBadge(budget: number, value: number | undefined, spec?: BudgetSpec) {
+function budgetBadge(
+  budget: number,
+  value: number | undefined,
+  spec: BudgetSpec | undefined,
+  locale: Locale,
+) {
   if (!budget || value == null) return null;
   const diff = budget - value;
   const cls = diff >= 0 ? "zip-detail__badge--under" : "zip-detail__badge--over";
   const text =
     diff >= 0
-      ? `Under budget by ${formatUsd(diff)}`
-      : `Over budget by ${formatUsd(-diff)}`;
+      ? `Under budget by ${locale.money(diff)}`
+      : `Over budget by ${locale.money(-diff)}`;
   const monthly =
     spec?.mode === "payment"
-      ? ` · ≈ ${formatMonthly(monthlyPaymentForPrice(value, spec.downPct, spec.ratePct))}`
+      ? ` · ≈ ${locale.monthly(monthlyPaymentForPrice(value, spec.downPct, spec.ratePct, spec.taxPct))}`
       : "";
   return (
     <span className={`zip-detail__badge ${cls}`}>
@@ -88,23 +92,41 @@ interface CompareRowDef {
   delta: "pct" | "pp";
 }
 
-const COMPARE_ROWS: CompareRowDef[] = [
-  { label: "Median value", get: (r) => r?.median_value ?? null, fmt: formatUsd, delta: "pct" },
-  { label: "YoY", get: (r) => r?.yoy_pct ?? null, fmt: formatPct, delta: "pp" },
-  {
-    label: "$/sqft sold",
-    get: (r) => r?.ppsf ?? null,
-    fmt: (v) => `$${Math.round(v)}`,
+function compareRows(locale: Locale): CompareRowDef[] {
+  const norway = locale.country === "NO";
+  const income: CompareRowDef = {
+    label: norway ? "Income after tax" : "HH income",
+    get: (r) => r?.median_income ?? null,
+    fmt: locale.money,
     delta: "pct",
-  },
-  { label: "HH income", get: (r) => r?.median_income ?? null, fmt: formatUsd, delta: "pct" },
-  {
+  };
+  const ratio: CompareRowDef = {
     label: "Price ÷ income",
     get: (r) => r?.price_to_income ?? null,
     fmt: (v) => formatRatio(v),
     delta: "pct",
-  },
-];
+  };
+  if (norway) {
+    return [
+      { label: "Est. price", get: (r) => r?.median_value ?? null, fmt: locale.money, delta: "pct" },
+      { label: "kr/m²", get: (r) => r?.price_per_m2 ?? null, fmt: locale.perArea, delta: "pct" },
+      income,
+      ratio,
+    ];
+  }
+  return [
+    { label: "Median value", get: (r) => r?.median_value ?? null, fmt: locale.money, delta: "pct" },
+    { label: "YoY", get: (r) => r?.yoy_pct ?? null, fmt: formatPct, delta: "pp" },
+    {
+      label: "$/sqft sold",
+      get: (r) => r?.ppsf ?? null,
+      fmt: (v) => `$${Math.round(v)}`,
+      delta: "pct",
+    },
+    income,
+    ratio,
+  ];
+}
 
 function deltaCell(def: CompareRowDef, pinned: number | null, selected: number | null) {
   if (pinned == null || selected == null) return "—";
@@ -118,25 +140,27 @@ function CompareView({
   pinnedRecord,
   selectedZip,
   selectedRecord,
+  locale,
 }: {
   pinnedZip: string;
   pinnedRecord: ZipValue | undefined;
   selectedZip: string;
   selectedRecord: ZipValue | undefined;
+  locale: Locale;
 }) {
   return (
-    <div className="zip-detail__compare" role="table" aria-label="ZIP comparison">
+    <div className="zip-detail__compare" role="table" aria-label={`${locale.areaNoun} comparison`}>
       <div className="zip-detail__compare-row zip-detail__compare-head" role="row">
         <span role="columnheader" />
         <span role="columnheader" className="zip-detail__compare-place">
-          📌 {placeLabel(pinnedZip, pinnedRecord?.name ?? null)}
+          📌 {locale.place(pinnedZip, pinnedRecord?.name ?? null)}
         </span>
         <span role="columnheader" className="zip-detail__compare-place">
-          {placeLabel(selectedZip, selectedRecord?.name ?? null)}
+          {locale.place(selectedZip, selectedRecord?.name ?? null)}
         </span>
         <span role="columnheader">Δ</span>
       </div>
-      {COMPARE_ROWS.map((def) => {
+      {compareRows(locale).map((def) => {
         const a = def.get(pinnedRecord);
         const b = def.get(selectedRecord);
         return (
@@ -174,7 +198,11 @@ export default function ZipDetailPanel({
   pinnedRecord,
   onPin,
   onUnpin,
+  locale = US_LOCALE,
+  referenceM2 = null,
+  fallbackName = null,
 }: Props) {
+  const norway = locale.country === "NO";
   const comparing = pinnedZip != null && pinnedZip !== zip;
   const yoy = record?.yoy_pct ?? null;
   const [wikiExpanded, setWikiExpanded] = useState(false);
@@ -185,7 +213,7 @@ export default function ZipDetailPanel({
   return (
     <aside
       className={`zip-detail${collapsed ? " zip-detail--collapsed" : ""}`}
-      aria-label={`Details for ZIP ${zip}`}
+      aria-label={norway ? `Details for ${record?.name ?? fallbackName ?? zip}` : `Details for ZIP ${zip}`}
     >
       <button
         type="button"
@@ -199,7 +227,7 @@ export default function ZipDetailPanel({
       <header className="zip-detail__head">
         <div>
           <h2 className="zip-detail__title">
-            {comparing ? "Compare" : placeLabel(zip, record?.name ?? null, stateCode)}
+            {comparing ? "Compare" : locale.place(zip, record?.name ?? fallbackName, stateCode)}
           </h2>
           <p className="zip-detail__sub">{metroLabel}</p>
         </div>
@@ -215,6 +243,7 @@ export default function ZipDetailPanel({
             pinnedRecord={pinnedRecord}
             selectedZip={zip}
             selectedRecord={record}
+            locale={locale}
           />
           <button type="button" className="zip-detail__pin" onClick={onUnpin}>
             Unpin {pinnedZip}
@@ -223,10 +252,36 @@ export default function ZipDetailPanel({
       ) : (
         <>
           <p className="zip-detail__value">
-            {record ? formatUsd(record.median_value) : "No price data"}
+            {record ? `${norway ? "≈ " : ""}${locale.money(record.median_value)}` : "No price data"}
           </p>
-          {budgetBadge(budget, record?.median_value, budgetSpec)}
+          {norway && (
+            <p className="zip-detail__sub">
+              {record
+                ? `Estimate for ${referenceM2 ?? "—"} m² at the area’s average price`
+                : "Under 10 sales in 2025, or not published"}
+            </p>
+          )}
+          {budgetBadge(budget, record?.median_value, budgetSpec, locale)}
 
+          {norway ? (
+            record && (
+              <div className="zip-detail__metrics zip-detail__metrics--pairs">
+                <Metric
+                  label="Average kr/m²"
+                  value={record.price_per_m2 == null ? "—" : locale.perArea(record.price_per_m2)}
+                />
+                <Metric label="Sales 2025" value={formatCount(record.sales)} />
+                <Metric
+                  label={record.income_level === "bydel" ? "Income (bydel)" : "Income after tax"}
+                  value={record.median_income == null ? "—" : locale.money(record.median_income)}
+                />
+                {record.price_to_income != null && (
+                  <Metric label="Price ÷ income" value={formatRatio(record.price_to_income)} />
+                )}
+              </div>
+            )
+          ) : (
+          <>
           <div className="zip-detail__metrics">
             <Metric
               label="YoY"
@@ -247,12 +302,14 @@ export default function ZipDetailPanel({
             <Metric label="Population" value={formatCount(record?.population)} />
             <Metric
               label="HH income"
-              value={record?.median_income == null ? "—" : formatUsd(record.median_income)}
+              value={record?.median_income == null ? "—" : locale.money(record.median_income)}
             />
             <Metric label="Price ÷ income" value={formatRatio(record?.price_to_income)} />
           </div>
 
           <PriceChart history={record?.history ?? null} />
+          </>
+          )}
 
           <div className="zip-detail__context">
             {estimating && !context.driveToWork && (
@@ -280,11 +337,13 @@ export default function ZipDetailPanel({
             )}
             {context.percentile != null && (
               <p>
-                Pricier than <strong>{context.percentile}%</strong> of {metroLabel} ZIPs
+                Pricier than <strong>{context.percentile}%</strong> of {metroLabel}{" "}
+                {locale.areaPlural}
                 {context.vsStateMedianPct != null && (
                   <>
                     {" "}
-                    · <strong>{formatPct(context.vsStateMedianPct)}</strong> vs state median
+                    · <strong>{formatPct(context.vsStateMedianPct)}</strong> vs{" "}
+                    {norway ? "regional" : "state"} median
                   </>
                 )}
               </p>
@@ -323,7 +382,7 @@ export default function ZipDetailPanel({
 
           {pinnedZip === zip ? (
             <button type="button" className="zip-detail__pin" onClick={onUnpin}>
-              📌 Pinned — click another ZIP to compare · Unpin
+              📌 Pinned — click another {locale.areaNoun} to compare · Unpin
             </button>
           ) : (
             <button type="button" className="zip-detail__pin" onClick={onPin}>

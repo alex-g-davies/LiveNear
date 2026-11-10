@@ -13,6 +13,14 @@ const SOURCES: { name: string; role: string; href: string }[] = [
   { name: "Mapbox", role: "drive-time contours, routing, geocoding", href: "https://www.mapbox.com/" },
 ];
 
+// Norway (026 R19). SSB and Kartverket require credit under CC BY 4.0, and SSB
+// requires saying the figures were changed; Oslo's bank is listed under NLOD.
+const NORWAY_SOURCES: { name: string; role: string; href: string }[] = [
+  { name: "Statistics Norway (SSB), CC BY 4.0", role: "kommune prices, household income, Oslo district codes. Adapted: combined, filtered to 10+ sales and multiplied into estimates", href: "https://www.ssb.no/en/diverse/lisens" },
+  { name: "City of Oslo statistics bank, NLOD 2.0", role: "Oslo delbydel prices, which include housing co-ops’ shared debt. Adapted: filtered to 10+ sales", href: "https://statistikkbanken.oslo.kommune.no/" },
+  { name: "Kartverket / Geonorge, CC BY 4.0", role: "kommune and grunnkrets boundaries. Adapted: simplified and merged", href: "https://www.geonorge.no/" },
+];
+
 interface Props {
   /** Reopens the welcome modal (017 R1). */
   onShowIntro?: () => void;
@@ -85,6 +93,18 @@ export default function AboutPanel({ onShowIntro, asOf }: Props) {
                 </li>
               ))}
             </ul>
+            <h3 className="about__subhead">Norway</h3>
+            <ul className="about__sources">
+              {NORWAY_SOURCES.map((s) => (
+                <li key={s.name}>
+                  <a href={s.href} target="_blank" rel="noopener noreferrer">
+                    {s.name}
+                  </a>{" "}
+                  — {s.role}
+                </li>
+              ))}
+            </ul>
+            <p className="about__foot">These organisations do not endorse {BRAND_NAME}.</p>
             {onShowIntro && (
               <p className="about__foot">
                 <button

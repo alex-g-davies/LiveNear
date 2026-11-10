@@ -51,6 +51,14 @@ def clear_cache() -> None:
     _CACHE.clear()
 
 
+def rush_windows(lat: float, lon: float) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
+    """(AM, PM) departures for a region: its own where declared (026 R13)."""
+    rush = (tzlookup.region_for(lat, lon) or {}).get("rush")
+    if not rush:
+        return list(AM_DEPARTURES), list(PM_DEPARTURES)
+    return [tuple(d) for d in rush["am"]], [tuple(d) for d in rush["pm"]]
+
+
 def calls_needed(mode: str) -> int:
     """Upstream calls an uncached estimate spends (budget reservation size)."""
     return len(AM_DEPARTURES) + len(PM_DEPARTURES) if mode == "drive" else 2
@@ -152,8 +160,10 @@ def fetch_commute(
         # Each leg's window rolls on its ORIGIN's clock (011 R1 semantics).
         am_now = now or datetime.datetime.now(tzlookup.tz_for(from_lat, from_lon))
         pm_now = now or datetime.datetime.now(tzlookup.tz_for(to_lat, to_lon))
-        am_departs = [next_departure(h, am_now, minute=m) for h, m in AM_DEPARTURES]
-        pm_departs = [next_departure(h, pm_now, minute=m) for h, m in PM_DEPARTURES]
+        am_times, _ = rush_windows(from_lat, from_lon)
+        _, pm_times = rush_windows(to_lat, to_lon)
+        am_departs = [next_departure(h, am_now, minute=m) for h, m in am_times]
+        pm_departs = [next_departure(h, pm_now, minute=m) for h, m in pm_times]
     else:
         am_departs = [None]
         pm_departs = [None]

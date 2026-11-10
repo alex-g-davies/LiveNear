@@ -13,13 +13,27 @@ from urllib.parse import quote
 
 import httpx
 
-from . import usage
+from . import tzlookup, usage
 from .bounded_cache import BoundedCache
 from .isochrone import snap_origin
 
 logger = logging.getLogger(__name__)
 
 GEOCODE_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places/{query}.json"
+COUNTRIES = "us,no"  # every country with map coverage (026 R12)
+# Below this Mapbox matched only part of the query. Live check 2026-11-10:
+# "Sveavagen 1, Stockholm" from Oslo became Sveavegen 1, Oslo at 0.548, while
+# "Karl Johans gate 1, Oslo" scored 1.0.
+MIN_RELEVANCE = 0.6
+
+
+def countries_for(lat: float | None, lon: float | None) -> str:
+    """Country filter for a search: the biasing region's own country, else all
+    covered ones. Searching both lets a foreign address fuzzy-match a US place
+    (live check: "Sveavagen 1, Stockholm" became a Michigan trailer park)."""
+    region = tzlookup.region_for(lat, lon) if lat is not None and lon is not None else None
+    return str(region.get("country", "US")).lower() if region else COUNTRIES
+
 
 # Cache: normalized query (forward) or "rev|lon,lat" (reverse, snapped) ->
 # (expires_at, result-or-None). None caches a miss. Bounded LRU (004
@@ -52,7 +66,7 @@ def reverse_geocode(
         raise usage.UsageBudgetError("daily upstream budget exhausted")
 
     url = GEOCODE_URL.format(query=f"{lon},{lat}")
-    params = {"access_token": token, "limit": 1, "types": "address", "country": "us"}
+    params = {"access_token": token, "limit": 1, "types": "address", "country": COUNTRIES}
     logger.info("Reverse geocoding a pin position")  # no coordinates, no token
     resp = httpx.get(url, params=params, timeout=10.0)
     resp.raise_for_status()
@@ -83,7 +97,8 @@ def forward_geocode(
     # The bias changes the answer, so it must be part of the cache key —
     # otherwise a Texas-biased result would be served to a Washington user.
     bias = f"{round(proximity_lon, 1)},{round(proximity_lat, 1)}" if has_proximity else "none"
-    key = f"{query.strip().lower()}|{bias}"
+    countries = countries_for(proximity_lat, proximity_lon) if has_proximity else COUNTRIES
+    key = f"{query.strip().lower()}|{bias}|{countries}"
     now = time.time()
     hit = _CACHE.get(key)
     if hit and hit[0] > now:
@@ -96,7 +111,7 @@ def forward_geocode(
     params = {
         "access_token": token,
         "limit": 1,
-        "country": "us",
+        "country": countries,
     }
     if has_proximity:
         params["proximity"] = f"{proximity_lon},{proximity_lat}"
@@ -104,7 +119,9 @@ def forward_geocode(
     resp = httpx.get(url, params=params, timeout=10.0)
     resp.raise_for_status()
 
-    features = resp.json().get("features", [])
+    features = [
+        f for f in resp.json().get("features", []) if f.get("relevance", 1.0) >= MIN_RELEVANCE
+    ]
     result: dict[str, Any] | None = None
     if features:
         lon, lat = features[0]["center"]  # Mapbox returns [lon, lat]

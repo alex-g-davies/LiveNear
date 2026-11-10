@@ -17,6 +17,12 @@ class ZipValue(BaseModel):
     price_to_income: float | None = None
     # GeoNames primary place name (spec 012). Optional.
     name: str | None = None
+    # Norway (spec 026): published average price, sales behind it, the kind of
+    # area, and the level the income figure describes.
+    price_per_m2: int | None = None
+    sales: int | None = None
+    area_type: str | None = None
+    income_level: str | None = None
 
 
 class HousingResponse(BaseModel):
@@ -51,10 +57,19 @@ class CommuteEstimate(BaseModel):
 
 
 class RegionInfo(BaseModel):
-    """A selectable state: name + map bounds/center for the picker (national)."""
+    """A selectable region: name, map bounds and center, plus how to present it
+    (026 R7). Fields absent from the data file take the US defaults below."""
 
     code: str
     name: str
     bbox: list[float] | None = None  # [minLon, minLat, maxLon, maxLat]
     center: list[float] | None = None  # [lon, lat]
     zip_count: int
+    country: str = "US"
+    currency: str = "USD"
+    timezone: str | None = None
+    units: str = "imperial"
+    region_label: str = "State"
+    area_label: str = "ZIP"
+    metrics: list[str] | None = None  # None = every metric
+    reference_m2: int | None = None

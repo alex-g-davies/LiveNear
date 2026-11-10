@@ -53,7 +53,7 @@ export default function Landing() {
             <span className="landing-card__body">
               <img src="/brand/livenear-logo.svg" alt={MAP_NAME} className="landing-card__logo" />
               <span className="landing-card__text">Find where you can afford a home and still reach work.</span>
-              <span className="landing-card__coverage">Home values and commute times · United States</span>
+              <span className="landing-card__coverage">Home values and commute times · United States and Norway</span>
               <span className="landing-card__cta">Explore the map →</span>
             </span>
           </Link>

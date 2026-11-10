@@ -1,0 +1,152 @@
+# Spec 026 — Norway on the LiveNear Map
+
+Status: Draft
+Owner: <you>
+Related: GitHub #14; 007 (coverage and repo size), 011/013/016 (commute),
+014/020 (affordability, payment budget), 019 (matches), 025 (routes),
+`docs/livenear/sources.md` (terms log)
+
+## Overview
+
+Add Norway to LiveNear: home prices and commute reach on the same map, in
+kroner and metric units. Coverage is every kommune with published data, and
+Oslo is split into delbydeler so the capital can answer commute questions at
+a useful scale.
+
+## Context
+
+The map is US-only, but regions, geofence and colour ramps are already
+data-driven. The obstacles are a US-only geocoder, 5-digit join keys, a
+required `median_value`, and US assumptions in formatting and mortgage
+defaults. Free Norwegian prices are published as average NOK/m², not as a
+median home value, which is the main modelling change. The owner has accepted
+Oslo's statistics bank on the strength of its open-data listing (see the terms
+log). Repo data is 114.9 MB against a ~120 MB limit (007 R2).
+
+## Requirements
+
+### Data
+
+- **R1 — Sources.** Prices come from SSB 14545/14310 for kommuner and Oslo
+  BOL018 for delbydeler; income from SSB 06944; boundaries from Geonorge
+  kommuner and grunnkretser, joined into delbydeler with SSB's KLASS 460 code
+  list. Only sources with a row in the terms log are used, and listing sites
+  are never touched.
+- **R2 — Regions.** Norway appears as regions in the existing picker: each
+  fylke, with kommune polygons, except a combined "Oslo & Akershus" region
+  with Oslo as delbydeler and Akershus as kommuner, so commuters see both
+  sides of the city line.
+- **R3 — Sparse areas.** An area with fewer than 10 sales in the period, or no
+  published price, has no value and renders as no-data. It is never imputed.
+- **R4 — Oslo is removable.** Oslo delbydel data is one separable build
+  output. Without it, Oslo falls back to one SSB kommune polygon.
+- **R5 — Size.** Norway adds at most 5 MB to committed data, or the 007 limit
+  is explicitly revised in this spec first.
+- **R6 — Build.** A separate `build_data_norway.py` produces the committed
+  files, reprojects from EPSG:25833 to WGS84 and is unit-tested. The US
+  pipeline is unchanged.
+
+### Model
+
+- **R7 — Region descriptor.** Each region declares its country, currency,
+  timezone, units, area-type wording and available metrics. Absent fields mean
+  US defaults, so existing data files keep working.
+- **R8 — Area IDs.** Area keys are opaque strings. Norwegian 4-digit kommune
+  codes keep their leading zeros and 8-digit codes survive; US ZIP handling is
+  unchanged.
+- **R9 — Price metric.** Norwegian areas carry price per m², labelled as an
+  average. The estimated home price used for budget matching is price per m²
+  times a reference home size, shown beside the result and adjustable by the
+  user. The default is 75 m², marked as an estimate.
+- **R10 — Metric availability.** A metric a region lacks is hidden. The picker
+  never offers an empty layer. Sold $/sqft is hidden for Norway.
+- **R11 — Trend.** Change-over-time figures never span the 2024/2025 boundary,
+  where SSB's m² definition changed.
+
+### Commute
+
+- **R12 — Geocoding.** Address search accepts Norwegian addresses, and results
+  outside covered regions are still refused.
+- **R13 — Time.** Norwegian regions use `Europe/Oslo` all year, so departure
+  times are never in the past, with rush windows set for Norway per region
+  rather than the US 16:30-18:00.
+- **R14 — Ferries.** Routes may use ferries, as today, and the commute note
+  says so for Norwegian regions.
+
+### Presentation
+
+- **R15 — Formatting.** Norwegian regions show kr, m², km² and km, and 24-hour
+  time. Wording says Fylke and Kommune or Delbydel, not State or ZIP. The
+  landing page's LiveNear coverage line includes Norway.
+- **R16 — URLs.** Shared links with Norwegian region and area IDs round-trip.
+  A budget applies only in its own currency: changing country clears it, and
+  a link carrying a budget and a Norwegian region reads it as kroner.
+- **R17 — Mortgage defaults.** Norwegian payment-mode defaults are marked as
+  estimates with a written basis: 10% minimum equity, and a note that banks
+  also cap debt at 5x income and test a 3-point rate rise (minimum 7%).
+  Payment mode states that it does not check those limits.
+- **R18 — Affordability.** Price-to-income appears only where a matching income
+  figure exists. Oslo delbydeler use their bydel's income, labelled as a bydel
+  figure wherever it is shown. Matches fall back to price per m² ranking where
+  no income exists.
+- **R19 — Attribution.** About lists SSB, the City of Oslo and Kartverket with
+  the credit their licences require, and flags that SSB figures were adapted.
+
+## Non-functional / Constraints
+
+- Norway adds no new API key, database or personal data.
+- Mapbox calls stay inside the existing daily budget and county-level
+  geofences (one all-Norway box would also admit most of Sweden).
+
+## Acceptance Criteria
+
+- [ ] Every Norwegian region loads with shaded areas; Oslo shows delbydeler
+      (R2).
+- [ ] Areas under 10 sales render as no-data (R3); removing the Oslo output
+      leaves a working single-polygon Oslo (R4).
+- [ ] Committed Norway data is within budget (R5), and US data and tests are
+      unchanged (R6, R7).
+- [ ] Code `0301` and an 8-digit code both survive load and URL round-trips
+      (R8, R16).
+- [ ] A budget matches on price per m² times the visible reference size (R9).
+- [ ] Unavailable metrics are absent from the picker (R10); no trend spans
+      2024/2025 (R11).
+- [ ] An Oslo address resolves, and a Stockholm address is refused (R12).
+- [ ] A commute in July uses a future Oslo departure (R13).
+- [ ] Live Oslo isochrones and commutes return traffic-aware results, recorded
+      in the verification notes (R13).
+- [ ] Norwegian regions show kr, m², km, 24-hour time and local wording (R15).
+- [ ] A US budget does not carry into Norway (R16).
+- [ ] Mortgage and attribution text is present (R17, R19).
+- [ ] `npm run test`, `npm run build`, `pytest`, `ruff check .` pass.
+
+## Open Questions (resolve in review)
+
+None open.
+
+Resolved by the owner: 75 m² default, adjustable (R9); bydel income labelled
+(R18); live Mapbox calls in Oslo approved. Resolved in the build: delbydeler
+can't be derived from grunnkrets codes, but SSB's KLASS 460 maps them under
+CC BY 4.0, so Oslo's unlicensed code list isn't needed.
+
+## Out of Scope (explicit)
+
+- Transit commutes (suggest a separate issue).
+- Sub-kommune prices outside Oslo; no public source was found.
+- Countries other than the US and Norway, and Norwegian-language UI.
+- A bank-grade check of how much someone could borrow.
+
+## Verification notes
+
+R1, R3-R6 → build tests and a size check; R7-R11, R15-R18 → unit tests plus a
+visual check on two fylker and Oslo at desktop and phone widths; R12-R14 →
+a small number of live Mapbox calls, approved by the owner beforehand; R19 →
+visual. The human verifies; the implementing agent does not self-certify done.
+
+Live Mapbox results, 2026-11-10 (21 calls, see the terms log): Oslo isochrone
+variation returned (peak 92 vs off-peak 229 sq mi); Asker-Oslo S commutes
+varied with departure time; Horten-Moss used a ferry step. Geocoding resolved
+Oslo and Bergen addresses. "Sveavagen 1, Stockholm" first matched a Michigan
+place under `country=us,no`, then a similarly named Oslo street at relevance
+0.55, so searches now use the bias region's country and drop matches below
+0.6 relevance.

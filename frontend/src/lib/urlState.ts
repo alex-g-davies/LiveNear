@@ -4,19 +4,20 @@
 
 import {
   COMMUTE_STEPS,
-  DEFAULT_DOWN_PCT,
   DEFAULT_MINUTES,
   DEFAULT_MODE,
-  DEFAULT_RATE_PCT,
   DEFAULT_STATE,
   DEFAULT_WORK,
   METRICS,
   TRAVEL_MODES,
+  mortgageDefaults,
   type MetricKey,
   type TravelMode,
   type WorkLocation,
 } from "../config";
-import { type BudgetSpec, DEFAULT_BUDGET_SPEC } from "./affordability";
+import { type BudgetSpec, defaultBudgetSpec } from "./affordability";
+import { isNorwegianCode } from "./locale";
+import { DEFAULT_REFERENCE_M2, validReferenceM2 } from "./referenceSize";
 
 export interface UrlState {
   state?: string;
@@ -33,6 +34,8 @@ export interface UrlState {
   minutes?: number;
   metric?: MetricKey;
   tmode?: TravelMode;
+  /** Norwegian reference home size (026 R9). */
+  m2?: number;
 }
 
 const METRIC_KEYS = new Set(METRICS.map((m) => m.key));
@@ -42,10 +45,15 @@ export function parseAppUrl(search: string): UrlState {
   const out: UrlState = {};
 
   const state = params.get("state")?.trim().toUpperCase();
-  if (state && /^[A-Z]{2}$/.test(state)) out.state = state;
+  if (state && (/^[A-Z]{2}$/.test(state) || isNorwegianCode(state))) out.state = state;
 
+  // Area IDs are opaque per country (026 R8): US ZIPs stay exactly 5 digits.
   const zip = params.get("zip")?.trim();
-  if (zip && /^\d{5}$/.test(zip)) out.zip = zip;
+  const areaPattern = out.state && isNorwegianCode(out.state) ? /^\d{4,8}$/ : /^\d{5}$/;
+  if (zip && areaPattern.test(zip)) out.zip = zip;
+
+  const m2 = Number(params.get("m2"));
+  if (params.has("m2") && validReferenceM2(m2)) out.m2 = m2;
 
   const budget = Number(params.get("budget"));
   if (Number.isFinite(budget) && budget > 0) out.budget = Math.round(budget);
@@ -99,12 +107,16 @@ export function parseAppUrl(search: string): UrlState {
  * param opens payment mode; otherwise price mode with any `budget`. Both
  * typed values are kept so toggling modes never loses either. */
 export function budgetSpecFromUrl(url: UrlState): BudgetSpec {
+  // The region decides the assumptions, so a link's budget reads in its own
+  // currency (026 R16).
+  const defaults = defaultBudgetSpec(url.state ?? DEFAULT_STATE);
   return {
+    ...defaults,
     mode: url.pay ? "payment" : "price",
-    price: url.budget ?? DEFAULT_BUDGET_SPEC.price,
-    payment: url.pay ?? DEFAULT_BUDGET_SPEC.payment,
-    downPct: url.down ?? DEFAULT_BUDGET_SPEC.downPct,
-    ratePct: url.rate ?? DEFAULT_BUDGET_SPEC.ratePct,
+    price: url.budget ?? defaults.price,
+    payment: url.pay ?? defaults.payment,
+    downPct: url.down ?? defaults.downPct,
+    ratePct: url.rate ?? defaults.ratePct,
   };
 }
 
@@ -117,6 +129,8 @@ export interface AppUrlInput {
   minutes: number;
   metric: MetricKey;
   tmode: TravelMode;
+  /** Reference size, written only for regions that use one. */
+  m2?: number;
 }
 
 /** Serialize to a query string ("?…" or "" when everything is default). */
@@ -126,8 +140,9 @@ export function serializeAppUrl(s: AppUrlInput): string {
   if (s.zip) params.set("zip", s.zip);
   if (s.budget.mode === "payment" && s.budget.payment > 0) {
     params.set("pay", String(s.budget.payment));
-    if (s.budget.downPct !== DEFAULT_DOWN_PCT) params.set("down", String(s.budget.downPct));
-    if (s.budget.ratePct !== DEFAULT_RATE_PCT) params.set("rate", String(s.budget.ratePct));
+    const defaults = mortgageDefaults(s.state);
+    if (s.budget.downPct !== defaults.downPct) params.set("down", String(s.budget.downPct));
+    if (s.budget.ratePct !== defaults.ratePct) params.set("rate", String(s.budget.ratePct));
   } else if (s.budget.mode === "price" && s.budget.price > 0) {
     params.set("budget", String(s.budget.price));
   }
@@ -142,6 +157,7 @@ export function serializeAppUrl(s: AppUrlInput): string {
   if (s.minutes !== DEFAULT_MINUTES) params.set("min", String(s.minutes));
   if (s.metric !== METRICS[0].key) params.set("metric", s.metric);
   if (s.tmode !== DEFAULT_MODE) params.set("tmode", s.tmode);
+  if (s.m2 != null && s.m2 !== DEFAULT_REFERENCE_M2) params.set("m2", String(s.m2));
   const qs = params.toString();
   return qs ? `?${qs}` : "";
 }

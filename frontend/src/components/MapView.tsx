@@ -16,6 +16,7 @@ import {
 } from "../config";
 import type { ZipValue } from "../api/client";
 import { fillColorExpression, fillOpacityExpression, overBudgetFilter } from "../lib/colorScale";
+import { type Locale, US_LOCALE } from "../lib/locale";
 import { buildZipPopupHtml } from "../lib/popup";
 
 interface Props {
@@ -52,6 +53,7 @@ interface Props {
   /** First visit (new-user onboarding): open the work pin's popup with a
    * "drag me" nudge so the pin is discoverable. Read once at map creation. */
   pinHint?: boolean;
+  locale?: Locale;
 }
 
 const ZIP_SOURCE = "zips";
@@ -147,6 +149,7 @@ export default function MapView({
   focusPoint,
   focusSignal,
   pinHint,
+  locale = US_LOCALE,
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -176,6 +179,8 @@ export default function MapView({
   recordsRef.current = records;
   const stateCodeRef = useRef(stateCode);
   stateCodeRef.current = stateCode;
+  const localeRef = useRef(locale);
+  localeRef.current = locale;
   const metricRef = useRef(activeMetric);
   metricRef.current = activeMetric;
   const stopsRef = useRef(stops);
@@ -243,7 +248,15 @@ export default function MapView({
       const zip = ((f.properties ?? {}) as { zip?: string }).zip ?? "";
       info
         .setLngLat(e.lngLat)
-        .setHTML(buildZipPopupHtml(zip, recordsRef.current.get(zip), stateCodeRef.current))
+        .setHTML(
+          buildZipPopupHtml(
+            zip,
+            recordsRef.current.get(zip),
+            stateCodeRef.current,
+            localeRef.current,
+            ((f.properties ?? {}) as { name?: string }).name,
+          ),
+        )
         .addTo(m);
     };
     m.on("mousemove", ZIP_FILL, showInfo);

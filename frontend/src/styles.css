@@ -1813,3 +1813,27 @@ body,
     transform: none;
   }
 }
+
+/* Reference home size for Norwegian price estimates (026 R9). */
+.reference-size {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.reference-size .budget-input__assumes,
+p.budget-input__assumes {
+  margin: 4px 0 0;
+  font-size: var(--fs-hint);
+  line-height: 1.4;
+}
+
+/* Norwegian figures are longer, so they sit two to a row (026 R15). */
+.zip-detail__metrics--pairs {
+  flex-wrap: wrap;
+}
+
+.zip-detail__metrics--pairs .zip-detail__metric {
+  flex: 1 1 calc(50% - 4px);
+}

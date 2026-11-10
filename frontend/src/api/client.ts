@@ -18,6 +18,11 @@ export interface ZipValue {
   price_to_income: number | null;
   // GeoNames primary place name (spec 012); null when unavailable.
   name: string | null;
+  // Norway (spec 026): absent on US records.
+  price_per_m2?: number | null;
+  sales?: number | null;
+  area_type?: string | null;
+  income_level?: string | null;
 }
 
 export interface HousingResponse {
@@ -45,6 +50,15 @@ export interface RegionInfo {
   bbox: [number, number, number, number] | null;
   center: [number, number] | null;
   zip_count: number;
+  // Presentation (spec 026 R7); absent means the US defaults.
+  country?: string;
+  currency?: string;
+  timezone?: string | null;
+  units?: string;
+  region_label?: string;
+  area_label?: string;
+  metrics?: string[] | null;
+  reference_m2?: number | null;
 }
 
 export const getRegions = () => getJson<RegionInfo[]>("/regions");

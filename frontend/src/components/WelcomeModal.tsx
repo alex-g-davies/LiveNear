@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { BRAND_NAME } from "../config";
 import type { BudgetSpec } from "../lib/affordability";
+import type { Locale } from "../lib/locale";
 import BudgetInput from "./BudgetInput";
 
 const HOW_TOS: { icon: string; text: string }[] = [
@@ -21,12 +22,13 @@ interface Props {
    * field in the panel. */
   budgetSpec?: BudgetSpec;
   onBudgetChange?: (spec: BudgetSpec) => void;
+  locale?: Locale;
 }
 
 /** First-visit welcome modal (017 R1): what the site is and the three moves
  * that matter. App owns visibility + the localStorage dismissal flag; the
  * About panel's "How it works" link reopens it. */
-export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange }: Props) {
+export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange, locale }: Props) {
   // Keyboard users land inside the dialog instead of on the map behind it.
   const ctaRef = useRef<HTMLButtonElement>(null);
   useEffect(() => ctaRef.current?.focus(), []);
@@ -55,7 +57,7 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange }: Pr
           </button>
         </header>
         <p className="about__blurb">
-          See where you could live. {BRAND_NAME} shades every ZIP by housing cost
+          See where you could live. {BRAND_NAME} shades every area by housing cost
           and overlays how far you can really get from work at rush hour — so
           affordable <em>and</em> commutable shows up at a glance.
         </p>
@@ -74,6 +76,7 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange }: Pr
             spec={budgetSpec}
             onChange={onBudgetChange}
             label="Your budget (optional)"
+            locale={locale}
           />
         )}
         <button type="button" ref={ctaRef} className="welcome__cta" onClick={onClose}>
