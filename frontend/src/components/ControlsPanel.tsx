@@ -1,10 +1,12 @@
 import { type ReactNode, useState } from "react";
+import { Link } from "react-router-dom";
 
 import type { CommuteVariation, RegionInfo, ZipValue } from "../api/client";
 import { BRAND_NAME } from "../config";
 import type { ColorStop, MetricDef, MetricKey, TravelMode } from "../config";
 import type { BudgetSpec } from "../lib/affordability";
 import type { MatchResult } from "../lib/matches";
+import { LANDING_PATH } from "../lib/productRoutes";
 import AboutPanel from "./AboutPanel";
 import AddressSearch from "./AddressSearch";
 import BudgetInput from "./BudgetInput";
@@ -12,6 +14,7 @@ import CommuteControl from "./CommuteControl";
 import Legend from "./Legend";
 import MatchesPanel from "./MatchesPanel";
 import MetricSwitcher from "./MetricSwitcher";
+import ProductSwitcher from "./ProductSwitcher";
 import RegionPicker from "./RegionPicker";
 import TopMovers from "./TopMovers";
 
@@ -105,7 +108,12 @@ export default function ControlsPanel({
       >
         {collapsed ? "▲" : "▼"}
       </button>
-      <img src="/brand/logo.png" alt={BRAND_NAME} className="panel-logo" />
+      <div className="panel-head">
+        <Link to={LANDING_PATH} aria-label={`${BRAND_NAME}, back to home`}>
+          <img src="/brand/livenear-logo.svg" alt="" className="panel-logo" />
+        </Link>
+        <ProductSwitcher current="map" />
+      </div>
       {firstRun}
 
       <div className="panel__section">

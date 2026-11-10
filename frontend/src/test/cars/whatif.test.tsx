@@ -26,7 +26,7 @@ describe("What-if sliders (spec 022 R11)", () => {
   });
 
   it("sends slider values as what_if without touching the profile, then Save moves them in", async () => {
-    renderCars("/cars/compare/curves");
+    renderCars("/drive-cheap/compare/curves");
     await waitFor(() => expect(postScenario).toHaveBeenCalled(), WAIT);
     expect(lastRequest().what_if).toBeNull();
 
@@ -50,7 +50,7 @@ describe("What-if sliders (spec 022 R11)", () => {
   });
 
   it("Reset clears the what-if and reruns with the saved profile", async () => {
-    renderCars("/cars/compare/curves");
+    renderCars("/drive-cheap/compare/curves");
     await waitFor(() => expect(postScenario).toHaveBeenCalled(), WAIT);
     fireEvent.click(screen.getByLabelText("Cash"));
     fireEvent.change(screen.getByLabelText(/Return your cash earns/), { target: { value: "6" } });

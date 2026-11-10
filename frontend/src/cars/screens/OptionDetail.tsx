@@ -16,6 +16,7 @@ import MeasureSelect from "../components/MeasureSelect";
 import { formatDate, formatKm, formatMonths, formatNok, formatPerKm, formatYears } from "../lib/format";
 import { MODE_LABELS, measureDef } from "../lib/measures";
 import { useCarState } from "../state";
+import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
 
 function bestOfKind(options: OptionSummary[], self: OptionSummary, kind: "lease" | "new", measure: keyof OptionSummary["result"]["measures"]) {
   const same = options.filter(
@@ -56,14 +57,14 @@ export default function OptionDetail() {
   if (!request) {
     return (
       <p className="cars-empty">
-        No cars selected yet. <Link to="/cars">Pick some on Your situation</Link>.
+        No cars selected yet. <Link to={DRIVE_PATH}>Pick some on Your situation</Link>.
       </p>
     );
   }
   if (!option) {
     return (
       <>
-        <Link to="/cars/compare" className="cars-link cars-back">
+        <Link to={drivePath("/compare")} className="cars-link cars-back">
           Back to all options
         </Link>
         {scenario.error && (
@@ -128,7 +129,7 @@ export default function OptionDetail() {
   return (
     <>
       <div className="cars-detailhead">
-        <Link to="/cars/compare" className="cars-link cars-back">
+        <Link to={drivePath("/compare")} className="cars-link cars-back">
           Back to all options
         </Link>
         <div className="cars-titlebar">

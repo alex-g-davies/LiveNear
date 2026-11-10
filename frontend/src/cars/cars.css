@@ -1,26 +1,45 @@
-/* Cars module (spec 022). Scoped under .cars so the map app is untouched.
-   Palette from the wireframes: page #F6F8FA, cards white with #D0D7DE,
-   ink #1F2328, muted #57606A (4.5:1+ on white), primary #0B5CD5. */
+/* DriveCheap (spec 022). Scoped under .cars so the map app is untouched.
+   Tokens derive from the shared palette in styles.css (025 R14); the rest are
+   meanings the map has no use for. Every colour literal lives in this block. */
 
 .cars {
-  --c-bg: #f6f8fa;
-  --c-card: #ffffff;
+  --c-bg: var(--page-bg);
+  --c-card: var(--surface);
   --c-border: #d0d7de;
   --c-border-soft: #eaeef2;
-  --c-ink: #1f2328;
-  --c-muted: #57606a;
-  --c-primary: #0b5cd5;
-  --c-primary-dark: #0a4bad;
-  --c-primary-soft: #e7f0fd;
+  --c-grid: #f0f2f4;
+  --c-ink: var(--ink);
+  --c-muted: var(--muted);
+  --c-primary: var(--accent);
+  --c-primary-dark: var(--accent-dark);
+  --c-primary-soft: var(--accent-soft);
   --c-est-bg: #fff4d6;
   --c-est-ink: #7a4b00;
+  --c-est-border: #e8d4a0;
   --c-live-bg: #eaeef2;
   --c-live-ink: #424a53;
+  --c-error-bg: #fff5f5;
+  --c-error-border: #f3b4b4;
+  --c-error-ink: #a12626;
+  --c-positive: #2f855a;
+  --c-neutral-300: #afb8c1;
+  --c-neutral-400: #8c959f;
+  --c-neutral-500: #6e7781;
+  --c-neutral-600: #57606a;
+  --c-neutral-700: #424a53;
+  --c-shadow: rgba(26, 34, 48, 0.12);
+  --c-series-1: var(--accent);
+  --c-series-2: #c2410c;
+  --c-series-3: #0f766e;
+  --c-series-4: #7c3aed;
+  --c-series-5: #b45309;
+  --c-series-6: #be185d;
+  --c-series-7: #1d4ed8;
+  --c-series-8: #4d7c0f;
   --c-radius: 12px;
   min-height: 100vh;
   background: var(--c-bg);
   color: var(--c-ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   overflow-x: hidden;
@@ -40,9 +59,9 @@
   transform: none;
   margin: 0;
   padding: 10px 14px;
-  border: 1px solid #f3b4b4;
+  border: 1px solid var(--c-error-border);
   border-radius: 8px;
-  background: #fff5f5;
+  background: var(--c-error-bg);
   font-size: 14px;
 }
 
@@ -68,9 +87,21 @@
   display: flex;
   flex-direction: column;
 }
-.cars-brand__name {
-  font-weight: 600;
-  font-size: 17px;
+.cars a.cars-brand__name {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--c-ink);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.cars-brand__logo {
+  display: block;
+  height: 44px;
+  width: auto;
 }
 .cars-brand__sub,
 .cars-hint {
@@ -112,7 +143,7 @@
 }
 .cars-steps__link--soon {
   cursor: not-allowed;
-  color: #6e7781;
+  color: var(--c-neutral-500);
 }
 .cars-steps__link--soon small {
   font-size: 11px;
@@ -433,7 +464,7 @@
   color: var(--c-muted);
 }
 .cars-gate--bad {
-  color: #a12626;
+  color: var(--c-error-ink);
   font-weight: 500;
 }
 .cars-actions {
@@ -467,7 +498,7 @@
 .cars-btn--primary {
   background: var(--c-primary);
   border-color: var(--c-primary);
-  color: #fff;
+  color: var(--c-card);
   font-weight: 600;
 }
 .cars-btn--primary:not(:disabled):hover {
@@ -547,7 +578,7 @@
 .cars-chip--whatif {
   background: var(--c-est-bg);
   color: var(--c-est-ink);
-  border-color: #e8d4a0;
+  border-color: var(--c-est-border);
 }
 .cars-chips__edit {
   display: inline-flex;
@@ -753,7 +784,7 @@
   top: 6px;
   height: 8px;
   border-radius: 4px;
-  background: #afb8c1;
+  background: var(--c-neutral-300);
 }
 .cars-range__mark {
   position: absolute;
@@ -787,7 +818,7 @@
   top: 0;
   width: 1px;
   height: 14px;
-  background: #8c959f;
+  background: var(--c-neutral-400);
 }
 .cars-sens__bar {
   position: absolute;
@@ -877,7 +908,7 @@
   gap: 12px;
   align-items: center;
   min-height: 44px;
-  border-top: 1px solid #f0f2f4;
+  border-top: 1px solid var(--c-grid);
   font-size: 14px;
 }
 .cars-rankat__name {
@@ -978,10 +1009,10 @@
 .cars-bar__fill {
   height: 10px;
   border-radius: 3px;
-  background: #6e7781;
+  background: var(--c-neutral-500);
 }
 .cars-bar__fill--neg {
-  background: #2f855a;
+  background: var(--c-positive);
 }
 .cars-bar__value {
   text-align: right;
@@ -1069,7 +1100,7 @@
   padding: 4px 4px 4px 14px;
   border: 1px solid var(--c-border);
   border-radius: 10px;
-  background: var(--c-bg, #f6f8fa);
+  background: var(--c-bg);
 }
 .cars-tray__name {
   font-size: 14px;
@@ -1092,7 +1123,7 @@
 }
 .cars-tray__remove:hover,
 .cars-tray__remove:focus-visible {
-  background: #eaeef2;
+  background: var(--c-border-soft);
   color: var(--c-ink);
 }
 .cars-tray__add {
@@ -1112,7 +1143,7 @@
   border: 1px solid var(--c-border);
   border-radius: 8px;
   background: var(--c-card);
-  box-shadow: 0 8px 24px rgba(27, 31, 36, 0.12);
+  box-shadow: 0 8px 24px var(--c-shadow);
 }
 .cars-tray__list ul {
   margin: 0;
@@ -1181,7 +1212,7 @@
   padding: 10px 12px;
   border: 1px solid var(--c-border);
   border-radius: 10px;
-  background: var(--c-bg, #f6f8fa);
+  background: var(--c-bg);
 }
 .cars-rec__rank {
   grid-area: rank;
@@ -1192,7 +1223,7 @@
   justify-content: center;
   border-radius: 50%;
   background: var(--c-ink);
-  color: #fff;
+  color: var(--c-card);
   font-size: 13px;
   font-weight: 600;
 }

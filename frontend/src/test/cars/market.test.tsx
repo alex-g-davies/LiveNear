@@ -35,7 +35,7 @@ describe("Market map (spec 023 R2/R3)", () => {
   });
 
   it("renders one dot per listing from the fixture with the count and date", async () => {
-    renderCars("/cars/market", { ...EMPTY, selection: [{ variant_id: "renault-5-52", year_from: 2025, year_to: 2026 }] });
+    renderCars("/drive-cheap/market", { ...EMPTY, selection: [{ variant_id: "renault-5-52", year_from: 2025, year_to: 2026 }] });
     expect(screen.getByRole("heading", { level: 1, name: "Market map" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
     expect(screen.getByTestId("market-count").textContent).toMatch(/^\d+ listings · as of 2026-10-24/);
@@ -49,7 +49,7 @@ describe("Market map (spec 023 R2/R3)", () => {
   });
 
   it("the search filter narrows the dots to the matching model", async () => {
-    renderCars("/cars/market", EMPTY);
+    renderCars("/drive-cheap/market", EMPTY);
     await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
     const before = screen.getAllByTestId("market-dot").length;
     fireEvent.change(screen.getByLabelText("Find a model"), { target: { value: "renault" } });
@@ -62,7 +62,7 @@ describe("Market map (spec 023 R2/R3)", () => {
 
   it("the brand select narrows the dots and sends make= to both endpoints (024 R9)", async () => {
     const api = await import("../../cars/api");
-    renderCars("/cars/market", EMPTY);
+    renderCars("/drive-cheap/market", EMPTY);
     await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
     const before = screen.getAllByTestId("market-dot").length;
     const brand = screen.getByLabelText("Brand");
@@ -82,7 +82,7 @@ describe("Market map (spec 023 R2/R3)", () => {
   it("clicking a dot adds its model year; the chip can be removed; Compare navigates", async () => {
     // Start with one chip (an empty selection is auto-filled by the provider once the
     // catalogue lands), remove it, and work from an empty tray.
-    renderCars("/cars/market", { ...EMPTY, selection: [{ variant_id: "kia-ev6-lr-rwd", year_from: 2021, year_to: 2026 }] });
+    renderCars("/drive-cheap/market", { ...EMPTY, selection: [{ variant_id: "kia-ev6-lr-rwd", year_from: 2021, year_to: 2026 }] });
     await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
     fireEvent.click(screen.getByRole("button", { name: "Remove Kia EV6 Long Range RWD" }));
     await waitFor(() => expect(screen.queryByTestId("selection-chip")).toBeNull(), WAIT);
@@ -118,7 +118,7 @@ describe("Market map (spec 023 R2/R3)", () => {
 
   it("falls back to cohort medians with a visible note when listings are unavailable", async () => {
     pointsMode.value = "unavailable";
-    renderCars("/cars/market", EMPTY);
+    renderCars("/drive-cheap/market", EMPTY);
     await waitFor(() => expect(screen.getByTestId("market-fallback")).toBeInTheDocument(), WAIT);
     const dots = screen.getAllByTestId("market-dot");
     // One dot per cohort: 6 fixture variants, 29 model years in total.
@@ -127,7 +127,7 @@ describe("Market map (spec 023 R2/R3)", () => {
   });
 
   it("axis and colour controls change the plot description", async () => {
-    renderCars("/cars/market", EMPTY);
+    renderCars("/drive-cheap/market", EMPTY);
     await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
     fireEvent.change(screen.getByLabelText("X axis"), { target: { value: "km" } });
     fireEvent.change(screen.getByLabelText("Y axis"), { target: { value: "range" } });

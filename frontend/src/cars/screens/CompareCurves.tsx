@@ -15,6 +15,7 @@ import { formatKm, formatPct, formatYears } from "../lib/format";
 import { MODE_LABELS, measureDef, modeBorderStyle } from "../lib/measures";
 import type { WhatIf } from "../lib/profile";
 import { useCarState } from "../state";
+import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
 
 export const DEFAULT_LOAN_RATE_PCT = 6.5;
 
@@ -183,7 +184,7 @@ export default function CompareCurves() {
 
           {!request && (
             <p className="cars-empty">
-              No cars selected yet. <Link to="/cars">Pick some on Your situation</Link>.
+              No cars selected yet. <Link to={DRIVE_PATH}>Pick some on Your situation</Link>.
             </p>
           )}
           {request && !data && scenario.loading && <p className="cars-empty">Computing curves…</p>}
@@ -243,7 +244,7 @@ export default function CompareCurves() {
                         color={color}
                         label={`P10 ${def.format(r.p10)}, P50 ${def.format(r.p50)}, P90 ${def.format(r.p90)}`}
                       />
-                      <Link to={`/cars/option/${encodeURIComponent(r.o.result.option_id)}`} className="cars-link">
+                      <Link to={drivePath(`/option/${encodeURIComponent(r.o.result.option_id)}`)} className="cars-link">
                         Detail
                       </Link>
                     </li>

@@ -18,7 +18,7 @@ describe("Compare table (spec 022 R11)", () => {
   beforeEach(() => window.localStorage.clear());
 
   it("switching the measure changes the expected column and its unit", async () => {
-    renderCars("/cars/compare");
+    renderCars("/drive-cheap/compare");
     await waitFor(() => expect(screen.getAllByTestId("option-row").length).toBeGreaterThan(0), WAIT);
     expect(screen.getByRole("columnheader", { name: "Expected (kr per month)" })).toBeInTheDocument();
     const before = screen.getAllByTestId("expected").map((el) => el.textContent);
@@ -39,7 +39,7 @@ describe("Compare table (spec 022 R11)", () => {
   });
 
   it("filters by way to get the car and lists ruled-out / skipped notes", async () => {
-    renderCars("/cars/compare");
+    renderCars("/drive-cheap/compare");
     await waitFor(() => expect(screen.getAllByTestId("option-row").length).toBeGreaterThan(0), WAIT);
     const all = screen.getAllByTestId("option-row").length;
     fireEvent.click(screen.getByRole("button", { name: "Lease" }));
@@ -55,7 +55,7 @@ describe("Compare table (spec 022 R11)", () => {
 
 describe("Compare curves (spec 022 R11)", () => {
   it("relabels the y axis when the measure changes and draws one line per option", async () => {
-    renderCars("/cars/compare/curves");
+    renderCars("/drive-cheap/compare/curves");
     await waitFor(() => expect(screen.getByTestId("curves-y-label")).toBeInTheDocument(), WAIT);
     expect(screen.getByTestId("curves-y-label").textContent).toBe("Net cost per month (kr per month)");
     const lines = screen.getAllByTestId("curve-line").length;

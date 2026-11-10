@@ -21,7 +21,7 @@ export function renderCars(path: string, state: CarState = BASE_STATE) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="/cars/*" element={<CarsApp initialState={state} />} />
+        <Route path="/drive-cheap/*" element={<CarsApp initialState={state} />} />
       </Routes>
     </MemoryRouter>,
   );

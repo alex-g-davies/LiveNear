@@ -31,16 +31,9 @@ import { centroidsByZip, scenariosContaining } from "./lib/geo";
 import { intersectIsochrones } from "./lib/intersect";
 import { computeMatches } from "./lib/matches";
 import { regionForPoint } from "./lib/locateRegion";
+import { markMapMounted, mapHasMounted, rememberMapSearch, replaceMapSearch } from "./lib/productRoutes";
 import { budgetSpecFromUrl, parseAppUrl, serializeAppUrl } from "./lib/urlState";
 import { deltaPct, percentileRank, stateMedian } from "./lib/zipStats";
-
-// Parsed once at startup (009 R5): seeds the initial state so a deep-linked
-// region is the FIRST fetch, not a correction after a default load.
-const INITIAL_URL = parseAppUrl(window.location.search);
-
-// Geolocate only cold landings (010 R1): any recognized URL param marks an
-// intentional, shareable link whose view must not be overridden.
-const GEOLOCATE = Object.keys(INITIAL_URL).length === 0;
 
 // Welcome-modal dismissal flag (017 R1). Already namespaced for 018.
 const WELCOME_KEY = "livenear.welcome-dismissed";
@@ -66,22 +59,33 @@ function checklistCompleted(): boolean {
 }
 
 export default function App() {
+  // Parsed on each mount (009 R5, 025 R8): seeds the initial state so a
+  // deep-linked region is the FIRST fetch, and returning from DriveCheap
+  // restores the latest view. Geolocate only the first cold landing in a page
+  // load (010 R1, 025 R10): any recognized URL param marks an intentional,
+  // shareable link whose view must not be overridden.
+  const [{ initialUrl, geolocate }] = useState(() => {
+    const url = parseAppUrl(window.location.search);
+    return { initialUrl: url, geolocate: Object.keys(url).length === 0 && !mapHasMounted() };
+  });
+  useEffect(markMapMounted, []);
+
   // Budget as typed (price or monthly payment, 020); `budget` below is the
   // dollar figure every consumer has always received.
   const [budgetSpec, setBudgetSpec] = useState<BudgetSpec>(() =>
-    budgetSpecFromUrl(INITIAL_URL),
+    budgetSpecFromUrl(initialUrl),
   );
   const budget = useMemo(() => effectiveBudget(budgetSpec), [budgetSpec]);
-  const [metricKey, setMetricKey] = useState<MetricKey>(INITIAL_URL.metric ?? "value");
-  const [minutes, setMinutes] = useState<number>(INITIAL_URL.minutes ?? DEFAULT_MINUTES);
-  const [mode, setMode] = useState<TravelMode>(INITIAL_URL.tmode ?? DEFAULT_MODE);
-  const [work, setWork] = useState<WorkLocation>(INITIAL_URL.work ?? DEFAULT_WORK);
+  const [metricKey, setMetricKey] = useState<MetricKey>(initialUrl.metric ?? "value");
+  const [minutes, setMinutes] = useState<number>(initialUrl.minutes ?? DEFAULT_MINUTES);
+  const [mode, setMode] = useState<TravelMode>(initialUrl.tmode ?? DEFAULT_MODE);
+  const [work, setWork] = useState<WorkLocation>(initialUrl.work ?? DEFAULT_WORK);
   // Second workplace (016): null = single-pin mode.
-  const [work2, setWork2] = useState<WorkLocation | null>(INITIAL_URL.work2 ?? null);
+  const [work2, setWork2] = useState<WorkLocation | null>(initialUrl.work2 ?? null);
   // Which pin the address search moves (only relevant in dual mode).
   const [searchTarget, setSearchTarget] = useState<"A" | "B">("A");
   const [regions, setRegions] = useState<RegionInfo[]>([]);
-  const [stateCode, setStateCode] = useState<string>(INITIAL_URL.state ?? DEFAULT_STATE);
+  const [stateCode, setStateCode] = useState<string>(initialUrl.state ?? DEFAULT_STATE);
   // Bumped on programmatic work moves (address / reset) so the map flies there.
   const [recenter, setRecenter] = useState(0);
   // Click-to-select (009 R1): drives the outline + detail panel.
@@ -92,12 +96,12 @@ export default function App() {
   const [focusPoint, setFocusPoint] = useState<[number, number] | null>(null);
   const [focusSignal, setFocusSignal] = useState(0);
   // Deep-linked ZIP: applied once when its state's data has arrived.
-  const pendingZipRef = useRef<string | null>(INITIAL_URL.zip ?? null);
+  const pendingZipRef = useRef<string | null>(initialUrl.zip ?? null);
   // Geolocated landing (010 R1): a fix arriving after the user has started
   // driving is discarded; applied at most once.
   const userTouchedRef = useRef(false);
   const geoAppliedRef = useRef(false);
-  const geoFix = useGeolocate(GEOLOCATE);
+  const geoFix = useGeolocate(geolocate);
   // True first visit (new-user onboarding): drives the pin hint and the
   // getting-started checklist. Frozen at mount — reopening the intro from
   // About later must not re-trigger first-run behavior.
@@ -116,8 +120,8 @@ export default function App() {
   // Getting-started progress: each step ticks from real app state. Deep-link
   // params count as already done — that user didn't start from zero.
   const [checklistOpen, setChecklistOpen] = useState(() => firstVisit && !checklistCompleted());
-  const [workSet, setWorkSet] = useState(INITIAL_URL.work != null);
-  const [explored, setExplored] = useState(INITIAL_URL.zip != null);
+  const [workSet, setWorkSet] = useState(initialUrl.work != null);
+  const [explored, setExplored] = useState(initialUrl.zip != null);
   const handleChecklistDone = useCallback(() => {
     setChecklistOpen(false);
     try {
@@ -341,20 +345,21 @@ export default function App() {
 
   // Write app state back to the URL, debounced — pin drags fire frequently and
   // replaceState (not pushState) keeps the back button pointing out of the app.
+  // The in-memory copy is immediate so switching products never loses the
+  // last change (025 R8); only the address-bar write is debounced.
   useEffect(() => {
-    const t = window.setTimeout(() => {
-      const qs = serializeAppUrl({
-        state: stateCode,
-        zip: selectedZip,
-        budget: budgetSpec,
-        work,
-        work2,
-        minutes,
-        metric: metricKey,
-        tmode: mode,
-      });
-      window.history.replaceState(null, "", `${window.location.pathname}${qs}`);
-    }, 300);
+    const qs = serializeAppUrl({
+      state: stateCode,
+      zip: selectedZip,
+      budget: budgetSpec,
+      work,
+      work2,
+      minutes,
+      metric: metricKey,
+      tmode: mode,
+    });
+    rememberMapSearch(qs);
+    const t = window.setTimeout(() => replaceMapSearch(qs), 300);
     return () => window.clearTimeout(t);
   }, [stateCode, selectedZip, budgetSpec, work, work2, minutes, metricKey, mode]);
 
@@ -437,7 +442,7 @@ export default function App() {
         onWork2Change={handleWork2Drag}
         recenterSignal={recenter}
         fitBbox={region?.bbox ?? null}
-        fitInitialBounds={INITIAL_URL.state != null && INITIAL_URL.zip == null}
+        fitInitialBounds={initialUrl.state != null && initialUrl.zip == null}
         selectedZip={selectedZip}
         pinnedZip={pinnedZip}
         onSelectZip={(zip) => setSelectedZip((prev) => (prev === zip ? null : zip))}

@@ -6,6 +6,7 @@ import { Link, NavLink } from "react-router-dom";
 import { measureDef } from "../lib/measures";
 import { useCarState } from "../state";
 import AssumptionChips from "./AssumptionChips";
+import { drivePath } from "../../lib/productRoutes";
 
 interface Props {
   view: "table" | "curves";
@@ -30,14 +31,14 @@ export default function CompareHeader({ view }: Props) {
             Prices as of {scenario.data?.bundle_as_of ?? "—"}
             {scenario.loading && <span className="cars-hint__loading"> · updating…</span>}
           </span>
-          <Link to="/cars/market" className="cars-btn cars-btn--outline cars-btn--sm">
+          <Link to={drivePath("/market")} className="cars-btn cars-btn--outline cars-btn--sm">
             Edit selection
           </Link>
           <div role="group" aria-label="View" className="cars-seg">
-            <NavLink to="/cars/compare" end className="cars-seg__btn">
+            <NavLink to={drivePath("/compare")} end className="cars-seg__btn">
               Table
             </NavLink>
-            <NavLink to="/cars/compare/curves" className="cars-seg__btn">
+            <NavLink to={drivePath("/compare/curves")} className="cars-seg__btn">
               Curves
             </NavLink>
           </div>

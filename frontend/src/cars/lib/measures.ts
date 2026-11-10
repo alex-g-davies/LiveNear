@@ -84,7 +84,7 @@ export function modeBorderStyle(mode: Mode): "solid" | "dashed" | "dotted" {
 }
 
 /** Colour-blind-safer categorical palette, one colour per car (variant). */
-export const CAR_COLORS = ["#0B5CD5", "#C2410C", "#0F766E", "#7C3AED", "#B45309", "#BE185D", "#1D4ED8", "#4D7C0F"];
+export const CAR_COLORS = Array.from({ length: 8 }, (_, i) => `var(--c-series-${i + 1})`);
 
 export function colorForIndex(i: number): string {
   return CAR_COLORS[i % CAR_COLORS.length];

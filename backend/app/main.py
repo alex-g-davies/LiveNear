@@ -10,8 +10,7 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
@@ -22,6 +21,7 @@ from .data_loader import DataLoadError, get_data_store, load_regions
 from .logging_setup import setup_logging
 from .ratelimit import client_ip, limiter
 from .routers import cars, commute, geocode, housing, isochrone
+from .spa import mount_spa
 
 settings = get_settings()
 setup_logging(settings.log_format)
@@ -127,14 +127,4 @@ def health(cfg: Settings = Depends(get_settings)) -> JSONResponse:
 # the built SPA; mounted last so /api/* keeps routing to the API. Local dev
 # leaves it unset and runs the Vite dev server instead.
 if settings.static_dir and Path(settings.static_dir).is_dir():
-    _static_root = Path(settings.static_dir)
-    _index = _static_root / "index.html"
-
-    @app.get("/cars", include_in_schema=False)
-    @app.get("/cars/{rest:path}", include_in_schema=False)
-    def spa_cars(rest: str = "") -> FileResponse:
-        """Client-side routes under /cars (022 R1): a hard reload of a deep
-        link must serve the SPA shell, not a 404 from the static mount."""
-        return FileResponse(_index)
-
-    app.mount("/", StaticFiles(directory=_static_root, html=True), name="spa")
+    mount_spa(app, Path(settings.static_dir))

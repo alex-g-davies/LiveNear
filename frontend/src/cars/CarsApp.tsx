@@ -1,8 +1,9 @@
-// Cars module root (spec 022 R1, 023): routes under /cars/* plus the state
-// provider. Mounted from main.tsx; the map app at / is untouched.
+// DriveCheap root (spec 022 R1, 023, 025 R1): routes under /drive-cheap/* plus
+// the state provider. Mounted from AppRoutes and loaded on demand.
 
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { DRIVE_PATH } from "../lib/productRoutes";
 import CarsHeader from "./components/CarsHeader";
 import type { CarState } from "./lib/profile";
 import Checklist from "./screens/Checklist";
@@ -32,7 +33,7 @@ export default function CarsApp({ initialState }: Props) {
             <Route path="compare" element={<CompareTable />} />
             <Route path="compare/curves" element={<CompareCurves />} />
             <Route path="option/:optionId" element={<OptionDetail />} />
-            <Route path="*" element={<Navigate to="/cars" replace />} />
+            <Route path="*" element={<Navigate to={DRIVE_PATH} replace />} />
           </Routes>
         </main>
       </div>

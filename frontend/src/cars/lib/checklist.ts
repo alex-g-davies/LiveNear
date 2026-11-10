@@ -5,6 +5,7 @@
 import type { ScenarioResponse, SensitivityRow } from "../api";
 import { formatNok, formatNokSigned, formatPerKm } from "./format";
 import type { Measure, Mode } from "./profile";
+import { DRIVE_PATH } from "../../lib/productRoutes";
 
 export type ChecklistGroupId = "before_choose" | "before_sign" | "after";
 
@@ -201,7 +202,7 @@ export function dueFor(item: ChecklistItem, inputs: DueInputs): DueInfo | null {
         return {
           kind: "missing",
           text: "Add your arrival date on Your situation to see the deadline",
-          to: "/cars",
+          to: DRIVE_PATH,
         };
       }
       return { kind: "date", iso: addMonths(a, 12), basis: LICENCE_BASIS, url: LICENCE_URL };

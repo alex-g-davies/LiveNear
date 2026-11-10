@@ -13,6 +13,7 @@ import { CAP_HINT, addPairs, isSelected, wouldExceedCap } from "../lib/market";
 import { MODE_LABELS, measureDef } from "../lib/measures";
 import { useCarState } from "../state";
 import Badge from "./Badge";
+import { DRIVE_PATH } from "../../lib/productRoutes";
 
 const START_HERE_ROWS = 3;
 
@@ -203,7 +204,7 @@ export function RecommendStrip() {
         wouldExceedCap(selection, [])
           ? `${CAP_HINT} `
           : ""}
-        Added cars appear in the table once the scenario re-runs. <Link to="/cars">Change your situation</Link>.
+        Added cars appear in the table once the scenario re-runs. <Link to={DRIVE_PATH}>Change your situation</Link>.
       </p>
     </section>
   );

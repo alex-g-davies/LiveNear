@@ -40,6 +40,8 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run build
+      - name: Landing page does not load the map bundle (spec 025 R6)
+        run: "! grep -qi maplibre dist/index.html"
       - run: npm run test
 
   docker:
@@ -60,6 +62,10 @@ jobs:
           curl -fsS http://localhost:8000/api/zips.geojson?state=WA -o /dev/null
           curl -fsS http://localhost:8000/api/isochrone?minutes=30 -o /dev/null
           curl -fsS http://localhost:8000/ | grep -qi "<!doctype html"
+          # Hard reloads of client-side routes (spec 025 R5).
+          for path in /live-near /drive-cheap/market /cars/compare; do
+            curl -fsS "http://localhost:8000$path" | grep -qi "<!doctype html"
+          done
           docker stop livenear
       - name: Smoke test (production guard, spec 021 — no token -> 503, not fixture)
         run: |

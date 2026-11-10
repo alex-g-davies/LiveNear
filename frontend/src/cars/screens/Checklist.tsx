@@ -25,6 +25,7 @@ import {
 import { formatDate } from "../lib/format";
 import { useCarState } from "../state";
 import "../checklist.css";
+import { drivePath } from "../../lib/productRoutes";
 
 export default function Checklist() {
   const { state, toggleChecklist, scenario } = useCarState();
@@ -197,7 +198,7 @@ export default function Checklist() {
             </h2>
             {scenario.data === null ? (
               <p className="cars-hint">
-                <Link to="/cars/compare">Run a comparison</Link> to see what moves your cost.
+                <Link to={drivePath("/compare")}>Run a comparison</Link> to see what moves your cost.
               </p>
             ) : impact.length === 0 ? (
               <p className="cars-hint">No sensitivity rows for the current ranking.</p>
@@ -205,11 +206,11 @@ export default function Checklist() {
               <div className="cars-checklist__impact">
                 {impact.map((r) => (
                   <div key={r.id} className="cars-checklist__impact-row" title={r.note}>
-                    <Link to="/cars/compare">{r.label}</Link>
+                    <Link to={drivePath("/compare")}>{r.label}</Link>
                     <span data-testid={`impact-${r.id}`}>{r.text}</span>
                   </div>
                 ))}
-                <Link to="/cars/compare" className="cars-link">
+                <Link to={drivePath("/compare")} className="cars-link">
                   See how each changes your ranking
                 </Link>
               </div>

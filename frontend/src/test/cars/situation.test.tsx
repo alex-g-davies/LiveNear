@@ -18,7 +18,7 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
   beforeEach(() => window.localStorage.clear());
 
   it("disables Continue with a visible message until the exit odds sum to 100 %", async () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     const button = screen.getByRole("button", { name: "Compare options" });
     expect(button).toBeEnabled();
     expect(screen.getByText("Odds add up to 100 %.")).toBeInTheDocument();
@@ -34,14 +34,14 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
   });
 
   it("gates on the charging mix too", () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     fireEvent.change(screen.getByLabelText(/Public fast/), { target: { value: "30" } });
     expect(screen.getByRole("button", { name: "Compare options" })).toBeDisabled();
     expect(screen.getByText("Charging shares add up to 120 %. They must total 100 %.")).toBeInTheDocument();
   });
 
   it("shows one chip per selected car with year selects (024 R10)", async () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     await waitFor(() => expect(screen.getAllByTestId("tray-chip")).toHaveLength(BASE_STATE.selection.length), WAIT);
     expect(screen.getByRole("button", { name: "Remove Tesla Model 3 Long Range RWD" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Remove Renault 5 52 kWh" })).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
   });
 
   it("adds a car from the typeahead with the keyboard, grouped by make", async () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     await waitFor(() => expect(screen.getAllByTestId("tray-chip")).toHaveLength(2), WAIT);
     const box = screen.getByRole("combobox", { name: "Add a car" });
     fireEvent.focus(box);
@@ -76,7 +76,7 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
   });
 
   it("removes a chip, clamps year edits and gates on an empty selection", async () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     await waitFor(() => expect(screen.getAllByTestId("tray-chip")).toHaveLength(2), WAIT);
     const [from, to] = [screen.getAllByLabelText("From")[0], screen.getAllByLabelText("To")[0]];
     fireEvent.change(to, { target: { value: "2023" } });
@@ -88,13 +88,13 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
     fireEvent.click(screen.getByRole("button", { name: "Remove Tesla Model 3 Long Range RWD" }));
     expect(screen.queryAllByTestId("tray-chip")).toHaveLength(0);
     expect(screen.getByText(/No cars yet\. Add one here or/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "browse the market" })).toHaveAttribute("href", "/cars/market");
+    expect(screen.getByRole("link", { name: "browse the market" })).toHaveAttribute("href", "/drive-cheap/market");
     expect(screen.getByText("Pick at least one car to compare.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Compare options" })).toBeDisabled();
   });
 
   it("keeps the toll passages field in the profile (024 R5)", async () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     const field = screen.getByLabelText(/Toll ring passages per week/);
     expect(field).toHaveValue(0);
     fireEvent.change(field, { target: { value: "12" } });
@@ -105,7 +105,7 @@ describe("Situation (spec 022 R11, 024 R5/R10)", () => {
   });
 
   it("saves a draft to localStorage", () => {
-    renderCars("/cars");
+    renderCars("/drive-cheap");
     fireEvent.click(screen.getByRole("button", { name: "Save draft" }));
     expect(screen.getByText("Draft saved on this device.")).toBeInTheDocument();
     const raw = window.localStorage.getItem("livenear.cars.state");

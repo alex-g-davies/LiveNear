@@ -37,8 +37,10 @@ specs/        One spec per feature (the source of truth for what to build)
 
 ## Cars module (specs 022-024)
 
-A second product surface at `/cars`: total cost of owning a car in Norway
-for newcomers. Rules that apply inside `backend/app/cars/` and
+DriveCheap, the second product, at `/drive-cheap`: total cost of owning a car
+in Norway for newcomers (the code and API keep the name `cars`; old `/cars`
+links redirect). The map is LiveNear at `/live-near`, and `/` is a landing
+page for both (spec 025). Rules that apply inside `backend/app/cars/` and
 `frontend/src/cars/`, on top of everything else in this file:
 
 - **Engine purity.** `app/cars/engine` and `app/cars/market` do no I/O,
