@@ -180,6 +180,31 @@ export const TAX_INSURANCE_PCT = 1.5;
 export const DEFAULT_DOWN_PCT = 20;
 export const DEFAULT_RATE_PCT = 6.5;
 
+export interface MortgageDefaults {
+  downPct: number;
+  ratePct: number;
+  taxInsurancePct: number;
+}
+
+// Norwegian payment-mode defaults (026 R17), all estimates. Basis: 10% is the
+// minimum equity in the lending regulation (forskrift 2020-12-09-2648); 5.5%
+// approximates a floating mortgage rate; 0.5%/yr is an allowance for home
+// insurance and municipal property tax, which varies by kommune.
+export const NO_MORTGAGE_DEFAULTS: MortgageDefaults = {
+  downPct: 10,
+  ratePct: 5.5,
+  taxInsurancePct: 0.5,
+};
+export const US_MORTGAGE_DEFAULTS: MortgageDefaults = {
+  downPct: DEFAULT_DOWN_PCT,
+  ratePct: DEFAULT_RATE_PCT,
+  taxInsurancePct: TAX_INSURANCE_PCT,
+};
+
+export function mortgageDefaults(regionCode: string): MortgageDefaults {
+  return /^NO\d{2}$/.test(regionCode) ? NO_MORTGAGE_DEFAULTS : US_MORTGAGE_DEFAULTS;
+}
+
 // Selectable commute times (min). Mapbox isochrones cap at 60.
 export const COMMUTE_STEPS = [15, 30, 45, 60] as const;
 export const DEFAULT_MINUTES = 30;

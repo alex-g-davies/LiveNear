@@ -81,12 +81,14 @@ export function rangeLabel(minMinutes: number, maxMinutes: number): string {
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-/** Naive local departure timestamp -> "Mon 8:00 AM"; bad input -> "". */
-export function departLabel(iso: string): string {
+/** Naive local departure timestamp -> "Mon 8:00 AM", or "Mon 08:00" with a
+ * 24-hour clock (026 R15); bad input -> "". */
+export function departLabel(iso: string, hour24 = false): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   const hours = d.getHours();
   const h12 = hours % 12 || 12;
   const mins = String(d.getMinutes()).padStart(2, "0");
+  if (hour24) return `${WEEKDAYS[d.getDay()]} ${String(hours).padStart(2, "0")}:${mins}`;
   return `${WEEKDAYS[d.getDay()]} ${h12}:${mins} ${hours >= 12 ? "PM" : "AM"}`;
 }

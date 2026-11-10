@@ -1,15 +1,17 @@
-import { METRICS, type MetricKey } from "../config";
+import { METRICS, type MetricDef, type MetricKey } from "../config";
 
 interface Props {
   active: MetricKey;
   onChange: (key: MetricKey) => void;
+  /** What this region can show (026 R10). */
+  metrics?: MetricDef[];
 }
 
 /** Segmented control to choose which metric the choropleth shades by. */
-export default function MetricSwitcher({ active, onChange }: Props) {
+export default function MetricSwitcher({ active, onChange, metrics = METRICS }: Props) {
   return (
     <div className="switcher switcher--grid" role="group" aria-label="Shade map by">
-      {METRICS.map((m) => (
+      {metrics.map((m) => (
         <button
           key={m.key}
           type="button"
