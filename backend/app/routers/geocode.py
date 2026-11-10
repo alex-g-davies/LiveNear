@@ -46,7 +46,8 @@ def geocode(
         logger.warning("Geocoding upstream call failed")
         raise HTTPException(status_code=503, detail="geocoding upstream unavailable") from None
 
-    if result is None:
+    # Norway has places outside any covered region, such as Svalbard (026 R12).
+    if result is None or not within_coverage(result["lat"], result["lon"]):
         raise HTTPException(status_code=404, detail=f"no match for {q!r}")
     return GeocodeResult(**result)
 

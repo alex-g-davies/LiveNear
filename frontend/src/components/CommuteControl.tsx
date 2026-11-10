@@ -1,6 +1,6 @@
 import type { CommuteVariation } from "../api/client";
 import { COMMUTE_STEPS, SCENARIO_STYLES, TRAVEL_MODES, type TravelMode } from "../config";
-import { formatSqMi } from "../lib/format";
+import { type Locale, US_LOCALE } from "../lib/locale";
 
 interface Props {
   minutes: number;
@@ -10,6 +10,7 @@ interface Props {
   dual: boolean;
   mode: TravelMode;
   onModeChange: (mode: TravelMode) => void;
+  locale?: Locale;
 }
 
 /** Commute controls: travel mode (013 R2), time (15/30/45/60), and — for
@@ -21,6 +22,7 @@ export default function CommuteControl({
   dual,
   mode,
   onModeChange,
+  locale = US_LOCALE,
 }: Props) {
   return (
     <div className="commute">
@@ -68,7 +70,7 @@ export default function CommuteControl({
               {s.label}
               {variation && (
                 <span className="scenarios__area">
-                  {formatSqMi(variation[`${s.key}_sqmi` as const])}
+                  {locale.reachArea(variation[`${s.key}_sqmi` as const])}
                 </span>
               )}
             </li>
@@ -86,6 +88,7 @@ export default function CommuteControl({
         )}
         <p className="commute__note">
           Typical traffic for each hour, leaving your workplace — bad days run longer.
+          {locale.country === "NO" && " Routes can include ferries, which run to a timetable."}
         </p>
       </details>
       )}

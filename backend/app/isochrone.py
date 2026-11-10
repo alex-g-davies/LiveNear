@@ -38,6 +38,17 @@ SCENARIOS: tuple[tuple[str, int, str], ...] = (
     ("peak", 17, "Evening rush"),
 )
 
+
+def scenarios_for(lat: float, lon: float) -> tuple[tuple[str, int, str], ...]:
+    """SCENARIOS with the region's own rush hour where it declares one (026 R13)."""
+    rush = (tzlookup.region_for(lat, lon) or {}).get("rush")
+    if not rush:
+        return SCENARIOS
+    return tuple(
+        (key, rush["peak_hour"] if key == "peak" else hour, label) for key, hour, label in SCENARIOS
+    )
+
+
 # Mapbox decorates each feature with styling props; strip them so our payload is
 # clean and carries nothing token-derived.
 _MAPBOX_STYLE_PROPS = {
@@ -268,7 +279,8 @@ def fetch_variation(
     if hit and hit[0] > clock:
         return hit[1]
 
-    if not usage.reserve(len(SCENARIOS), daily_budget):
+    scenarios = scenarios_for(lat, lon)
+    if not usage.reserve(len(scenarios), daily_budget):
         raise usage.UsageBudgetError("daily upstream budget exhausted")
 
     now = now or datetime.datetime.now(tzlookup.tz_for(lat, lon))
@@ -287,11 +299,11 @@ def fetch_variation(
                 "driving-traffic",
                 next_departure(hour, now),
             )
-            for _, hour, _ in SCENARIOS
+            for _, hour, _ in scenarios
         ]
     )
     fetched: list[tuple[str, str, dict[str, Any]]] = []  # (scenario, label, feature)
-    for (scenario, _, label), raw in zip(SCENARIOS, results, strict=True):
+    for (scenario, _, label), raw in zip(scenarios, results, strict=True):
         if isinstance(raw, BaseException):
             if not isinstance(raw, httpx.HTTPError):
                 raise raw

@@ -2,7 +2,8 @@ import type { ChangeEvent } from "react";
 
 import { MORTGAGE_TERM_YEARS, TAX_INSURANCE_PCT } from "../config";
 import { type BudgetMode, type BudgetSpec, maxPriceForPayment } from "../lib/affordability";
-import { formatBudgetInput, formatUsd } from "../lib/format";
+import { formatBudgetInput } from "../lib/format";
+import { type Locale, US_LOCALE } from "../lib/locale";
 
 interface Props {
   spec: BudgetSpec;
@@ -11,6 +12,7 @@ interface Props {
   label?: string;
   /** Muted nudge under the field, shown only while no budget is set. */
   hint?: string;
+  locale?: Locale;
 }
 
 // Short enough to sit side by side in the 240 px panel without ellipsis;
@@ -39,7 +41,7 @@ function parsePct(raw: string, lo: number, hi: number): number {
  * assumptions and shows the max price they support — which is what every
  * downstream consumer receives as "the budget".
  */
-export default function BudgetInput({ spec, onChange, label, hint }: Props) {
+export default function BudgetInput({ spec, onChange, label, hint, locale = US_LOCALE }: Props) {
   const setPrice = (e: ChangeEvent<HTMLInputElement>) =>
     onChange({ ...spec, price: parseDollars(e.target.value) });
   const setPayment = (e: ChangeEvent<HTMLInputElement>) =>
@@ -49,7 +51,8 @@ export default function BudgetInput({ spec, onChange, label, hint }: Props) {
   const setRate = (e: ChangeEvent<HTMLInputElement>) =>
     onChange({ ...spec, ratePct: parsePct(e.target.value, 0, 30) });
 
-  const derived = maxPriceForPayment(spec.payment, spec.downPct, spec.ratePct);
+  const derived = maxPriceForPayment(spec.payment, spec.downPct, spec.ratePct, spec.taxPct);
+  const taxPct = spec.taxPct ?? TAX_INSURANCE_PCT;
   const unset = spec.mode === "price" ? spec.price === 0 : spec.payment === 0;
 
   return (
@@ -72,12 +75,12 @@ export default function BudgetInput({ spec, onChange, label, hint }: Props) {
 
       {spec.mode === "price" ? (
         <label className="budget-input__field">
-          <span aria-hidden="true">$</span>
+          <span aria-hidden="true">{locale.currencySymbol}</span>
           <input
             type="text"
             inputMode="numeric"
-            aria-label="Budget in dollars"
-            placeholder="e.g. 800,000"
+            aria-label={`Budget in ${locale.currencyName}`}
+            placeholder={locale.budgetExample}
             value={formatBudgetInput(spec.price)}
             onChange={setPrice}
           />
@@ -85,12 +88,12 @@ export default function BudgetInput({ spec, onChange, label, hint }: Props) {
       ) : (
         <>
           <label className="budget-input__field">
-            <span aria-hidden="true">$</span>
+            <span aria-hidden="true">{locale.currencySymbol}</span>
             <input
               type="text"
               inputMode="numeric"
-              aria-label="Monthly payment in dollars"
-              placeholder="e.g. 3,000"
+              aria-label={`Monthly payment in ${locale.currencyName}`}
+              placeholder={locale.paymentExample}
               value={formatBudgetInput(spec.payment)}
               onChange={setPayment}
             />
@@ -131,16 +134,22 @@ export default function BudgetInput({ spec, onChange, label, hint }: Props) {
           <p className="budget-input__derived" aria-live="polite">
             {derived > 0 ? (
               <>
-                ≈ max price <strong>{formatUsd(derived)}</strong>
+                ≈ max price <strong>{locale.money(derived)}</strong>
               </>
             ) : (
               "Enter a monthly payment to set a budget"
             )}
             <span className="budget-input__assumes">
               {" "}
-              · assumes {MORTGAGE_TERM_YEARS}-yr, {TAX_INSURANCE_PCT}%/yr tax + insurance
+              · assumes {MORTGAGE_TERM_YEARS}-yr, {taxPct}%/yr tax + insurance
             </span>
           </p>
+          {locale.country === "NO" && (
+            <p className="budget-input__assumes">
+              Estimates. 10% is the legal minimum equity. Banks also cap debt at 5× income and test
+              a 3-point rate rise (minimum 7%); this tool doesn’t check those limits.
+            </p>
+          )}
         </>
       )}
       {hint && unset && <span className="budget-input__hint">{hint}</span>}

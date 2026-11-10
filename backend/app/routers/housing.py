@@ -76,10 +76,17 @@ def get_housing(
             median_income=r.median_income,
             price_to_income=r.price_to_income,
             name=r.name,
+            price_per_m2=r.price_per_m2,
+            sales=r.sales,
+            area_type=r.area_type,
+            income_level=r.income_level,
         )
         for _, r in sorted(store.housing.records.items())
     ]
-    return HousingResponse(metro=store.housing.metro, as_of=store.housing.as_of, zips=zips)
+    currency = "NOK" if store.housing.country == "NO" else "USD"
+    return HousingResponse(
+        metro=store.housing.metro, currency=currency, as_of=store.housing.as_of, zips=zips
+    )
 
 
 @router.get("/zips.geojson")

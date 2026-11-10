@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import datetime
 from functools import cache
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from .data_loader import COVERAGE_BUFFER_DEG, load_regions
@@ -80,12 +81,12 @@ def _fallback_tz(lon: float) -> datetime.tzinfo:
     return datetime.timezone(datetime.timedelta(hours=offset))
 
 
-def tz_for(lat: float, lon: float) -> datetime.tzinfo:
-    """Local timezone of the region containing (lat, lon).
+def region_for(lat: float, lon: float) -> dict[str, Any] | None:
+    """The region containing (lat, lon), or None off-coverage.
 
     Containing-bbox lookup (with the geofence buffer), ties broken by distance
     to the region center — the same rule the frontend uses to geolocate."""
-    best_code: str | None = None
+    best: dict[str, Any] | None = None
     best_dist = float("inf")
     for r in load_regions():
         bbox = r.get("bbox")
@@ -103,9 +104,15 @@ def tz_for(lat: float, lon: float) -> datetime.tzinfo:
         dist = d_lat * d_lat + d_lon * d_lon
         if dist < best_dist:
             best_dist = dist
-            best_code = r["code"]
+            best = r
+    return best
 
-    name = STATE_TZ.get(best_code or "")
+
+def tz_for(lat: float, lon: float) -> datetime.tzinfo:
+    """Local timezone of the region containing (lat, lon): the zone the region
+    declares (026 R13), else the US state table, else a longitude estimate."""
+    region = region_for(lat, lon)
+    name = (region.get("timezone") or STATE_TZ.get(region["code"])) if region else None
     if name is None:
         return _fallback_tz(lon)
     return _zoneinfo(name)

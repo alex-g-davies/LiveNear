@@ -5,6 +5,7 @@ import type { CommuteVariation, RegionInfo, ZipValue } from "../api/client";
 import { BRAND_NAME } from "../config";
 import type { ColorStop, MetricDef, MetricKey, TravelMode } from "../config";
 import type { BudgetSpec } from "../lib/affordability";
+import type { Locale } from "../lib/locale";
 import type { MatchResult } from "../lib/matches";
 import { LANDING_PATH } from "../lib/productRoutes";
 import AboutPanel from "./AboutPanel";
@@ -15,6 +16,7 @@ import Legend from "./Legend";
 import MatchesPanel from "./MatchesPanel";
 import MetricSwitcher from "./MetricSwitcher";
 import ProductSwitcher from "./ProductSwitcher";
+import ReferenceSize from "./ReferenceSize";
 import RegionPicker from "./RegionPicker";
 import TopMovers from "./TopMovers";
 
@@ -59,6 +61,11 @@ interface Props {
   onShowIntro?: () => void;
   /** First-visit getting-started checklist (new-user onboarding); null hides it. */
   firstRun?: ReactNode;
+  locale: Locale;
+  metrics: MetricDef[];
+  /** Shown only for regions priced per m² (026 R9). */
+  referenceM2: number | null;
+  onReferenceM2Change: (m2: number) => void;
 }
 
 /** Floating panel: title, region picker, budget, work controls, switcher, legend. */
@@ -94,6 +101,10 @@ export default function ControlsPanel({
   onZipChosen,
   onShowIntro,
   firstRun,
+  locale,
+  metrics,
+  referenceM2,
+  onReferenceM2Change,
 }: Props) {
   // Mobile-only collapse (015 R5); the toggle is display:none on desktop.
   const [collapsed, setCollapsed] = useState(false);
@@ -124,7 +135,11 @@ export default function ControlsPanel({
           spec={budgetSpec}
           onChange={onBudgetSpecChange}
           hint="Set one to fade areas over budget and focus your matches"
+          locale={locale}
         />
+        {referenceM2 != null && (
+          <ReferenceSize value={referenceM2} onChange={onReferenceM2Change} />
+        )}
       </div>
 
       <div className="panel__section work">
@@ -175,24 +190,25 @@ export default function ControlsPanel({
           dual={dual}
           mode={mode}
           onModeChange={onModeChange}
+          locale={locale}
         />
       </div>
 
       {matches && (
         <div className="panel__section">
-          <MatchesPanel result={matches} budget={budget} onZipChosen={onZipChosen} />
+          <MatchesPanel result={matches} budget={budget} onZipChosen={onZipChosen} locale={locale} />
         </div>
       )}
 
       <div className="panel__section">
         <span className="section-label">Shade map by</span>
-        <MetricSwitcher active={metricKey} onChange={onMetricChange} />
+        <MetricSwitcher active={metricKey} onChange={onMetricChange} metrics={metrics} />
         <Legend metric={activeMetric} stops={stops} budget={budget} asOf={asOf} />
         <TopMovers records={records} onZipChosen={onZipChosen} />
       </div>
 
       <p className="panel-foot">
-        Hover a ZIP for quick stats, click or tap for details · {minutes}-min{" "}
+        Hover {locale.country === "US" ? "a ZIP" : "an area"} for quick stats, click or tap for details · {minutes}-min{" "}
         {{ drive: "drive-time", walk: "walking", cycle: "cycling" }[mode]} overlay
       </p>
       <AboutPanel onShowIntro={onShowIntro} asOf={asOf} />

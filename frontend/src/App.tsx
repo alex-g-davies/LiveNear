@@ -12,7 +12,6 @@ import {
   DEFAULT_MODE,
   DEFAULT_STATE,
   DEFAULT_WORK,
-  METRICS,
   type MetricKey,
   SCENARIO_STYLES,
   type TravelMode,
@@ -24,13 +23,19 @@ import { NOTICE_ISOCHRONE, useIsochrone } from "./hooks/useIsochrone";
 import { useReverseGeocode } from "./hooks/useReverseGeocode";
 import { useMapData } from "./hooks/useMapData";
 import { useWikiSummary } from "./hooks/useWikiSummary";
-import { type BudgetSpec, effectiveBudget } from "./lib/affordability";
+import { type BudgetSpec, defaultBudgetSpec, effectiveBudget } from "./lib/affordability";
 import { metricValuesFromFeatures, resolveStops } from "./lib/colorScale";
-import { departLabel, rangeLabel } from "./lib/format";
+import { rangeLabel } from "./lib/format";
 import { centroidsByZip, scenariosContaining } from "./lib/geo";
 import { intersectIsochrones } from "./lib/intersect";
 import { computeMatches } from "./lib/matches";
+import { localeFor, metricsFor } from "./lib/locale";
 import { regionForPoint } from "./lib/locateRegion";
+import {
+  DEFAULT_REFERENCE_M2,
+  applyReferenceSize,
+  applyReferenceSizeToGeojson,
+} from "./lib/referenceSize";
 import { markMapMounted, mapHasMounted, rememberMapSearch, replaceMapSearch } from "./lib/productRoutes";
 import { budgetSpecFromUrl, parseAppUrl, serializeAppUrl } from "./lib/urlState";
 import { deltaPct, percentileRank, stateMedian } from "./lib/zipStats";
@@ -131,8 +136,24 @@ export default function App() {
     }
   }, []);
 
-  const activeMetric = METRICS.find((m) => m.key === metricKey) ?? METRICS[0];
-  const { geojson, records, loading, error, notices, asOf } = useMapData(stateCode);
+  const [referenceM2, setReferenceM2] = useState<number>(initialUrl.m2 ?? DEFAULT_REFERENCE_M2);
+  const {
+    geojson: rawGeojson,
+    records: rawRecords,
+    loading,
+    error,
+    notices,
+    asOf,
+  } = useMapData(stateCode);
+  // Norwegian estimates follow the chosen home size (026 R9).
+  const records = useMemo(
+    () => applyReferenceSize(rawRecords, referenceM2),
+    [rawRecords, referenceM2],
+  );
+  const geojson = useMemo(
+    () => applyReferenceSizeToGeojson(rawGeojson, records),
+    [rawGeojson, records],
+  );
 
   // Per-pin reach overlays (016 R2); server caches stay per-location.
   const iso1 = useIsochrone(work, minutes, mode);
@@ -163,6 +184,25 @@ export default function App() {
   }, []);
 
   const region = regions.find((r) => r.code === stateCode) ?? null;
+  const locale = localeFor(region, stateCode);
+  const metrics = useMemo(
+    () => metricsFor(region, locale, referenceM2),
+    [region, locale, referenceM2],
+  );
+  // A region without the chosen metric shows its first one (026 R10).
+  const activeMetric = metrics.find((m) => m.key === metricKey) ?? metrics[0];
+
+  // A budget means nothing in another currency (026 R16). This also covers a
+  // geolocation fix that changes the country after a budget was typed.
+  const country = region?.country ?? (region ? "US" : null);
+  const countryRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!country) return;
+    if (countryRef.current && countryRef.current !== country) {
+      setBudgetSpec(defaultBudgetSpec(stateCode));
+    }
+    countryRef.current = country;
+  }, [country, stateCode]);
 
   // Stable per-state ramp: equal-count buckets over the WHOLE state's
   // distribution (each color ≈ the same number of ZIPs), shared by the map
@@ -214,7 +254,8 @@ export default function App() {
 
   // Wikipedia summary of the selected place (012 R3) — best-effort.
   const wiki = useWikiSummary(
-    selectedZip ? (records.get(selectedZip)?.name ?? null) : null,
+    // English Wikipedia titles don't follow "place, region" in Norway.
+    selectedZip && locale.country === "US" ? (records.get(selectedZip)?.name ?? null) : null,
     region?.name ?? null,
   );
 
@@ -260,7 +301,7 @@ export default function App() {
     const verb = { drive: "Drive", walk: "Walk", cycle: "Cycle" }[mode];
     const window = (start: string | null, end: string | null) =>
       !dual && start && end
-        ? ` (departing ${departLabel(start)}–${departLabel(end).replace(/^\w+ /, "")})`
+        ? ` (departing ${locale.departure(start)}–${locale.departure(end).replace(/^\w+ /, "")})`
         : "";
     const lines = (
       est: typeof commute,
@@ -289,7 +330,7 @@ export default function App() {
       driveToWork2,
       driveHome2,
     };
-  }, [selectedZip, records, centroids, isochrone, minutes, commute, commuteB, mode, dual]);
+  }, [selectedZip, records, centroids, isochrone, minutes, commute, commuteB, mode, dual, locale]);
 
   // First area opened -> the "explore" step is done, even if closed again.
   useEffect(() => {
@@ -340,7 +381,8 @@ export default function App() {
     const zip = pendingZipRef.current;
     if (!zip || records.size === 0 || centroids.size === 0) return;
     pendingZipRef.current = null;
-    if (records.has(zip)) selectZipAndFly(zip);
+    // A no-data area has geometry but no record, and its link still works (026 R16).
+    if (records.has(zip) || centroids.has(zip)) selectZipAndFly(zip);
   }, [records, centroids, selectZipAndFly]);
 
   // Write app state back to the URL, debounced — pin drags fire frequently and
@@ -355,13 +397,25 @@ export default function App() {
       work,
       work2,
       minutes,
-      metric: metricKey,
+      metric: activeMetric.key,
       tmode: mode,
+      m2: region?.reference_m2 != null ? referenceM2 : undefined,
     });
     rememberMapSearch(qs);
     const t = window.setTimeout(() => replaceMapSearch(qs), 300);
     return () => window.clearTimeout(t);
-  }, [stateCode, selectedZip, budgetSpec, work, work2, minutes, metricKey, mode]);
+  }, [
+    stateCode,
+    selectedZip,
+    budgetSpec,
+    work,
+    work2,
+    minutes,
+    activeMetric.key,
+    mode,
+    region,
+    referenceM2,
+  ]);
 
   // Seed labels for the pin-address lines (015 R1): an address search already
   // knows its place_name — show it instantly; drags clear it so the reverse
@@ -450,6 +504,7 @@ export default function App() {
         focusPoint={focusPoint}
         focusSignal={focusSignal}
         pinHint={firstVisit}
+        locale={locale}
       />
       {selectedZip && (
         <ZipDetailPanel
@@ -467,6 +522,12 @@ export default function App() {
           pinnedRecord={pinnedZip ? records.get(pinnedZip) : undefined}
           onPin={() => setPinnedZip(selectedZip)}
           onUnpin={() => setPinnedZip(null)}
+          locale={locale}
+          referenceM2={region?.reference_m2 != null ? referenceM2 : null}
+          fallbackName={
+            (rawGeojson?.features.find((f) => f.properties?.zip === selectedZip)?.properties
+              ?.name as string | undefined) ?? null
+          }
         />
       )}
       <ControlsPanel
@@ -500,6 +561,10 @@ export default function App() {
         records={records}
         onZipChosen={selectZipAndFly}
         onShowIntro={() => setShowWelcome(true)}
+        locale={locale}
+        metrics={metrics}
+        referenceM2={region?.reference_m2 != null ? referenceM2 : null}
+        onReferenceM2Change={setReferenceM2}
         firstRun={
           checklistOpen && !showWelcome ? (
             <GettingStarted
@@ -535,6 +600,7 @@ export default function App() {
           onClose={handleWelcomeClose}
           budgetSpec={budgetSpec}
           onBudgetChange={setBudgetSpec}
+          locale={locale}
         />
       )}
       <Toasts
