@@ -22,5 +22,5 @@ repair_allowance:
   source: "Smarte Penger, Bilkostnader - reparasjon (updated 2026-08-06): repair cost per km by odometer for a mid-size car"
   source_url: https://www.smartepenger.no/bilokonomi/2231-bilkostnader-reparasjon
   status: estimate
-  basis: "Editorial estimate for a petrol mid-size car (0.11 kr/km at 20 000 km, 0.45 at 80 000, 0.79 at 100 000, 0.96 at 110 000+); the 40 000 and 60 000 km points are interpolated; scaled by repair_ev_factor and repair_in_warranty_factor"
+  basis: "Editorial estimate for a petrol mid-size car (0.11 kr/km at 20 000 km, 0.45 at 80 000, 0.79 at 100 000, 0.96 at 110 000+); the 40 000 and 60 000 km points are interpolated; scaled by the EV repair factor and the in-warranty repair factor"
   bands_ore_per_km: [[20000, 11], [40000, 22], [60000, 34], [80000, 45], [100000, 79], [999999999, 96]]

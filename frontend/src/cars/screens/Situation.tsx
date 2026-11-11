@@ -291,7 +291,7 @@ export default function Situation() {
                   value={profile.down_payment_nok}
                   onChange={(e) => updateProfile({ down_payment_nok: numOf(e) })}
                 />
-                <span aria-hidden="true">NOK</span>
+                <span aria-hidden="true">kr</span>
               </span>
             </label>
           </div>
@@ -389,7 +389,7 @@ export default function Situation() {
                         updateProfile({ insurance_quotes_nok: next });
                       }}
                     />
-                    <span aria-hidden="true">NOK per year</span>
+                    <span aria-hidden="true">kr per year</span>
                   </span>
                 </label>
               ))}
@@ -421,7 +421,7 @@ export default function Situation() {
                     })
                   }
                 />
-                <span aria-hidden="true">NOK</span>
+                <span aria-hidden="true">kr</span>
               </span>
             </label>
             <label className="cars-field">

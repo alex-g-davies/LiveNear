@@ -62,7 +62,33 @@ export function formatYears(years: number): string {
   return `${text} ${years === 1 ? "year" : "years"}`;
 }
 
-/** ISO date passthrough with a dash for missing values. */
+/** Provenance text for display (027 R6). The data marks defaults with no
+ *  external source as "Placeholder" and user-entered values as "Owner input";
+ *  readers see "Typical value" and "Your input". The status badge and basis
+ *  still say it is an estimate, so nothing is hidden, only renamed. */
+export function plainSource(text: string | null | undefined): string {
+  if (!text) return "";
+  return readableDates(
+    text
+      .replace(/^Placeholder(?=\s+[a-z])(?!\s+until\b)/, "Typical value:") // "…: winter uplift"
+      .replace(/^Placeholder\b/, "Typical value")
+      .replace(/^Owner input\b/, "Your input")
+      .replace(/^Owner enters\b/, "You enter"),
+  );
+}
+
+/** ISO dates inside free text -> "6 Aug 2026" (027 R7), the rest untouched. */
+export function readableDates(text: string): string {
+  return text.replace(/\b\d{4}-\d{2}-\d{2}\b/g, (iso) => formatDate(iso));
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** ISO date -> "1 Jan 2027" (027 R7), a dash for missing values. By hand, like
+ *  the numbers above, so every ICU build prints the same thing. */
 export function formatDate(iso: string | null | undefined): string {
-  return iso && /^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10) : "—";
+  const m = iso ? /^(\d{4})-(\d{2})-(\d{2})/.exec(iso) : null;
+  if (!m) return "—";
+  const month = MONTHS[Number(m[2]) - 1];
+  return month ? `${Number(m[3])}${NBSP}${month}${NBSP}${m[1]}` : "—";
 }

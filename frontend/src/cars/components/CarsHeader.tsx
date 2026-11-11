@@ -2,6 +2,7 @@
 // switcher (025 R7). Step 4 (Detail) is only reachable from an option, so it
 // is a link only while on one.
 
+import { useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 
 import ProductSwitcher from "../../components/ProductSwitcher";
@@ -12,6 +13,16 @@ export default function CarsHeader() {
   const { pathname } = useLocation();
   const onDetail = pathname.startsWith(drivePath("/option/"));
   const onCompare = pathname.startsWith(drivePath("/compare"));
+  // On a phone the steps scroll sideways (027 R4); keep the current one in view.
+  const stepsRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const nav = stepsRef.current;
+    const current = nav?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!nav || !current || nav.scrollWidth <= nav.clientWidth) return;
+    const right = current.offsetLeft + current.offsetWidth;
+    if (right > nav.scrollLeft + nav.clientWidth) nav.scrollLeft = right - nav.clientWidth;
+    else if (current.offsetLeft < nav.scrollLeft) nav.scrollLeft = current.offsetLeft;
+  }, [pathname]);
   return (
     <header className="cars-header">
       <div className="cars-header__inner">
@@ -23,7 +34,7 @@ export default function CarsHeader() {
           {isMockMode() && <span className="cars-brand__mock">Sample data</span>}
         </div>
         <ProductSwitcher current="drive" />
-        <nav aria-label="Steps" className="cars-steps">
+        <nav aria-label="Steps" className="cars-steps" ref={stepsRef}>
           <NavLink to={DRIVE_PATH} end className="cars-steps__link">
             1 Your situation
           </NavLink>

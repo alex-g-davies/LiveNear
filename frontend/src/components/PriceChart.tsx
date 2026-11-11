@@ -27,7 +27,7 @@ export default function PriceChart({ history }: Props) {
 
   const points = history.map(([, v], i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
   const rising = values[values.length - 1] >= values[0];
-  const stroke = rising ? "#2e7d32" : "#c62828";
+  const trend = rising ? "up" : "down"; // colours come from --positive / --negative (027 R10)
   const area = [
     `${PAD.left},${(PAD.top + innerH).toFixed(1)}`,
     ...points,
@@ -53,7 +53,7 @@ export default function PriceChart({ history }: Props) {
             x2={W - PAD.right}
             y1={y(v)}
             y2={y(v)}
-            stroke="#e2e6ec"
+            className="chart__grid"
             strokeDasharray="3 3"
           />
           <text x={PAD.left - 6} y={y(v) + 3.5} textAnchor="end" className="chart__tick">
@@ -61,8 +61,8 @@ export default function PriceChart({ history }: Props) {
           </text>
         </g>
       ))}
-      <polygon points={area} fill={stroke} opacity={0.08} />
-      <polyline points={points.join(" ")} fill="none" stroke={stroke} strokeWidth={2} />
+      <polygon points={area} className={`chart__area--${trend}`} opacity={0.08} />
+      <polyline points={points.join(" ")} fill="none" className={`chart__line--${trend}`} strokeWidth={2} />
       <text x={PAD.left} y={H - 4} className="chart__tick">
         {firstQ}
       </text>

@@ -81,7 +81,9 @@ def test_inputs_carry_units_and_display_values(client):
     assert ins["unit"] == "kr/year"
     assert ins["display_range"] is not None and ins["display_range"][0].endswith("kr/year")
     assert inputs["Loan rate"]["display_value"] == "6,9 %"
-    assert inputs["Traffic insurance tax rule"]["display_value"].startswith("ev 9,16 kr/day")
+    assert inputs["Traffic insurance tax rule"]["display_value"].startswith(
+        "Electric 9,16\u00a0kr/day"
+    )
     assert inputs["Resale value path"]["unit"] is None
 
 
@@ -92,7 +94,13 @@ def test_formatting_helpers():
     assert fmt_kr(-250000) == "-2 500"
     assert display_value(Decimal("756000"), "kr/year") == "7 560 kr/year"
     assert display_value(Decimal("6.9"), "%") == "6,9 %"
-    assert display_value({"ev": 916, "ice": 652}, "kr/day") == "ev 9,16 kr/day, ice 6,52 kr/day"
+    # 027 R5: dict keys become words, never config keys.
+    assert display_value({"ev": 916, "ice": 652}, "kr/day") == (
+        "Electric 9,16\u00a0kr/day, petrol or diesel 6,52\u00a0kr/day"
+    )
+    assert display_value({"first_after_months": 48, "every_months": 24}, "months") == (
+        "First at 48\u00a0months, then every 24\u00a0months"
+    )
     assert input_unit("x.price", 1) == "kr"
     assert input_unit("traffic_tax_2026", {}) == "kr/day"
     assert input_unit("market.v.2019.resale_path", "text") is None

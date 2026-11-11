@@ -100,9 +100,10 @@ def value_path(
     basis = None
     if overall == "estimate":
         basis = (
-            f"cohort {variant_id}:{model_year} has {fit.n} listings (< 5)"
+            f"only {fit.n} comparable {'listing' if fit.n == 1 else 'listings'} "
+            "for this model year (fewer than 5)"
             if fit is not None and fit.n < 5
-            else "no cohort fit; value from the segment retention curve"
+            else "no listings for this model year; based on how similar cars hold their value"
             if fit is None
             else params.note or "market model marked estimate"
         )
@@ -111,8 +112,12 @@ def value_path(
         log_sigma=tuple(sig),
         source=In[str](
             id=f"market.{variant_id}.{model_year}.resale_path",
-            value=f"{params.version} retention path, cohort n={fit.n if fit else 0}",
-            source=f"Market model {params.version}",
+            value=(
+                f"Resale curve from {fit.n} comparable listings"
+                if fit
+                else "Resale curve for similar cars"
+            ),
+            source="Market model",
             as_of=as_of or params.as_of,
             status=overall,
             basis=basis,

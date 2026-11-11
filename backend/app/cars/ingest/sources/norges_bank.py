@@ -75,7 +75,7 @@ def to_rates_patch(obs_date: date, policy_pct: Decimal) -> dict[str, In[Decimal]
         "car_loan_rate_pct": In[Decimal](
             id="rates.car_loan_rate_pct",
             value=loan,
-            source="Policy rate + placeholder spread",
+            source="Norges Bank policy rate plus a typical lender margin",
             as_of=obs_date,
             status="estimate",
             basis=(

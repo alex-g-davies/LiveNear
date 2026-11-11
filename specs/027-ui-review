@@ -1,0 +1,157 @@
+# Spec 027 — UI review
+
+Status: Draft
+Owner: <you>
+Related: GitHub #20; 025 (shared shell and tokens), 010 (target sizes),
+022-024 (DriveCheap screens)
+
+## Overview
+
+Make both products look like one finished site. Fix the layout, typography and
+copy problems that read as unfinished, starting with the owner's screenshot of
+`/drive-cheap/checklist`. Nothing in this spec changes a calculation.
+
+## Context
+
+A headless pass on 2026-11-11 covered every surface at 1280 and 390 px wide:
+landing, the LiveNear map, the detail panel (WA and Oslo), About, and the
+DriveCheap screens Situation, Market, Checklist, Compare, Curves and Option
+detail. It found the problems below, which the requirements address:
+
+- **Checklist cards:** they have no gap between them (`.cars-checklist` has no
+  CSS rule), and their headings sit on the card border because a flush card
+  uses an unpadded `__head`.
+- **Developer text on screen:**
+  - "Pending rule ev_vat_2027_proposed".
+  - Option detail values and notes showing `first_after_months`, `repair_ev_factor`, `rates.yaml (inspection_fee_nok)`.
+  - "Default estimate (engine/defaults.py)".
+  - "cohort tesla-model3-lr-awd:2019 at 112709 km".
+  - About a dozen inputs whose source reads "Placeholder".
+- **Fonts:** 13 control types on the map panel (Go, the region select, the
+  product switcher, Add second workplace, the matches rows, About, the zoom
+  buttons) render in the browser default font, because no rule sets
+  `font: inherit`. Some DriveCheap controls do the same.
+- **Dates:** shown as raw ISO ("Due 2027-01-01", "Prices as of 2026-11-02").
+- **Units:** DriveCheap inputs say "NOK" next to results that say "kr".
+- **Phone layout:**
+  - Checklist checkboxes sit on their own line above the title.
+  - The step navigation leaves "5 Checklist" alone on a second line.
+  - A 720px media rule adds padding back to flush cards.
+- **Colours:** DriveCheap keeps its own border, green, neutral and shadow values
+  beside the shared tokens from 025, and `styles.css` still has about 26 kinds
+  of literal colour outside `:root`. Font sizes are scattered px values in both
+  stylesheets.
+
+## Requirements
+
+### Layout
+
+- **R1 — Checklist sections.** Checklist sections are separated like other
+  DriveCheap cards, and each section heading has the same inner padding as
+  other card headings.
+- **R2 — Checklist rows on phones.** At 390px the checkbox stays beside the
+  item title, and the tag and due badges sit under the text.
+- **R3 — Flush cards on phones.** Cards designed without padding (lists and
+  tables) stay that way at every width.
+- **R4 — Step navigation on phones.** At 390px the five DriveCheap steps sit on
+  one row, scrolling sideways if needed, and never leave a single step alone on
+  a second line.
+
+### Copy
+
+- **R5 — No internal identifiers.** No rule id, config key, file name, model
+  version or cohort id appears in visible text or in the checklist download.
+  - Pending rules are described in words, for example "Proposed change, not yet law: …".
+  - The inspection cycle reads like "First at 48 months, then every 24 months".
+  - Model provenance reads like "Market model, 93 comparable sales". The
+    version moves to a tooltip.
+- **R6 — Plain source labels.** An input with no external source is labelled
+  "Typical value" or "Your input" instead of "Placeholder". It stays marked as an
+  estimate with its written basis, as CLAUDE.md requires; only the label changes.
+- **R7 — Dates.** Dates in both products read as "1 Jan 2027", not ISO. This
+  covers due badges, "Prices as of", source dates and the next deadline.
+  Machine formats such as URLs, the API and the checklist file's metadata are
+  unchanged.
+- **R8 — Units.** DriveCheap uses "kr" for money everywhere, including input
+  suffixes. "NOK" appears only where a currency code is expected.
+
+### Visual system
+
+- **R9 — Fonts.** Every button, input, select and textarea uses the site font.
+- **R10 — Colour tokens.**
+  - DriveCheap's border, positive green, neutrals and shadow use the shared
+    025 tokens.
+  - Repeated literal colours in `styles.css` and the price chart move into
+    named tokens.
+  - Estimate, error, chart-series and map-ramp colours keep their own named
+    tokens or data.
+- **R11 — Type scale.** Both stylesheets take font sizes from one shared set
+  of `--fs-*` tokens. DriveCheap's 15px reading size and the map panel's 13px
+  stay different on purpose.
+
+## Non-functional / Constraints
+
+- No change to any number, ranking or calculation. Golden scenarios and engine
+  tests pass unchanged.
+- Spec 010 target sizes and contrast still hold. Text colours stay at or above
+  4.5:1.
+- No new dependencies.
+
+## Acceptance Criteria
+
+- [ ] At both widths the checklist matches R1-R3: separated cards, padded
+      headings, checkbox beside the title.
+- [ ] At 390px the step navigation never leaves a single step on its own row (R4).
+- [ ] A rendered-page scan of every surface finds no snake_case identifier or
+      file name, and the checklist download has none (R5).
+- [ ] No visible "Placeholder" source label; estimates still show their basis (R6).
+- [ ] No ISO date in visible text on either product (R7).
+- [ ] DriveCheap money inputs show "kr" (R8).
+- [ ] A computed-style scan finds no form control whose font differs from the
+      body's (R9).
+- [ ] `cars.css` defines no border, positive, neutral or shadow colour of its
+      own, and `styles.css` has no repeated literal colour outside `:root` (R10).
+- [ ] Font sizes come from `--fs-*` tokens (R11).
+- [ ] Before and after screenshots of every surface at 1280 and 390px.
+- [ ] `npm run test`, `npm run build`, `pytest`, `ruff check .` pass, with
+      golden scenarios unchanged.
+
+## Out of Scope (explicit)
+
+- Translation and number formats per language (spec 028, #19).
+- Redesigning any screen, or changing which information a screen shows.
+- The browser's own date-picker format (mm/dd/yyyy), which follows the
+  browser's locale. Spec 028 sets the page language.
+- Backend explanatory prose beyond removing identifiers (R5).
+
+## Open Questions (resolve in review)
+
+None open. The owner approved the spec, including the R6 wording ("Typical
+value", "Your input").
+
+## Verification notes
+
+R1-R4, R9-R11 → the screenshot tour plus a computed-style scan; R5, R7 → a
+rendered-text scan for snake_case, file names and ISO dates, plus unit tests on
+the checklist copy and the date formatter; R6, R8 → unit tests and
+screenshots. The human verifies; the implementing agent does not self-certify
+done.
+
+Results, 2026-11-12. A headless tour of 10 surfaces at 1280 and 390px, on a
+production build with sample data, found:
+
+- no form control in a font other than the body's, including MapLibre's own
+  buttons;
+- no snake_case id, file name, ISO date, "Placeholder" or "NOK" in visible text;
+- no sideways page overflow;
+- the DriveCheap steps on one row;
+- no page errors.
+
+Implementation notes:
+
+- "Placeholder" and "Owner input" remain in the data files and are relabelled
+  at display time (`plainSource`), so no bundle was rebuilt.
+- Code-generated sources and the two prose notes that named config keys were
+  rewritten in the backend.
+- `tests/cars/test_properties.py` could not run locally: Windows Application
+  Control blocks a hypothesis DLL. The other 258 backend tests pass.

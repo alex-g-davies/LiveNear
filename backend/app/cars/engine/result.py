@@ -431,11 +431,29 @@ def _fmt_number(v: object) -> str:
     return str(v)
 
 
+# Words for the keys of dict-valued rules, so no config key reaches the screen
+# (spec 027 R5). Unknown keys fall back to their humanised form.
+DICT_KEY_LABELS: dict[str, str] = {
+    "ev": "electric",
+    "phev": "plug-in hybrid",
+    "hybrid": "hybrid",
+    "ice": "petrol or diesel",
+    "first_after_months": "first at",
+    "every_months": "then every",
+}
+
+
+def _key_label(key: object) -> str:
+    k = str(key)
+    return DICT_KEY_LABELS.get(k, k.replace("_", " "))
+
+
 def display_value(v: object, unit: str | None) -> str:
     """Value in display units: money converted from øre, unit appended,
-    dict values (tax rules per energy type, inspection cycle) listed."""
+    dict values (tax rules per energy type, inspection cycle) listed in words."""
     if isinstance(v, dict):
-        return ", ".join(f"{k} {display_value(x, unit)}" for k, x in v.items())
+        text = ", ".join(f"{_key_label(k)} {display_value(x, unit)}" for k, x in v.items())
+        return text[:1].upper() + text[1:]
     if unit is None:
         return _fmt(v)
     if unit in MONEY_UNITS and isinstance(v, int | Decimal | float) and not isinstance(v, bool):

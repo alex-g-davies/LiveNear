@@ -13,7 +13,16 @@ import type { InputView, OptionSummary } from "../api";
 import Badge from "../components/Badge";
 import ExitChart from "../components/ExitChart";
 import MeasureSelect from "../components/MeasureSelect";
-import { formatDate, formatKm, formatMonths, formatNok, formatPerKm, formatYears } from "../lib/format";
+import {
+  formatDate,
+  formatKm,
+  formatMonths,
+  formatNok,
+  formatPerKm,
+  formatYears,
+  plainSource,
+  readableDates,
+} from "../lib/format";
 import { MODE_LABELS, measureDef } from "../lib/measures";
 import { useCarState } from "../state";
 import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
@@ -203,7 +212,7 @@ export default function OptionDetail() {
               <span className="cars-deal__value">{rentInput ? rentInput.display_value ?? rentInput.value : "—"}</span>
               <span className="cars-deal__meta">
                 {rentInput && <Badge status={rentInput.status} />}
-                {rentInput && <span className="cars-hint">{rentInput.source}</span>}
+                {rentInput && <span className="cars-hint">{plainSource(rentInput.source)}</span>}
               </span>
             </div>
             <div className="cars-deal__item">
@@ -226,7 +235,7 @@ export default function OptionDetail() {
               </span>
               <span className="cars-deal__meta">
                 {priceInput && <Badge status={priceInput.status} />}
-                {priceInput && <span className="cars-hint">{priceInput.source}</span>}
+                {priceInput && <span className="cars-hint">{plainSource(priceInput.source)}</span>}
               </span>
             </div>
             <div className="cars-deal__item">
@@ -239,7 +248,7 @@ export default function OptionDetail() {
                 <span className="cars-hint">
                   {saleLo !== null && saleHi !== null
                     ? `Likely ${formatNok(saleLo)} to ${formatNok(saleHi)}`
-                    : resaleInput?.source ?? "Market model"}
+                    : plainSource(resaleInput?.source) || "Market model"}
                 </span>
               </span>
             </div>
@@ -357,7 +366,7 @@ export default function OptionDetail() {
                       {inp.material && <span className="cars-hint"> · key input</span>}
                     </td>
                     <td>
-                      {inp.display_value ?? inp.value}
+                      {readableDates(String(inp.display_value ?? inp.value))}
                       {range && (
                         <div className="cars-hint">
                           Range {range[0]} to {range[1]}
@@ -370,9 +379,9 @@ export default function OptionDetail() {
                           {inp.source.replace(/^https?:\/\/(www\.)?/, "")}
                         </a>
                       ) : (
-                        inp.source
+                        plainSource(inp.source)
                       )}
-                      {inp.basis && <div className="cars-inputs__basis">Basis: {inp.basis}</div>}
+                      {inp.basis && <div className="cars-inputs__basis">Basis: {plainSource(inp.basis)}</div>}
                     </td>
                     <td>
                       <Badge status={inp.status} />

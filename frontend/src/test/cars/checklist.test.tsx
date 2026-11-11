@@ -66,14 +66,16 @@ describe("Newcomer checklist (spec 023 R4-R7)", () => {
   it("derives due dates from the arrival and start dates and the pending EV rule", async () => {
     renderCars("/drive-cheap/checklist", WITH_ARRIVAL);
     const licence = screen.getByTestId("check-licence_exchange");
-    expect(licence.textContent).toContain("Due 2027-03-15");
+    expect(licence.textContent).toMatch(/Due 15\sMar\s2027/);
     expect(licence.textContent).toContain("Statens vegvesen");
-    expect(screen.getByTestId("check-winter_tyres").textContent).toContain("Due 2027-11-01");
+    expect(screen.getByTestId("check-winter_tyres").textContent).toMatch(/Due 1\sNov\s2027/);
     await waitFor(
-      () => expect(screen.getByTestId("check-ev_tax_changes").textContent).toContain("Due 2027-01-01"),
+      () => expect(screen.getByTestId("check-ev_tax_changes").textContent).toMatch(/Due 1\sJan\s2027/),
       WAIT,
     );
-    expect(screen.getByTestId("check-ev_tax_changes").textContent).toContain("ev_vat_2027_proposed");
+    // 027 R5: the rule is described in words, never by its id.
+    expect(screen.getByTestId("check-ev_tax_changes").textContent).toContain("Proposed change, not yet law");
+    expect(screen.getByTestId("check-ev_tax_changes").textContent).not.toMatch(/\b[a-z]+_[a-z0-9_]+\b/);
     expect(screen.getByTestId("next-due").textContent).toContain("Check upcoming tax changes");
   });
 
@@ -84,7 +86,7 @@ describe("Newcomer checklist (spec 023 R4-R7)", () => {
     };
     renderCars("/drive-cheap/checklist", state);
     const licence = screen.getByTestId("check-licence_exchange");
-    expect(licence.textContent).not.toContain("Due 20");
+    expect(licence.textContent).not.toMatch(/Due \d/);
     expect(screen.getByRole("link", { name: /Add your arrival date/ })).toHaveAttribute("href", "/drive-cheap");
     expect(screen.getByTestId("check-lease_terms").textContent).toContain("only if you lease");
     expect(screen.getByTestId("check-prefer_dealer").textContent).toContain("only if you go used");
@@ -168,7 +170,7 @@ describe("checklist helpers (spec 023 R5, R7)", () => {
     expect(md).toContain("## Before you choose");
     expect(md).toContain("- [x] Ask your previous insurer for a claims-free letter — ");
     expect(md).toContain("- [ ] Find your driving licence exchange deadline — ");
-    expect(md).toContain("  Due 2027-03-15 (estimate: basis text)");
+    expect(md).toContain("  Due 15 Mar 2027 (estimate: basis text)");
     expect(md).toContain("(Cost to exit; only if you lease)");
     expect(md.match(/^- \[[ x]\] /gm)).toHaveLength(11);
   });

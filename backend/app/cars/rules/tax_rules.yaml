@@ -106,8 +106,8 @@ rules:
     checked_on: 2026-11-02
     note: >-
       Passenger cars (M1) must pass within four years of first registration and
-      then at the latest every second year. The fee itself is a market price in
-      rates.yaml (inspection_fee_nok).
+      then at the latest every second year. The fee itself is a market price, shown as the
+      inspection fee input.
 
   # --- VAT on new electric cars --------------------------------------------
   - id: ev_vat_2023

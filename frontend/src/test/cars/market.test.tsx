@@ -38,7 +38,7 @@ describe("Market map (spec 023 R2/R3)", () => {
     renderCars("/drive-cheap/market", { ...EMPTY, selection: [{ variant_id: "renault-5-52", year_from: 2025, year_to: 2026 }] });
     expect(screen.getByRole("heading", { level: 1, name: "Market map" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getAllByTestId("market-dot").length).toBeGreaterThan(50), WAIT);
-    expect(screen.getByTestId("market-count").textContent).toMatch(/^\d+ listings · as of 2026-10-24/);
+    expect(screen.getByTestId("market-count").textContent).toMatch(/^\d+ listings · as of 24\sOct\s2026/);
     expect(screen.queryByTestId("market-fallback")).toBeNull();
     // Selected dots are pressed; others are not.
     const dots = screen.getAllByTestId("market-dot");

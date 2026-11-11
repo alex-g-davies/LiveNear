@@ -171,6 +171,13 @@ export function buildVehicles(): VehicleOut[] {
 }
 
 const NOK = (nok: number) => Math.round(nok * 100);
+
+/** "rates.winter_tyres_nok" -> "Winter tyres": a readable fallback label with
+ *  no config key or unit suffix on screen (027 R5). */
+function humaniseId(id: string): string {
+  const words = (id.split(".").pop() ?? id).replace(/_(nok|pct|ore)$/, "").replace(/_/g, " ");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
 const nbsp = " ";
 const kr = (ore: number) =>
   `${String(Math.round(ore / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, nbsp)}${nbsp}kr`;
@@ -473,7 +480,7 @@ function buildOption(v: VehicleOut, mode: Mode, year: number, ctx: Ctx): BuiltOp
     }),
   );
 
-  for (const i of inputs) i.label ??= MOCK_INPUT_LABELS[i.id] ?? i.id.replace(/_/g, " ");
+  for (const i of inputs) i.label ??= MOCK_INPUT_LABELS[i.id] ?? humaniseId(i.id);
   const materialEstimates = inputs.filter((i) => i.material && i.status === "estimate").map((i) => i.id);
   const lineItems: LineItemView[] = display["36"].map((item) => ({
     key: item.key,

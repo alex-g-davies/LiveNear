@@ -3,7 +3,7 @@
 // taken from the scenario's sensitivity, and the Markdown export. No I/O.
 
 import type { ScenarioResponse, SensitivityRow } from "../api";
-import { formatNok, formatNokSigned, formatPerKm } from "./format";
+import { formatDate, formatNok, formatNokSigned, formatPerKm } from "./format";
 import type { Measure, Mode } from "./profile";
 import { DRIVE_PATH } from "../../lib/productRoutes";
 
@@ -224,7 +224,7 @@ export function dueFor(item: ChecklistItem, inputs: DueInputs): DueInfo | null {
         kind: "date",
         iso,
         basis:
-          `Pending rule ${p.id}: a reported change to EV VAT, not yet enacted. ` +
+          "Proposed change, not yet law: a reported change to VAT on electric cars. " +
           "Applied in the results only once an official source is cited.",
         url: EV_TAX_URL,
       };
@@ -330,7 +330,10 @@ export function checklistMarkdown({ ticked, dues, modes, generatedOn }: Markdown
       const note = appliesNote(item, modes);
       lines.push(`- ${box} ${item.title} — ${item.why} (${item.tag}${note ? `; ${note}` : ""})`);
       const d = dues.get(item.id);
-      if (d?.kind === "date") lines.push(`  Due ${d.iso} (estimate: ${d.basis})`);
+      if (d?.kind === "date") {
+        const due = formatDate(d.iso).replace(/ /g, " ");
+        lines.push(`  Due ${due} (estimate: ${d.basis})`);
+      }
       else if (d?.kind === "missing") lines.push(`  Due date: ${d.text}`);
     }
     lines.push("");

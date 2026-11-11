@@ -343,7 +343,7 @@ def fit_market(
         In[Decimal](
             id=priors.dealer_premium.id,
             value=_decimal(delta),
-            source=f"Pooled dealer term of within-cohort residuals ({VERSION})",
+            source="Market model: price gap between dealer and private sales",
             as_of=as_of,
             status="live",
         )

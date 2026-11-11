@@ -53,6 +53,7 @@ from .rules import toll_ring_for
 from .schemas import Profile, SelectionItem
 
 MID_YEAR_MONTH = 7
+NBSP = " "  # thousands separator in display text
 
 
 def age_months_on(start: date, model_year: int) -> int:
@@ -356,13 +357,13 @@ def build_scenario(
                 basis = (
                     None
                     if status == "live"
-                    else "cohort value from the retention prior (no listings yet)"
+                    else "estimated from how similar cars hold their value (no listings yet)"
                 )
             oid = f"{v.variant_id}:{year}:{kind}"
             price_in = In[int](
                 id=f"{oid}.price",
                 value=price_val,
-                source=f"Market model {b.market.version}, cohort {cohort.cohort_id} at {km0} km",
+                source="Market model, for a car at about " + f"{km0:,}".replace(",", NBSP) + " km",
                 as_of=cohort.as_of,
                 status=price_status,
                 basis=basis,

@@ -57,7 +57,7 @@
    "recovery_pct": {
     "id": "lease-155687.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
@@ -144,7 +144,7 @@
    "recovery_pct": {
     "id": "lease-183373.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
@@ -231,7 +231,7 @@
    "recovery_pct": {
     "id": "lease-201805.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
@@ -318,7 +318,7 @@
    "recovery_pct": {
     "id": "lease-214398.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
@@ -405,7 +405,7 @@
    "recovery_pct": {
     "id": "lease-226674.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
@@ -492,7 +492,7 @@
    "recovery_pct": {
     "id": "lease-233809.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",
@@ -579,7 +579,7 @@
    "recovery_pct": {
     "id": "lease-235827.early_exit_recovery",
     "value": "60",
-    "source": "Build spec default rule",
+    "source": "Typical value",
     "as_of": "2026-11-01",
     "status": "estimate",
     "basis": "Lessee owes remaining payments less what the lessor recovers by re-leasing",

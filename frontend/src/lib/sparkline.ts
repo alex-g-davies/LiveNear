@@ -23,10 +23,10 @@ export function buildSparklineSvg(
     })
     .join(" ");
   // Green when the series ends up over its start, red when down.
-  const stroke = values[values.length - 1] >= values[0] ? "#2e7d32" : "#c62828";
+  const trend = values[values.length - 1] >= values[0] ? "up" : "down"; // --positive / --negative
   return (
     `<svg class="spark" width="${width}" height="${height}" ` +
     `viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">` +
-    `<polyline fill="none" stroke="${stroke}" stroke-width="1.5" points="${points}"/></svg>`
+    `<polyline class="spark__line spark__line--${trend}" fill="none" stroke-width="1.5" points="${points}"/></svg>`
   );
 }
