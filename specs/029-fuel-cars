@@ -1,0 +1,145 @@
+# Spec 029 — Hybrid, petrol and diesel cars, and four more EVs
+
+Status: Draft
+Owner: <you>
+Related: 022 (engine, catalogue, ingest), 023 (market map, energy filter),
+024 (service and maintenance), 028 (translations); owner export of
+2026-11-12 (`backend/docs/cars/sources.md`)
+
+## Overview
+
+DriveCheap compares only electric cars today. Newcomers also weigh hybrids
+and diesels, and the owner's latest export covers 14 models the catalogue
+lacks: 4 electric and 10 hybrid, petrol or diesel. This spec lets the engine
+cost a car that burns fuel, adds those models to the catalogue, and feeds
+their listings into the market model, so a hybrid or diesel can be ranked
+against an EV on the same terms.
+
+## Context
+
+- The engine already has `energy_type` (`ev`, `phev`, `hybrid`, `ice`) on
+  options and variants, but every cost path assumes electricity: energy is
+  kWh times a charging mix, toll rates are EV rates, and tax rules are read
+  for electric cars (023 notes "nothing is invented for hybrids or petrol").
+- The 2026-11-12 export holds these models outside the catalogue (listings,
+  median asking price):
+
+  | Model | Fuel | Listings | Median |
+  |---|---|---:|---:|
+  | Audi Q4 e-tron | electric | 178 | 339 900 kr |
+  | BMW i4 | electric | 112 | 449 900 kr |
+  | Polestar 2 | electric | 124 | 319 000 kr |
+  | Porsche Taycan | electric | 248 | 604 532 kr |
+  | Toyota Yaris | hybrid | 162 | 239 000 kr |
+  | Toyota Corolla | hybrid | 145 | 259 000 kr |
+  | Toyota C-HR | hybrid | 116 | 259 000 kr |
+  | Toyota RAV4 | hybrid | 179 | 329 000 kr |
+  | VW Golf | hybrid / petrol | 43 | 259 000 kr |
+  | Skoda Octavia | diesel | 146 | 259 990 kr |
+  | Skoda Kodiaq | diesel | 95 | 388 900 kr |
+  | VW Tiguan | diesel | 57 | 319 900 kr |
+  | Volvo V60 | diesel | 42 | 289 990 kr |
+  | Toyota Land Cruiser | diesel | 91 | 579 900 kr |
+
+  88 of the 91 Land Cruisers are registered as vans (*varebil*), which have
+  different taxes and VAT rules from a passenger car.
+- Listings in this export name only the model; the trim comes from ad text.
+  The converter's `TARGET_MODEL_RULES` (added with the 2026-11-12 data
+  update) already reads trims for the six catalogued models.
+
+## Requirements
+
+### Engine
+
+- **R1 — Fuel energy cost.** For `hybrid` and `ice` variants, energy cost is
+  litres per 100 km times km driven times the fuel price, with a winter
+  uplift. Consumption is the WLTP figure plus a real-world uplift, each with
+  a source and `status`. The charging-mix questions do not apply to these
+  cars and are hidden or ignored for them.
+- **R2 — Fuel price.** Petrol and diesel pump prices come from a public
+  source with a date (candidate: SSB's monthly pump-price table, NLOD) and
+  carry a P10–P90 range for the Monte Carlo, like electricity prices today.
+- **R3 — Taxes by energy type.** `rules/tax_rules.yaml` gains the fossil and
+  hybrid rates of the traffic insurance tax and any energy-dependent
+  re-registration fee, each with effective dates and official URLs.
+  Values are `unverified` until read on the official page.
+- **R4 — Tolls by energy type.** `rules/toll_rings.yaml` gains the rates for
+  petrol, diesel and hybrid cars in each ring, with their sources. Where a
+  ring sets rates by Euro class, the variant's class is used.
+- **R5 — Service.** Fuel cars use their brand's service interval (often
+  yearly or by km) and price, with oil and filter changes in the per-visit
+  price, sourced as in spec 024. Wear and repair factors keep the EV/ICE
+  split already in the rates.
+- **R6 — Tests first.** Before any formula changes, a golden scenario for
+  one hybrid and one diesel is added and worked by hand in
+  `docs/cars/golden/`, as CLAUDE.md requires.
+
+### Catalogue and market
+
+- **R7 — New variants.** One catalogue variant per model in the table
+  (except where Open Question 3 decides otherwise), choosing the trim and
+  model years with the most listings, with every field sourced or marked
+  `estimate` with a basis.
+- **R8 — Listings.** `TARGET_MODEL_RULES` gains a rule per new variant. Ads
+  that name another trim, or none, are skipped and counted, never guessed.
+  Van-registered listings are skipped.
+- **R9 — Market model.** New segments pool the fuel cars (for example
+  `hybrid-small`, `hybrid-suv`, `diesel-estate`, `diesel-suv`) with priors
+  for how they hold value, so a thin cohort borrows from cars like it. The
+  backtest gate still passes, and the report shows each new segment.
+
+### Screens
+
+- **R10 — Energy everywhere it matters.** The market map's energy filter,
+  the compare filters and the option detail show the energy type. Energy
+  lines read "Fuel" for fuel cars, and the "Where the money goes" rows
+  follow.
+- **R11 — Your situation.** Charging questions say they apply to electric
+  cars only; nothing about a fuel car depends on them.
+- **R12 — Translations.** Every new string ships in English, Bokmål and
+  Turkish (spec 028), with fuel terms added to the glossary.
+
+## Non-functional / Constraints
+
+- Engine purity, integer øre and "no silent defaults" hold (CLAUDE.md).
+- Listings stay private; only derived cohort aggregates are committed.
+- EV results do not change: existing golden scenarios pass unchanged.
+
+## Acceptance Criteria
+
+- [ ] A hybrid and a diesel golden scenario pass, worked by hand (R1-R6).
+- [ ] Fuel price, consumption, tax and toll inputs show a source, a date and
+      a status on option detail (R1-R5).
+- [ ] The catalogue holds the new variants with sourced or estimated fields (R7).
+- [ ] The converter maps the new models' listings and its tests cover the
+      rules and the skips (R8).
+- [ ] The backtest gate passes and reports the new segments (R9).
+- [ ] Compare can rank an EV, a hybrid and a diesel together; filters and
+      labels show the energy type (R10, R11).
+- [ ] No English left in Bokmål or Turkish on the new screens (R12).
+- [ ] `pytest`, `ruff`, `npm run test`, `npm run build` pass; EV golden
+      scenarios unchanged.
+
+## Out of Scope (explicit)
+
+- Plug-in hybrids (their cost depends on the charging share; a later spec).
+- Van-registered cars and company-car taxation.
+- Automating any fuel-price or listing source beyond what sources.md allows.
+
+## Open Questions (resolve in review)
+
+1. **Porsche Taycan.** At a median of about 600 000 kr it sits far above
+   the other cars. Include it, or leave it out of a "drive cheap" catalogue?
+2. **Land Cruiser.** Almost all listings are vans. Drop the model, or keep
+   the 3 passenger-car listings as an estimate-only cohort?
+3. **Trims.** One variant per model (the most-listed trim), or more where
+   the listings split, for example RAV4 front-wheel vs all-wheel drive?
+4. **Order.** Ship the four EVs first (no engine change, only catalogue and
+   listings) and the fuel cars after, or everything in one PR?
+
+## Verification notes
+
+R1-R6 → golden scenarios and unit tests; R7-R9 → converter tests and the
+backtest report; R10-R12 → component tests and the language render checks
+from 028. The human verifies; the implementing agent does not self-certify
+done.
