@@ -183,7 +183,9 @@ def test_thin_cohorts_take_segment_slope_and_status_rules(seed_data):
     assert params.status == "live"  # >= 4 variants still have a cohort with n >= 5
     # the engine consumes the result: a path for a thin cohort is an estimate
     path = value_path(params, "hyundai-kona-64", 2019, 87, 150_000, 15_000)
-    assert path.source.status == "estimate" and "1 listings" in (path.source.basis or "")
+    assert path.source.status == "estimate" and "only 1 comparable listing " in (
+        path.source.basis or ""
+    )
 
 
 def test_model_is_estimate_until_four_variants_have_live_cohorts(seed_data):

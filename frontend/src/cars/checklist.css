@@ -1,7 +1,15 @@
 /* Newcomer checklist (spec 023 R4–R7). Scoped under .cars-checklist*. */
 
-.cars-checklist__group .cars-card__head {
-  border-bottom: 1px solid var(--c-border);
+/* Sections stack with the same gap as other DriveCheap cards (027 R1). */
+.cars-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+/* In a column, .cars-card's 460px basis would become a minimum height. */
+.cars-checklist > .cars-card {
+  flex: none;
 }
 .cars-checklist__row {
   display: flex;
@@ -37,11 +45,11 @@
   color: var(--c-muted);
 }
 .cars-checklist__why {
-  font-size: 14px;
+  font-size: var(--fs-md);
   color: var(--c-muted);
 }
 .cars-checklist__basis {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--c-muted);
 }
 .cars-checklist__basis a {
@@ -55,7 +63,7 @@
   flex: none;
 }
 .cars-checklist__tag {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   padding: 3px 8px;
   border-radius: 10px;
@@ -64,7 +72,7 @@
   white-space: nowrap;
 }
 .cars-checklist__due {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--c-est-ink);
   background: var(--c-est-bg);
   padding: 3px 8px;
@@ -73,12 +81,12 @@
   cursor: help;
 }
 .cars-checklist__only {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--c-muted);
   font-style: italic;
 }
 .cars-checklist__progress-n {
-  font-size: 26px;
+  font-size: var(--fs-3xl);
   font-weight: 600;
 }
 .cars-checklist__bar {
@@ -97,7 +105,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 14px;
+  font-size: var(--fs-md);
 }
 .cars-checklist__impact {
   display: flex;
@@ -108,7 +116,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 14px;
+  font-size: var(--fs-md);
 }
 .cars-checklist__impact-row span:last-child {
   color: var(--c-muted);
@@ -119,6 +127,10 @@
   .cars-checklist__row {
     flex-wrap: wrap;
     padding: 12px 16px;
+  }
+  /* A zero basis keeps the text beside the checkbox; only the badges wrap (027 R2). */
+  .cars-checklist__body {
+    flex: 1 1 0;
   }
   .cars-checklist__side {
     flex-direction: row;

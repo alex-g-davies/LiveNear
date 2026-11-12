@@ -58,7 +58,7 @@ def default_insurance(profile: InsuranceProfile, price_ore: int, option_id: str)
     return In[int](
         id=f"{option_id}.insurance_annual",
         value=int(annual),
-        source="Default estimate (engine/defaults.py)",
+        source="Typical value for your profile",
         as_of=INSURANCE_AS_OF,
         status="estimate",
         basis=_BASIS,

@@ -8,6 +8,7 @@ import {
   formatNokSigned,
   formatPct,
   formatPerKm,
+  plainSource,
 } from "../../cars/lib/format";
 
 const NB = " ";
@@ -41,7 +42,24 @@ describe("cars NOK formatting (spec 022 R11)", () => {
     expect(formatMonths(24)).toBe("2 years");
     expect(formatMonths(30)).toBe("2.5 years");
     expect(formatMonths(6)).toBe("6 months");
-    expect(formatDate("2026-10-24")).toBe("2026-10-24");
+    // 027 R7: readable dates, never ISO.
+    expect(formatDate("2026-10-24")).toBe(`24${NB}Oct${NB}2026`);
+    expect(formatDate("2027-01-01T00:00:00Z")).toBe(`1${NB}Jan${NB}2027`);
+    expect(formatDate("2026-13-01")).toBe("—");
     expect(formatDate(null)).toBe("—");
+  });
+
+  it("renames placeholder and owner provenance for readers (027 R6)", () => {
+    expect(plainSource("Placeholder")).toBe("Typical value");
+    expect(plainSource("Placeholder: Oslo household price")).toBe("Typical value: Oslo household price");
+    expect(plainSource("Placeholder winter uplift")).toBe("Typical value: winter uplift");
+    expect(plainSource("Placeholder until 12 weekly snapshots exist")).toBe(
+      "Typical value until 12 weekly snapshots exist",
+    );
+    expect(plainSource("Owner input")).toBe("Your input");
+    expect(plainSource("Owner enters the bank's quoted rate")).toBe("You enter the bank's quoted rate");
+    expect(plainSource("SSB table 14545")).toBe("SSB table 14545");
+    expect(plainSource("Smarte Penger (updated 2026-08-06)")).toBe(`Smarte Penger (updated 6${NB}Aug${NB}2026)`);
+    expect(plainSource(null)).toBe("");
   });
 });

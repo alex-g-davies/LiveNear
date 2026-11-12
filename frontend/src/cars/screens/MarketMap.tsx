@@ -180,7 +180,7 @@ export default function MarketMap() {
                   type="text"
                   inputMode="numeric"
                   className="cars-input"
-                  placeholder="NOK"
+                  placeholder="kr"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
                 />

@@ -113,7 +113,7 @@ export default function Checklist() {
               className="cars-card cars-card--flush cars-checklist__group"
               aria-labelledby={`group-${g.id}`}
             >
-              <div className="cars-card__head">
+              <div className="cars-card__bar">
                 <h2 id={`group-${g.id}`} className="cars-h2">
                   {g.title}
                 </h2>

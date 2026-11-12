@@ -29,7 +29,8 @@ describe("buildSparklineSvg", () => {
       ["a", 200],
       ["b", 100],
     ]);
-    expect(up).toContain("#2e7d32");
-    expect(down).toContain("#c62828");
+    // Colours come from the --positive / --negative tokens via classes (027 R10).
+    expect(up).toContain("spark__line--up");
+    expect(down).toContain("spark__line--down");
   });
 });

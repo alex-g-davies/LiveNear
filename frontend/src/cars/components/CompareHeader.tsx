@@ -3,6 +3,7 @@
 
 import { Link, NavLink } from "react-router-dom";
 
+import { formatDate } from "../lib/format";
 import { measureDef } from "../lib/measures";
 import { useCarState } from "../state";
 import AssumptionChips from "./AssumptionChips";
@@ -28,7 +29,7 @@ export default function CompareHeader({ view }: Props) {
         </div>
         <div className="cars-titlebar__tools">
           <span className="cars-hint">
-            Prices as of {scenario.data?.bundle_as_of ?? "—"}
+            Prices as of {formatDate(scenario.data?.bundle_as_of)}
             {scenario.loading && <span className="cars-hint__loading"> · updating…</span>}
           </span>
           <Link to={drivePath("/market")} className="cars-btn cars-btn--outline cars-btn--sm">

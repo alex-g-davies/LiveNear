@@ -139,7 +139,7 @@ options:
       includes: []
       early_exit:
         kind: default_estimate
-        recovery_pct: {value: 60, source: "Build spec default rule", as_of: 2026-10-31, status: estimate, basis: "Lessee owes remaining payments less what the lessor recovers by re-leasing"}
+        recovery_pct: {value: 60, source: "Typical value", as_of: 2026-10-31, status: estimate, basis: "Lessee owes remaining payments less what the lessor recovers by re-leasing"}
       end_of_lease_fee: {value_nok: 3000, source: "Placeholder return inspection allowance", as_of: 2026-10-31, status: estimate, basis: "Typical wear allowance"}
       delivery_months: {value: 1, source: "Placeholder delivery time", as_of: 2026-10-31, status: estimate, basis: "Owner to confirm with the dealer"}
 
