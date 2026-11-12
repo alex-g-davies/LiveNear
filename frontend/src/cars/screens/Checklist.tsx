@@ -25,9 +25,11 @@ import {
 import { formatDate } from "../lib/format";
 import { useCarState } from "../state";
 import "../checklist.css";
+import { useT } from "../../i18n/react";
 import { drivePath } from "../../lib/productRoutes";
 
 export default function Checklist() {
+  const { t, lang } = useT();
   const { state, toggleChecklist, scenario } = useCarState();
   const { profile, checklist } = state;
   const today = todayIso();
@@ -63,14 +65,16 @@ export default function Checklist() {
       );
     }
     return m;
-  }, [profile.arrival_date, profile.start_date, today, pending]);
+    // `lang`: the bases and notes are text in the site language.
+  }, [profile.arrival_date, profile.start_date, today, pending, lang]);
 
   const ticked = checklist.filter((id) => CHECKLIST_ITEMS.some((i) => i.id === id));
   const total = CHECKLIST_ITEMS.length;
   const pct = Math.round((ticked.length / total) * 100);
   const next = nextDue(dues, ticked, today);
   const impact = impactRows(scenario.data);
-  const [downloadMsg, setDownloadMsg] = useState<string | null>(null);
+  const [downloaded, setDownloaded] = useState<boolean | null>(null);
+  const [runBefore, runAfter = ""] = t("carsPlan.checklist.runHint").split("{link}");
 
   const onDownload = () => {
     const text = checklistMarkdown({
@@ -80,27 +84,26 @@ export default function Checklist() {
       generatedOn: today,
     });
     const ok = downloadText(text, CHECKLIST_FILENAME);
-    setDownloadMsg(ok ? `Saved ${CHECKLIST_FILENAME}` : "Download is not available in this browser.");
+    setDownloaded(ok);
   };
 
   return (
     <>
       <div className="cars-titlebar">
         <div className="cars-titlebar__text">
-          <h1 className="cars-h1">Newcomer checklist</h1>
-          <p className="cars-lede">
-            Things locals don't have to think about. Each one shows which part of your cost it
-            affects.
-          </p>
+          <h1 className="cars-h1">{t("carsPlan.checklist.title")}</h1>
+          <p className="cars-lede">{t("carsPlan.checklist.lede")}</p>
         </div>
         <div className="cars-titlebar__tools">
-          {downloadMsg && (
+          {downloaded !== null && (
             <span className="cars-hint" role="status">
-              {downloadMsg}
+              {downloaded
+                ? t("carsPlan.checklist.saved", { file: CHECKLIST_FILENAME })
+                : t("carsPlan.checklist.downloadUnavailable")}
             </span>
           )}
           <button type="button" className="cars-btn" onClick={onDownload}>
-            Download checklist
+            {t("carsPlan.checklist.download")}
           </button>
         </div>
       </div>
@@ -140,10 +143,10 @@ export default function Checklist() {
                       <span className="cars-checklist__why">{item.why}</span>
                       {due?.kind === "date" && (
                         <span className="cars-checklist__basis">
-                          Estimate: {due.basis}
+                          {t("carsPlan.checklist.estimate")} {due.basis}
                           {due.url && (
                             <a href={due.url} target="_blank" rel="noreferrer">
-                              Official page
+                              {t("carsPlan.checklist.official")}
                             </a>
                           )}
                         </span>
@@ -154,14 +157,14 @@ export default function Checklist() {
                         </span>
                       )}
                       {due?.kind === "unknown" && (
-                        <span className="cars-checklist__basis">Due date: {due.text}</span>
+                        <span className="cars-checklist__basis">{t("carsPlan.checklist.dueDate", { text: due.text })}</span>
                       )}
                     </span>
                     <span className="cars-checklist__side">
                       <span className="cars-checklist__tag">{item.tag}</span>
                       {due?.kind === "date" && (
                         <span className="cars-checklist__due" title={due.basis}>
-                          Due {formatDate(due.iso)} · estimate
+                          {t("carsPlan.checklist.dueEstimate", { date: formatDate(due.iso) })}
                         </span>
                       )}
                       {only && <span className="cars-checklist__only">{only}</span>}
@@ -176,42 +179,49 @@ export default function Checklist() {
         <aside className="cars-layout__aside">
           <section className="cars-card" aria-labelledby="progress">
             <h2 id="progress" className="cars-h3">
-              Progress
+              {t("carsPlan.checklist.progress")}
             </h2>
             <span className="cars-checklist__progress-n" data-testid="progress">
-              {ticked.length} of {total} done
+              {t("carsPlan.checklist.done", { done: ticked.length, total })}
             </span>
             <div className="cars-checklist__bar" aria-hidden="true">
               <div className="cars-checklist__bar-fill" style={{ width: `${pct}%` }} />
             </div>
             <div className="cars-checklist__next">
-              <span className="cars-hint">Next deadline</span>
+              <span className="cars-hint">{t("carsPlan.checklist.next")}</span>
               <span className="cars-strong" data-testid="next-due">
-                {next ? `${next.item.title} · ${formatDate(next.iso)}` : "No dated items left"}
+                {next ? `${next.item.title} · ${formatDate(next.iso)}` : t("carsPlan.checklist.noNext")}
               </span>
             </div>
           </section>
 
           <section className="cars-card" aria-labelledby="impact">
             <h2 id="impact" className="cars-h3">
-              Biggest effect on your cost
+              {t("carsPlan.checklist.impact")}
             </h2>
             {scenario.data === null ? (
               <p className="cars-hint">
-                <Link to={drivePath("/compare")}>Run a comparison</Link> to see what moves your cost.
+                {runBefore}
+                <Link to={drivePath("/compare")}>{t("carsPlan.checklist.runLink")}</Link>
+                {runAfter}
               </p>
             ) : impact.length === 0 ? (
-              <p className="cars-hint">No sensitivity rows for the current ranking.</p>
+              <p className="cars-hint">{t("carsPlan.checklist.noRows")}</p>
             ) : (
               <div className="cars-checklist__impact">
                 {impact.map((r) => (
-                  <div key={r.id} className="cars-checklist__impact-row" title={r.note}>
+                  <div
+                    key={r.id}
+                    className="cars-checklist__impact-row"
+                    // A backend note is English prose (028 R7): say so in the tooltip.
+                    title={r.noteIsBackend && lang !== "en" ? `${r.note} ${t("common.englishTag")}` : r.note}
+                  >
                     <Link to={drivePath("/compare")}>{r.label}</Link>
                     <span data-testid={`impact-${r.id}`}>{r.text}</span>
                   </div>
                 ))}
                 <Link to={drivePath("/compare")} className="cars-link">
-                  See how each changes your ranking
+                  {t("carsPlan.checklist.seeRanking")}
                 </Link>
               </div>
             )}

@@ -10,6 +10,8 @@ import { useMemo } from "react";
 
 import type { OptionSummary } from "../api";
 import { useContainerWidth } from "../hooks/useContainerWidth";
+import { decimal } from "../../i18n/dates";
+import { useT } from "../../i18n/react";
 import { formatYears } from "../lib/format";
 import { MODE_LABELS, measureDef, modeDash } from "../lib/measures";
 import type { Measure } from "../lib/profile";
@@ -45,6 +47,7 @@ function compactValue(def: ReturnType<typeof measureDef>, v: number): string {
 }
 
 export default function CurvesChart({ options, measure, showBands, exitMonth, colorOf }: Props) {
+  const { t } = useT();
   const { ref, width } = useContainerWidth<HTMLDivElement>(800);
   const def = measureDef(measure);
   const innerW = Math.max(120, width - MARGIN.left - MARGIN.right);
@@ -109,11 +112,20 @@ export default function CurvesChart({ options, measure, showBands, exitMonth, co
     .sort((a, b) => a.v - b.v);
   const lowest = atExit[0];
   const ariaLabel =
-    `${def.label} for ${series.length} option${series.length === 1 ? "" : "s"} against years of ownership ` +
-    `from 0.5 to 5, ${showBands ? "with P10–P90 uncertainty bands" : "without uncertainty bands"}, ` +
-    `and an exit marker at ${formatYears(exitYears)}.` +
+    t("carsCompare.curves.aria", {
+      measure: def.label,
+      count: series.length,
+      from: decimal(String(CURVE_FIRST_MONTH / 12)),
+      to: decimal(String(CURVE_LAST_MONTH / 12)),
+      bands: showBands ? t("carsCompare.curves.withBands") : t("carsCompare.curves.withoutBands"),
+      years: formatYears(exitYears),
+    }) +
     (lowest
-      ? ` Lowest at that point: ${lowest.s.option.result.label}, ${MODE_LABELS[lowest.s.option.option_kind]}, ${def.format(lowest.v)}.`
+      ? ` ${t("carsCompare.curves.ariaLowest", {
+          label: lowest.s.option.result.label,
+          mode: MODE_LABELS[lowest.s.option.option_kind],
+          value: def.format(lowest.v),
+        })}`
       : "");
 
   const yTicks = y.ticks(5);
@@ -143,7 +155,7 @@ export default function CurvesChart({ options, measure, showBands, exitMonth, co
             <g key={yr} transform={`translate(${x(yr)},${innerH})`}>
               <line y1={0} y2={5} stroke="var(--c-border)" />
               <text y={20} textAnchor="middle" className="cars-curves__tick">
-                {yr} yr
+                {t("carsCompare.curves.yearTick", { value: yr })}
               </text>
             </g>
           ))}
@@ -156,7 +168,7 @@ export default function CurvesChart({ options, measure, showBands, exitMonth, co
             {def.label} ({def.unit})
           </text>
           <text x={innerW / 2} y={innerH + 36} textAnchor="middle" className="cars-curves__axis">
-            Years of ownership
+            {t("carsCompare.curves.axisYears")}
           </text>
 
           {showBands &&
@@ -181,7 +193,7 @@ export default function CurvesChart({ options, measure, showBands, exitMonth, co
             data-testid="exit-marker"
           />
           <text x={exitX} y={-6} textAnchor="middle" className="cars-curves__exit">
-            Leave at {formatYears(exitYears)}
+            {t("carsCompare.leaveAt", { years: formatYears(exitYears) })}
           </text>
 
           {series.map((s) => (

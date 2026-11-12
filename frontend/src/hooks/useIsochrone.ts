@@ -3,8 +3,11 @@ import type { FeatureCollection } from "geojson";
 
 import { getIsochrone } from "../api/client";
 import type { TravelMode, WorkLocation } from "../config";
+import type { TKey } from "../i18n/core";
 
-export const NOTICE_ISOCHRONE = "Commute layer unavailable — move the pin or retry later";
+/** Dictionary key of the toast shown when a reach overlay fails (translated
+ * where it is shown, spec 028). */
+export const NOTICE_ISOCHRONE = "map.notice.isochrone" satisfies TKey;
 
 export interface IsochroneState {
   isochrone: FeatureCollection | null;

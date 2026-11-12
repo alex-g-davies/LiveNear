@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import type { CommuteVariation, RegionInfo, ZipValue } from "../api/client";
 import { BRAND_NAME } from "../config";
+import { useT } from "../i18n/react";
 import type { ColorStop, MetricDef, MetricKey, TravelMode } from "../config";
 import type { BudgetSpec } from "../lib/affordability";
 import type { Locale } from "../lib/locale";
@@ -15,6 +16,7 @@ import CommuteControl from "./CommuteControl";
 import Legend from "./Legend";
 import MatchesPanel from "./MatchesPanel";
 import MetricSwitcher from "./MetricSwitcher";
+import LanguagePicker from "./LanguagePicker";
 import ProductSwitcher from "./ProductSwitcher";
 import ReferenceSize from "./ReferenceSize";
 import RegionPicker from "./RegionPicker";
@@ -108,22 +110,27 @@ export default function ControlsPanel({
 }: Props) {
   // Mobile-only collapse (015 R5); the toggle is display:none on desktop.
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useT();
+  const us = locale.country === "US";
   return (
     <div className={`panel${collapsed ? " panel--collapsed" : ""}`}>
       <button
         type="button"
         className="sheet-toggle"
         aria-expanded={!collapsed}
-        aria-label={collapsed ? "Expand controls" : "Collapse controls"}
+        aria-label={collapsed ? t("map.panel.expand") : t("map.panel.collapse")}
         onClick={() => setCollapsed((v) => !v)}
       >
         {collapsed ? "▲" : "▼"}
       </button>
       <div className="panel-head">
-        <Link to={LANDING_PATH} aria-label={`${BRAND_NAME}, back to home`}>
+        <Link to={LANDING_PATH} aria-label={t("common.backHome", { name: BRAND_NAME })}>
           <img src="/brand/livenear-logo.svg" alt="" className="panel-logo" />
         </Link>
-        <ProductSwitcher current="map" />
+        <div className="panel-head__tools">
+          <ProductSwitcher current="map" />
+          <LanguagePicker />
+        </div>
       </div>
       {firstRun}
 
@@ -134,7 +141,7 @@ export default function ControlsPanel({
         <BudgetInput
           spec={budgetSpec}
           onChange={onBudgetSpecChange}
-          hint="Set one to fade areas over budget and focus your matches"
+          hint={t("map.panel.budgetHint")}
           locale={locale}
         />
         {referenceM2 != null && (
@@ -143,7 +150,7 @@ export default function ControlsPanel({
       </div>
 
       <div className="panel__section work">
-        <span className="work__label">{hasWork2 ? "Work locations" : "Work location"}</span>
+        <span className="work__label">{hasWork2 ? t("map.work.labelDual") : t("map.work.label")}</span>
         <AddressSearch
           onLocated={onAddressLocated}
           proximity={searchProximity}
@@ -159,11 +166,11 @@ export default function ControlsPanel({
         {hasWork2 && (
           <span className="work__address">
             {"🅱 "}
-            {work2Address ?? "Drag pin B into place"}
+            {work2Address ?? t("map.work.dragB")}
             <button
               type="button"
               className="work__remove"
-              aria-label="Remove second workplace"
+              aria-label={t("map.work.removeB")}
               onClick={onRemoveWork2}
             >
               ×
@@ -172,13 +179,13 @@ export default function ControlsPanel({
         )}
         {!hasWork2 && (
           <button type="button" className="work__add" onClick={onAddWork2}>
-            + Add second workplace
+            {t("map.work.addB")}
           </button>
         )}
         <span className="work__hint">
           {hasWork2
-            ? "Drag a pin to move it — the map shows where BOTH can commute"
-            : "Drag the pin to move it, or search an address"}
+            ? t("map.work.hintDual")
+            : t("map.work.hint")}
         </span>
       </div>
 
@@ -201,15 +208,15 @@ export default function ControlsPanel({
       )}
 
       <div className="panel__section">
-        <span className="section-label">Shade map by</span>
+        <span className="section-label">{t("map.metric.shadeBy")}</span>
         <MetricSwitcher active={metricKey} onChange={onMetricChange} metrics={metrics} />
         <Legend metric={activeMetric} stops={stops} budget={budget} asOf={asOf} />
         <TopMovers records={records} onZipChosen={onZipChosen} />
       </div>
 
       <p className="panel-foot">
-        Hover {locale.country === "US" ? "a ZIP" : "an area"} for quick stats, click or tap for details · {minutes}-min{" "}
-        {{ drive: "drive-time", walk: "walking", cycle: "cycling" }[mode]} overlay
+        {us ? t("map.panel.footHoverUs") : t("map.panel.footHoverNo")} ·{" "}
+        {t(`map.panel.footOverlay.${mode}`, { minutes })}
       </p>
       <AboutPanel onShowIntro={onShowIntro} asOf={asOf} />
     </div>

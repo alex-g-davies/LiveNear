@@ -1,6 +1,8 @@
 import type { CommuteVariation } from "../api/client";
 import { COMMUTE_STEPS, SCENARIO_STYLES, TRAVEL_MODES, type TravelMode } from "../config";
+import { useT } from "../i18n/react";
 import { type Locale, US_LOCALE } from "../lib/locale";
+import { rich } from "../lib/rich";
 
 interface Props {
   minutes: number;
@@ -24,10 +26,11 @@ export default function CommuteControl({
   onModeChange,
   locale = US_LOCALE,
 }: Props) {
+  const { t } = useT();
   return (
     <div className="commute">
-      <span className="section-label">Commute</span>
-      <div className="switcher" role="group" aria-label="Travel mode">
+      <span className="section-label">{t("map.commute.label")}</span>
+      <div className="switcher" role="group" aria-label={t("map.commute.modeGroup")}>
         {TRAVEL_MODES.map((m) => (
           <button
             key={m.key}
@@ -42,15 +45,15 @@ export default function CommuteControl({
           </button>
         ))}
       </div>
-      <span className="section-label">Commute time (min)</span>
-      <div className="switcher" role="group" aria-label="Commute time (minutes)">
+      <span className="section-label">{t("map.commute.time")}</span>
+      <div className="switcher" role="group" aria-label={t("map.commute.timeGroup")}>
         {COMMUTE_STEPS.map((m) => (
           <button
             key={m}
             type="button"
             className={m === minutes ? "switcher__btn switcher__btn--active" : "switcher__btn"}
             aria-pressed={m === minutes}
-            aria-label={`${m} minutes`}
+            aria-label={t("map.commute.minutes", { count: m, value: m })}
             onClick={() => onMinutesChange(m)}
           >
             {m}
@@ -62,7 +65,7 @@ export default function CommuteControl({
           is time-invariant and renders as a single contour. */}
       {mode !== "drive" ? null : (
       <details className="panel-fold" open>
-        <summary>{dual ? "Shared reach (both commutes)" : "Traffic scenarios"}</summary>
+        <summary>{dual ? t("map.commute.shared") : t("map.commute.scenarios")}</summary>
         <ul className="scenarios">
           {SCENARIO_STYLES.map((s) => (
             <li key={s.key} className="scenarios__row">
@@ -78,17 +81,18 @@ export default function CommuteControl({
         </ul>
         {variation?.peak_shrink_pct != null ? (
           <p className="commute__summary">
-            Evening rush shrinks your {minutes}-min reach{" "}
-            <strong>{variation.peak_shrink_pct}%</strong> vs. light traffic.
+            {rich(t("map.commute.shrink", { minutes }), {
+              pct: <strong>{locale.decimal(String(variation.peak_shrink_pct))}%</strong>,
+            })}
           </p>
         ) : (
           <p className="commute__summary commute__summary--muted">
-            Traffic variation unavailable (showing a typical contour).
+            {t("map.commute.noVariation")}
           </p>
         )}
         <p className="commute__note">
-          Typical traffic for each hour, leaving your workplace — bad days run longer.
-          {locale.country === "NO" && " Routes can include ferries, which run to a timetable."}
+          {t("map.commute.note")}
+          {locale.country === "NO" && ` ${t("map.commute.ferries")}`}
         </p>
       </details>
       )}

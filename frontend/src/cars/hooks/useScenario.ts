@@ -1,7 +1,10 @@
 // Scenario POST hook (spec 022 R10): 300 ms debounce, AbortController, keeps
 // the last good response while a new one loads, surfaces errors as text.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { useLang } from "../../i18n/react";
+import { localizeScenario } from "../lib/optionLabel";
 
 import { postScenario, type ScenarioRequest, type ScenarioResponse } from "../api";
 
@@ -51,5 +54,8 @@ export function useScenario(request: ScenarioRequest | null): ScenarioState {
     };
   }, [key]);
 
-  return { data, loading, error };
+  // Option names follow the site language (028 R5).
+  const lang = useLang();
+  const shown = useMemo(() => (data ? localizeScenario(data) : data), [data, lang]);
+  return { data: shown, loading, error };
 }

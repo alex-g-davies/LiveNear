@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
 import type { ZipValue } from "../api/client";
+import { t } from "../i18n/core";
+import { useT } from "../i18n/react";
 import { type BudgetSpec, monthlyPaymentForPrice } from "../lib/affordability";
-import { formatCount, formatPct, formatRatio } from "../lib/format";
+import { formatPct, formatRatio } from "../lib/format";
 import { type Locale, US_LOCALE } from "../lib/locale";
+import { rich } from "../lib/rich";
 import type { WikiSummary } from "../lib/wiki";
 import { deltaPct } from "../lib/zipStats";
 import PriceChart from "./PriceChart";
@@ -61,8 +64,8 @@ function budgetBadge(
   const cls = diff >= 0 ? "zip-detail__badge--under" : "zip-detail__badge--over";
   const text =
     diff >= 0
-      ? `Under budget by ${locale.money(diff)}`
-      : `Over budget by ${locale.money(-diff)}`;
+      ? t("map.detail.underBudget", { amount: locale.money(diff) })
+      : t("map.detail.overBudget", { amount: locale.money(-diff) });
   const monthly =
     spec?.mode === "payment"
       ? ` · ≈ ${locale.monthly(monthlyPaymentForPrice(value, spec.downPct, spec.ratePct, spec.taxPct))}`
@@ -95,30 +98,30 @@ interface CompareRowDef {
 function compareRows(locale: Locale): CompareRowDef[] {
   const norway = locale.country === "NO";
   const income: CompareRowDef = {
-    label: norway ? "Income after tax" : "HH income",
+    label: norway ? t("map.detail.incomeAfterTax") : t("map.detail.hhIncome"),
     get: (r) => r?.median_income ?? null,
     fmt: locale.money,
     delta: "pct",
   };
   const ratio: CompareRowDef = {
-    label: "Price ÷ income",
+    label: t("map.detail.priceToIncome"),
     get: (r) => r?.price_to_income ?? null,
-    fmt: (v) => formatRatio(v),
+    fmt: (v) => locale.decimal(formatRatio(v)),
     delta: "pct",
   };
   if (norway) {
     return [
-      { label: "Est. price", get: (r) => r?.median_value ?? null, fmt: locale.money, delta: "pct" },
+      { label: t("map.detail.estPrice"), get: (r) => r?.median_value ?? null, fmt: locale.money, delta: "pct" },
       { label: "kr/m²", get: (r) => r?.price_per_m2 ?? null, fmt: locale.perArea, delta: "pct" },
       income,
       ratio,
     ];
   }
   return [
-    { label: "Median value", get: (r) => r?.median_value ?? null, fmt: locale.money, delta: "pct" },
-    { label: "YoY", get: (r) => r?.yoy_pct ?? null, fmt: formatPct, delta: "pp" },
+    { label: t("map.metric.value.label"), get: (r) => r?.median_value ?? null, fmt: locale.money, delta: "pct" },
+    { label: t("map.detail.yoy"), get: (r) => r?.yoy_pct ?? null, fmt: formatPct, delta: "pp" },
     {
-      label: "$/sqft sold",
+      label: t("map.detail.ppsfSold"),
       get: (r) => r?.ppsf ?? null,
       fmt: (v) => `$${Math.round(v)}`,
       delta: "pct",
@@ -130,9 +133,16 @@ function compareRows(locale: Locale): CompareRowDef[] {
 
 function deltaCell(def: CompareRowDef, pinned: number | null, selected: number | null) {
   if (pinned == null || selected == null) return "—";
-  if (def.delta === "pp") return `${formatPct(Math.round((selected - pinned) * 10) / 10)} pt`;
+  if (def.delta === "pp") {
+    return t("map.detail.points", { value: formatPct(Math.round((selected - pinned) * 10) / 10) });
+  }
   const d = deltaPct(selected, pinned);
   return d == null ? "—" : formatPct(d);
+}
+
+// Percentages in a Norwegian region use a decimal comma (028 R10).
+function pct(value: number, locale: Locale): string {
+  return locale.decimal(formatPct(value));
 }
 
 function CompareView({
@@ -148,8 +158,13 @@ function CompareView({
   selectedRecord: ZipValue | undefined;
   locale: Locale;
 }) {
+  const { t } = useT();
   return (
-    <div className="zip-detail__compare" role="table" aria-label={`${locale.areaNoun} comparison`}>
+    <div
+      className="zip-detail__compare"
+      role="table"
+      aria-label={t(locale.country === "US" ? "map.detail.compareTable.us" : "map.detail.compareTable.no")}
+    >
       <div className="zip-detail__compare-row zip-detail__compare-head" role="row">
         <span role="columnheader" />
         <span role="columnheader" className="zip-detail__compare-place">
@@ -171,7 +186,7 @@ function CompareView({
             <span role="cell">{a == null ? "—" : def.fmt(a)}</span>
             <span role="cell">{b == null ? "—" : def.fmt(b)}</span>
             <span role="cell" className="zip-detail__compare-delta">
-              {deltaCell(def, a, b)}
+              {locale.decimal(deltaCell(def, a, b))}
             </span>
           </div>
         );
@@ -202,6 +217,7 @@ export default function ZipDetailPanel({
   referenceM2 = null,
   fallbackName = null,
 }: Props) {
+  const { t, lang } = useT();
   const norway = locale.country === "NO";
   const comparing = pinnedZip != null && pinnedZip !== zip;
   const yoy = record?.yoy_pct ?? null;
@@ -213,13 +229,17 @@ export default function ZipDetailPanel({
   return (
     <aside
       className={`zip-detail${collapsed ? " zip-detail--collapsed" : ""}`}
-      aria-label={norway ? `Details for ${record?.name ?? fallbackName ?? zip}` : `Details for ZIP ${zip}`}
+      aria-label={
+        norway
+          ? t("map.detail.label", { name: record?.name ?? fallbackName ?? zip })
+          : t("map.detail.labelZip", { zip })
+      }
     >
       <button
         type="button"
         className="sheet-toggle"
         aria-expanded={!collapsed}
-        aria-label={collapsed ? "Expand details" : "Collapse details"}
+        aria-label={collapsed ? t("map.detail.expand") : t("map.detail.collapse")}
         onClick={() => setCollapsed((v) => !v)}
       >
         {collapsed ? "▲" : "▼"}
@@ -227,11 +247,11 @@ export default function ZipDetailPanel({
       <header className="zip-detail__head">
         <div>
           <h2 className="zip-detail__title">
-            {comparing ? "Compare" : locale.place(zip, record?.name ?? fallbackName, stateCode)}
+            {comparing ? t("map.detail.compare") : locale.place(zip, record?.name ?? fallbackName, stateCode)}
           </h2>
           <p className="zip-detail__sub">{metroLabel}</p>
         </div>
-        <button type="button" className="zip-detail__close" aria-label="Close" onClick={onClose}>
+        <button type="button" className="zip-detail__close" aria-label={t("map.close")} onClick={onClose}>
           ×
         </button>
       </header>
@@ -246,19 +266,19 @@ export default function ZipDetailPanel({
             locale={locale}
           />
           <button type="button" className="zip-detail__pin" onClick={onUnpin}>
-            Unpin {pinnedZip}
+            {t("map.detail.unpin", { zip: pinnedZip })}
           </button>
         </>
       ) : (
         <>
           <p className="zip-detail__value">
-            {record ? `${norway ? "≈ " : ""}${locale.money(record.median_value)}` : "No price data"}
+            {record ? `${norway ? "≈ " : ""}${locale.money(record.median_value)}` : t("map.noPriceData")}
           </p>
           {norway && (
             <p className="zip-detail__sub">
               {record
-                ? `Estimate for ${referenceM2 ?? "—"} m² at the area’s average price`
-                : "Under 10 sales in 2025, or not published"}
+                ? t("map.detail.estimateFor", { m2: referenceM2 ?? "—" })
+                : t("map.detail.fewSales", { min: 10, year: 2025 })}
             </p>
           )}
           {budgetBadge(budget, record?.median_value, budgetSpec, locale)}
@@ -267,16 +287,19 @@ export default function ZipDetailPanel({
             record && (
               <div className="zip-detail__metrics zip-detail__metrics--pairs">
                 <Metric
-                  label="Average kr/m²"
+                  label={t("map.detail.avgPerM2")}
                   value={record.price_per_m2 == null ? "—" : locale.perArea(record.price_per_m2)}
                 />
-                <Metric label="Sales 2025" value={formatCount(record.sales)} />
+                <Metric label={t("map.detail.sales", { year: 2025 })} value={locale.count(record.sales)} />
                 <Metric
-                  label={record.income_level === "bydel" ? "Income (bydel)" : "Income after tax"}
+                  label={record.income_level === "bydel" ? t("map.detail.incomeBydel") : t("map.detail.incomeAfterTax")}
                   value={record.median_income == null ? "—" : locale.money(record.median_income)}
                 />
                 {record.price_to_income != null && (
-                  <Metric label="Price ÷ income" value={formatRatio(record.price_to_income)} />
+                  <Metric
+                    label={t("map.detail.priceToIncome")}
+                    value={locale.decimal(formatRatio(record.price_to_income))}
+                  />
                 )}
               </div>
             )
@@ -284,27 +307,34 @@ export default function ZipDetailPanel({
           <>
           <div className="zip-detail__metrics">
             <Metric
-              label="YoY"
-              value={yoy == null ? "—" : formatPct(yoy)}
+              label={t("map.detail.yoy")}
+              value={yoy == null ? "—" : pct(yoy, locale)}
               tone={yoy == null ? undefined : yoy >= 0 ? "tip__metric--up" : "tip__metric--down"}
             />
             <Metric
-              label="5-yr CAGR"
-              value={record?.cagr5_pct == null ? "—" : `${formatPct(record.cagr5_pct)}/yr`}
+              label={t("map.detail.cagr", { years: 5 })}
+              value={
+                record?.cagr5_pct == null
+                  ? "—"
+                  : t("map.unit.perYear", { value: pct(record.cagr5_pct, locale) })
+              }
             />
             <Metric
-              label="$/sqft sold"
+              label={t("map.detail.ppsfSold")}
               value={record?.ppsf == null ? "—" : `$${Math.round(record.ppsf)}`}
             />
           </div>
 
           <div className="zip-detail__metrics">
-            <Metric label="Population" value={formatCount(record?.population)} />
+            <Metric label={t("map.detail.population")} value={locale.count(record?.population)} />
             <Metric
-              label="HH income"
+              label={t("map.detail.hhIncome")}
               value={record?.median_income == null ? "—" : locale.money(record.median_income)}
             />
-            <Metric label="Price ÷ income" value={formatRatio(record?.price_to_income)} />
+            <Metric
+              label={t("map.detail.priceToIncome")}
+              value={locale.decimal(formatRatio(record?.price_to_income))}
+            />
           </div>
 
           <PriceChart history={record?.history ?? null} />
@@ -313,7 +343,7 @@ export default function ZipDetailPanel({
 
           <div className="zip-detail__context">
             {estimating && !context.driveToWork && (
-              <p className="zip-detail__estimating">Estimating commute…</p>
+              <p className="zip-detail__estimating">{t("map.detail.estimating")}</p>
             )}
             {context.driveToWork && (
               <p className="zip-detail__drive">
@@ -337,13 +367,16 @@ export default function ZipDetailPanel({
             )}
             {context.percentile != null && (
               <p>
-                Pricier than <strong>{context.percentile}%</strong> of {metroLabel}{" "}
-                {locale.areaPlural}
+                {rich(t(norway ? "map.detail.pricier.no" : "map.detail.pricier.us", { metro: metroLabel }), {
+                  pct: <strong>{context.percentile}%</strong>,
+                })}
                 {context.vsStateMedianPct != null && (
                   <>
                     {" "}
-                    · <strong>{formatPct(context.vsStateMedianPct)}</strong> vs{" "}
-                    {norway ? "regional" : "state"} median
+                    ·{" "}
+                    {rich(t(norway ? "map.detail.vsMedian.no" : "map.detail.vsMedian.us"), {
+                      pct: <strong>{pct(context.vsStateMedianPct, locale)}</strong>,
+                    })}
                   </>
                 )}
               </p>
@@ -352,11 +385,15 @@ export default function ZipDetailPanel({
           </div>
 
           {wiki && (
-            <section className="zip-wiki" aria-label="About this area">
+            <section className="zip-wiki" aria-label={t("map.detail.wikiLabel")}>
               {wiki.thumbnailUrl && (
                 <img className="zip-wiki__thumb" src={wiki.thumbnailUrl} alt="" />
               )}
-              <p className={`zip-wiki__extract${wikiExpanded ? " zip-wiki__extract--open" : ""}`}>
+              {/* English Wikipedia text (R7): marked so readers know it is English. */}
+              <p
+                className={`zip-wiki__extract${wikiExpanded ? " zip-wiki__extract--open" : ""}`}
+                lang={lang === "en" ? undefined : "en"}
+              >
                 {wiki.extract}
               </p>
               <div className="zip-wiki__foot">
@@ -365,7 +402,7 @@ export default function ZipDetailPanel({
                   className="zip-wiki__more"
                   onClick={() => setWikiExpanded((v) => !v)}
                 >
-                  {wikiExpanded ? "Less" : "More"}
+                  {wikiExpanded ? t("map.detail.less") : t("map.detail.more")}
                 </button>
                 {/* CC BY-SA attribution is required (012 R4). */}
                 <a
@@ -374,7 +411,7 @@ export default function ZipDetailPanel({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  From Wikipedia (CC BY-SA)
+                  {t("map.detail.wikiCredit")}
                 </a>
               </div>
             </section>
@@ -382,11 +419,11 @@ export default function ZipDetailPanel({
 
           {pinnedZip === zip ? (
             <button type="button" className="zip-detail__pin" onClick={onUnpin}>
-              📌 Pinned — click another {locale.areaNoun} to compare · Unpin
+              {t(norway ? "map.detail.pinned.no" : "map.detail.pinned.us")}
             </button>
           ) : (
             <button type="button" className="zip-detail__pin" onClick={onPin}>
-              Pin to compare
+              {t("map.detail.pin")}
             </button>
           )}
         </>

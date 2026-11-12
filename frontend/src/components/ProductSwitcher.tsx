@@ -3,6 +3,7 @@
 
 import { Link } from "react-router-dom";
 
+import { useT } from "../i18n/react";
 import { DRIVE_NAME, MAP_NAME, driveHref, loadDriveApp, loadMapApp, mapHref } from "../lib/productRoutes";
 
 interface Props {
@@ -15,8 +16,9 @@ const PRODUCTS = [
 ] as const;
 
 export default function ProductSwitcher({ current }: Props) {
+  const { t } = useT();
   return (
-    <nav aria-label="Products" className="product-switcher">
+    <nav aria-label={t("common.products")} className="product-switcher">
       {PRODUCTS.map((p) =>
         p.key === current ? (
           <span key={p.key} className="product-switcher__link product-switcher__link--current" aria-current="page">

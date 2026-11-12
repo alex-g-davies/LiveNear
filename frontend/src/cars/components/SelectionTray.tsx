@@ -8,8 +8,10 @@ import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 
 import type { VehicleOut } from "../api";
-import { CAP_HINT, MAX_COMPARE_VARIANTS, variantCount } from "../lib/market";
+import { MAX_COMPARE_VARIANTS, capHint, variantCount } from "../lib/market";
 import type { SelectionItem } from "../lib/profile";
+import EnglishText from "../../components/EnglishText";
+import { useT } from "../../i18n/react";
 import { drivePath } from "../../lib/productRoutes";
 
 interface Props {
@@ -39,6 +41,8 @@ export function matchingVehicles(vehicles: VehicleOut[], query: string): Vehicle
 }
 
 export default function SelectionTray({ vehicles, selection, onChange, loading, error }: Props) {
+  const { t } = useT();
+  const [emptyBefore, emptyAfter = ""] = t("carsPlan.tray.empty").split("{link}");
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
@@ -93,20 +97,20 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
     <div className="cars-tray">
       {selection.length === 0 && !loading && (
         <p className="cars-tray__empty" role="status">
-          No cars yet. Add one here or{" "}
+          {emptyBefore}
           <Link to={drivePath("/market")} className="cars-link">
-            browse the market
+            {t("carsPlan.tray.emptyLink")}
           </Link>
-          .
+          {emptyAfter}
         </p>
       )}
-      {loading && <p className="cars-hint">Loading vehicles…</p>}
+      {loading && <p className="cars-hint">{t("carsPlan.tray.loading")}</p>}
       {error && (
         <div className="status status--error" role="alert">
-          Could not load vehicles: {error}
+          {t("carsPlan.tray.error")} <EnglishText>{error}</EnglishText>
         </div>
       )}
-      <ul className="cars-tray__chips" aria-label="Your selection">
+      <ul className="cars-tray__chips" aria-label={t("carsPlan.tray.label")}>
         {selection.map((s) => {
           const v = byId.get(s.variant_id);
           const name = v ? vehicleName(v) : s.variant_id;
@@ -116,7 +120,7 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
               <span className="cars-tray__name">{name}</span>
               <span className="cars-tray__years">
                 <label className="cars-field cars-field--inline">
-                  <span className="cars-field__label cars-field__label--muted">From</span>
+                  <span className="cars-field__label cars-field__label--muted">{t("carsPlan.tray.from")}</span>
                   <select
                     className="cars-select cars-select--sm"
                     value={s.year_from}
@@ -130,7 +134,7 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
                   </select>
                 </label>
                 <label className="cars-field cars-field--inline">
-                  <span className="cars-field__label cars-field__label--muted">To</span>
+                  <span className="cars-field__label cars-field__label--muted">{t("carsPlan.tray.to")}</span>
                   <select
                     className="cars-select cars-select--sm"
                     value={s.year_to}
@@ -147,7 +151,7 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
               <button
                 type="button"
                 className="cars-tray__remove"
-                aria-label={`Remove ${name}`}
+                aria-label={t("carsPlan.tray.remove", { name })}
                 onClick={() => remove(s.variant_id)}
               >
                 ×
@@ -159,13 +163,13 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
 
       <div className="cars-tray__add">
         <label className="cars-field">
-          <span className="cars-field__label">Add a car</span>
+          <span className="cars-field__label">{t("carsPlan.tray.add")}</span>
           <input
             ref={inputRef}
             type="text"
             role="combobox"
             className="cars-input"
-            placeholder={full ? "Selection is full" : "Type a make, model or trim"}
+            placeholder={full ? t("carsPlan.tray.full") : t("carsPlan.tray.placeholder")}
             disabled={full}
             autoComplete="off"
             aria-autocomplete="list"
@@ -185,11 +189,11 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
         </label>
         {full && (
           <p className="cars-hint" role="status" data-testid="tray-full">
-            {CAP_HINT}
+            {capHint()}
           </p>
         )}
         {open && !full && (
-          <ul id={listId} role="listbox" className="cars-tray__list" aria-label="Catalogue">
+          <ul id={listId} role="listbox" className="cars-tray__list" aria-label={t("carsPlan.tray.catalogue")}>
             {groups.map(([make, list]) => (
               <li key={make} role="group" aria-label={make} className="cars-tray__group">
                 <span className="cars-tray__make" aria-hidden="true">
@@ -213,7 +217,7 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
                         <span>{vehicleName(v)}</span>
                         <span className="cars-hint">
                           {Math.min(...v.model_years)}–{Math.max(...v.model_years)}
-                          {taken ? " · selected" : v.has_lease_offer ? "" : " · no lease offer"}
+                          {taken ? t("carsPlan.tray.selected") : v.has_lease_offer ? "" : t("carsPlan.tray.noLease")}
                         </span>
                       </li>
                     );
@@ -223,7 +227,7 @@ export default function SelectionTray({ vehicles, selection, onChange, loading, 
             ))}
             {matches.length === 0 && (
               <li className="cars-tray__none" role="option" aria-disabled="true" aria-selected={false}>
-                No car matches “{query}”.
+                {t("carsPlan.tray.none", { query })}
               </li>
             )}
           </ul>

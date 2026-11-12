@@ -3,7 +3,10 @@
 // Callers pass null until the profile validates (exit odds and charging mix
 // both sum to 100 %), so an unfinished form never hits the backend.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { useLang } from "../../i18n/react";
+import { localizeRecommend } from "../lib/optionLabel";
 
 import { postRecommend, type RecommendRequest, type RecommendResponse } from "../api";
 import { chargingSum, exitOddsSum, type CarProfile, type Measure } from "../lib/profile";
@@ -65,5 +68,8 @@ export function useRecommend(request: RecommendRequest | null): RecommendState {
     };
   }, [key]);
 
-  return { data, loading, error };
+  // Option names follow the site language (028 R5).
+  const lang = useLang();
+  const shown = useMemo(() => (data ? localizeRecommend(data) : data), [data, lang]);
+  return { data: shown, loading, error };
 }

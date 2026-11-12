@@ -8,6 +8,8 @@ import { scaleLinear } from "d3-scale";
 import { line } from "d3-shape";
 
 import type { ExitMonthKey, OptionSummary } from "../api";
+import { monthsText } from "../../i18n/dates";
+import { useT } from "../../i18n/react";
 import { formatYears } from "../lib/format";
 import { measureDef } from "../lib/measures";
 import type { Measure } from "../lib/profile";
@@ -29,13 +31,14 @@ const FIRST_MONTH = 6;
 const LAST_MONTH = 60;
 
 export default function ExitChart({ option, bestLease, bestNew, measure, exitOdds, exitMonth }: Props) {
+  const { t } = useT();
   const def = measureDef(measure);
   const innerW = W - M.left - M.right;
   const innerH = H - M.top - M.bottom;
   const series = [
-    { key: "this", label: "This option", opt: option, stroke: "var(--c-ink)", width: 3, dash: undefined },
-    { key: "lease", label: "Best lease, same model", opt: bestLease, stroke: "var(--c-neutral-500)", width: 2, dash: "7 5" },
-    { key: "new", label: "Best new, same model", opt: bestNew, stroke: "var(--c-neutral-400)", width: 2, dash: "2 4" },
+    { key: "this", label: t("carsCompare.exit.this"), opt: option, stroke: "var(--c-ink)", width: 3, dash: undefined },
+    { key: "lease", label: t("carsCompare.exit.bestLease"), opt: bestLease, stroke: "var(--c-neutral-500)", width: 2, dash: "7 5" },
+    { key: "new", label: t("carsCompare.exit.bestNew"), opt: bestNew, stroke: "var(--c-neutral-400)", width: 2, dash: "2 4" },
   ].filter((s): s is typeof s & { opt: OptionSummary } => s.opt !== null);
 
   const months: number[] = [];
@@ -57,14 +60,33 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
   const thisAtMarker = option.result.measures[measure].deterministic[marker];
 
   const aria =
-    `${def.label} by month of exit from ${FIRST_MONTH} to ${LAST_MONTH} months. This option at exit after ` +
-    `12, 24, 36 and 48 months: ` +
-    EXITS.map((k) => `${k} months ${def.format(option.result.measures[measure].deterministic[Number(k)])}`).join(", ") +
+    t("carsCompare.exit.aria", {
+      measure: def.label,
+      from: FIRST_MONTH,
+      to: monthsText(LAST_MONTH),
+      exits: t("carsCompare.exit.list", {
+        a: EXITS[0],
+        b: EXITS[1],
+        c: EXITS[2],
+        d: monthsText(Number(EXITS[3])),
+      }),
+      values: EXITS.map(
+        (k) => `${monthsText(Number(k))} ${def.format(option.result.measures[measure].deterministic[Number(k)])}`,
+      ).join(", "),
+    }) +
     (bestLease
-      ? `; best lease for this model at 36 months ${def.format(bestLease.result.measures[measure].deterministic[36])}`
+      ? t("carsCompare.exit.ariaLease", {
+          months: monthsText(36),
+          value: def.format(bestLease.result.measures[measure].deterministic[36]),
+        })
       : "") +
-    (bestNew ? `; best new for this model at 36 months ${def.format(bestNew.result.measures[measure].deterministic[36])}` : "") +
-    `. Exit marker at ${formatYears(marker / 12)}: ${def.format(thisAtMarker)}.`;
+    (bestNew
+      ? t("carsCompare.exit.ariaNew", {
+          months: monthsText(36),
+          value: def.format(bestNew.result.measures[measure].deterministic[36]),
+        })
+      : "") +
+    t("carsCompare.exit.ariaMarker", { years: formatYears(marker / 12), value: def.format(thisAtMarker) });
 
   return (
     <div className="cars-exitchart">
@@ -109,21 +131,23 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
               className="cars-curves__tick"
               fill="var(--c-primary)"
             >
-              Leave at {formatYears(marker / 12)}
+              {t("carsCompare.leaveAt", { years: formatYears(marker / 12) })}
             </text>
           </g>
           {EXITS.map((k) => (
             <g key={k} transform={`translate(${x(Number(k))},${innerH})`}>
               <text y={18} textAnchor="middle" className="cars-curves__tick">
-                {k} mo
+                {t("carsCompare.exit.monthTick", { value: k })}
               </text>
               <rect x={-12} y={52 - barH(k)} width={24} height={barH(k)} fill="var(--c-neutral-300)">
-                <title>{`Odds of leaving at ${k} months: ${Math.round(exitOdds[k] * 100)} %`}</title>
+                <title>
+                  {t("carsCompare.exit.oddsTitle", { months: monthsText(Number(k)), pct: Math.round(exitOdds[k] * 100) })}
+                </title>
               </rect>
             </g>
           ))}
           <text x={0} y={innerH + 66} className="cars-curves__tick">
-            Bars: your odds of leaving at each point
+            {t("carsCompare.exit.bars")}
           </text>
         </g>
       </svg>
@@ -138,8 +162,8 @@ export default function ExitChart({ option, bestLease, bestNew, measure, exitOdd
             {s.label}
           </span>
         ))}
-        {!bestLease && <span className="cars-legend__item cars-hint">No lease offer for this model</span>}
-        {!bestNew && <span className="cars-legend__item cars-hint">No buy-new option for this model</span>}
+        {!bestLease && <span className="cars-legend__item cars-hint">{t("carsCompare.exit.noLease")}</span>}
+        {!bestNew && <span className="cars-legend__item cars-hint">{t("carsCompare.exit.noNew")}</span>}
       </div>
     </div>
   );

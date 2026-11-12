@@ -1,24 +1,35 @@
 import { useEffect, useRef, useState } from "react";
 
 import { BRAND_NAME } from "../config";
+import type { TKey } from "../i18n/core";
+import { useT } from "../i18n/react";
 import { formatMonthYear } from "../lib/format";
+import { rich } from "../lib/rich";
 
-const SOURCES: { name: string; role: string; href: string }[] = [
-  { name: "Zillow ZHVI", role: "median home values + history", href: "https://www.zillow.com/research/data/" },
-  { name: "U.S. Census Bureau", role: "ZIP boundaries (ZCTA) + ACS population/income", href: "https://www.census.gov/" },
-  { name: "Redfin Data Center", role: "sold $/sqft", href: "https://www.redfin.com/news/data-center/" },
-  { name: "GeoNames (CC BY 4.0)", role: "place names", href: "https://www.geonames.org/" },
-  { name: "Wikipedia (CC BY-SA 4.0)", role: "area summaries", href: "https://en.wikipedia.org/" },
-  { name: "CARTO / © OpenStreetMap contributors", role: "basemap tiles", href: "https://carto.com/attribution/" },
-  { name: "Mapbox", role: "drive-time contours, routing, geocoding", href: "https://www.mapbox.com/" },
+// `name` is a proper name, or a key where the credit has words in it.
+interface Source {
+  id: string;
+  name: string | { key: TKey; license?: string };
+  role: TKey;
+  href: string;
+}
+
+const SOURCES: Source[] = [
+  { id: "zillow", name: "Zillow ZHVI", role: "map.about.role.zillow", href: "https://www.zillow.com/research/data/" },
+  { id: "census", name: "U.S. Census Bureau", role: "map.about.role.census", href: "https://www.census.gov/" },
+  { id: "redfin", name: "Redfin Data Center", role: "map.about.role.redfin", href: "https://www.redfin.com/news/data-center/" },
+  { id: "geonames", name: "GeoNames (CC BY 4.0)", role: "map.about.role.geonames", href: "https://www.geonames.org/" },
+  { id: "wikipedia", name: "Wikipedia (CC BY-SA 4.0)", role: "map.about.role.wikipedia", href: "https://en.wikipedia.org/" },
+  { id: "carto", name: { key: "map.about.name.carto" }, role: "map.about.role.carto", href: "https://carto.com/attribution/" },
+  { id: "mapbox", name: "Mapbox", role: "map.about.role.mapbox", href: "https://www.mapbox.com/" },
 ];
 
 // Norway (026 R19). SSB and Kartverket require credit under CC BY 4.0, and SSB
 // requires saying the figures were changed; Oslo's bank is listed under NLOD.
-const NORWAY_SOURCES: { name: string; role: string; href: string }[] = [
-  { name: "Statistics Norway (SSB), CC BY 4.0", role: "kommune prices, household income, Oslo district codes. Adapted: combined, filtered to 10+ sales and multiplied into estimates", href: "https://www.ssb.no/en/diverse/lisens" },
-  { name: "City of Oslo statistics bank, NLOD 2.0", role: "Oslo delbydel prices, which include housing co-ops’ shared debt. Adapted: filtered to 10+ sales", href: "https://statistikkbanken.oslo.kommune.no/" },
-  { name: "Kartverket / Geonorge, CC BY 4.0", role: "kommune and grunnkrets boundaries. Adapted: simplified and merged", href: "https://www.geonorge.no/" },
+const NORWAY_SOURCES: Source[] = [
+  { id: "ssb", name: { key: "map.about.name.ssb", license: "CC BY 4.0" }, role: "map.about.role.ssb", href: "https://www.ssb.no/en/diverse/lisens" },
+  { id: "oslo", name: { key: "map.about.name.oslo", license: "NLOD 2.0" }, role: "map.about.role.oslo", href: "https://statistikkbanken.oslo.kommune.no/" },
+  { id: "kartverket", name: "Kartverket / Geonorge, CC BY 4.0", role: "map.about.role.kartverket", href: "https://www.geonorge.no/" },
 ];
 
 interface Props {
@@ -32,8 +43,10 @@ interface Props {
 /** About & data popover (012 R5): every source credited in one place, plus
  * the estimates-not-advice disclaimer. */
 export default function AboutPanel({ onShowIntro, asOf }: Props) {
+  const { t } = useT();
   const vintage = formatMonthYear(asOf);
   const [open, setOpen] = useState(false);
+  const name = (s: Source) => (typeof s.name === "string" ? s.name : t(s.name.key, { license: s.name.license ?? "" }));
   // Keyboard users land inside the dialog instead of on the panel behind it.
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -50,61 +63,60 @@ export default function AboutPanel({ onShowIntro, asOf }: Props) {
   return (
     <>
       <button type="button" className="about-trigger" onClick={() => setOpen(true)}>
-        ⓘ About & data
+        {t("map.about.trigger")}
       </button>
       {open && (
         <div
           className="about"
           role="dialog"
           aria-modal="true"
-          aria-label={`About ${BRAND_NAME} and its data sources`}
+          aria-label={t("map.about.label", { brand: BRAND_NAME })}
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
           <div className="about__card">
             <header className="about__head">
-              <h2 className="about__title">About {BRAND_NAME}</h2>
+              <h2 className="about__title">{t("map.about.title", { brand: BRAND_NAME })}</h2>
               <button
                 type="button"
                 ref={closeRef}
                 className="about__close"
-                aria-label="Close"
+                aria-label={t("map.close")}
                 onClick={() => setOpen(false)}
               >
                 ×
               </button>
             </header>
             <p className="about__blurb">
-              {BRAND_NAME} overlays housing cost and commute reach so you can see
-              where you could live. All figures are estimates built from public,
-              aggregate data — <strong>not financial or real-estate advice</strong>.
-              Traffic and prices vary; verify anything that matters.
+              {rich(t("map.about.blurb", { brand: BRAND_NAME }), {
+                advice: <strong>{t("map.about.notAdvice")}</strong>,
+              })}
             </p>
-            <h3 className="about__subhead">Data &amp; services</h3>
+            <h3 className="about__subhead">{t("map.about.sources")}</h3>
             <ul className="about__sources">
               {SOURCES.map((s) => (
-                <li key={s.name}>
+                <li key={s.id}>
                   <a href={s.href} target="_blank" rel="noopener noreferrer">
-                    {s.name}
+                    {name(s)}
                   </a>{" "}
-                  — {s.role}
-                  {vintage && s.name === "Zillow ZHVI" && (
-                    <span className="about__vintage"> (values as of {vintage})</span>
+                  — {t(s.role, { min: 10 })}
+                  {vintage && s.id === "zillow" && (
+                    <span className="about__vintage"> {t("map.about.vintage", { date: vintage })}</span>
                   )}
                 </li>
               ))}
             </ul>
-            <h3 className="about__subhead">Norway</h3>
+            <h3 className="about__subhead">{t("map.region.no")}</h3>
             <ul className="about__sources">
               {NORWAY_SOURCES.map((s) => (
-                <li key={s.name}>
+                <li key={s.id}>
                   <a href={s.href} target="_blank" rel="noopener noreferrer">
-                    {s.name}
+                    {name(s)}
                   </a>{" "}
-                  — {s.role}
+                  — {t(s.role, { min: 10 })}
                 </li>
               ))}
             </ul>
-            <p className="about__foot">These organisations do not endorse {BRAND_NAME}.</p>
+            <p className="about__foot">{t("map.about.noEndorse", { brand: BRAND_NAME })}</p>
             {onShowIntro && (
               <p className="about__foot">
                 <button
@@ -115,18 +127,18 @@ export default function AboutPanel({ onShowIntro, asOf }: Props) {
                     onShowIntro();
                   }}
                 >
-                  How it works
+                  {t("map.about.howItWorks")}
                 </button>
               </p>
             )}
             <p className="about__foot">
-              Code AGPL-3.0 ·{" "}
+              {t("map.about.code", { license: "AGPL-3.0" })} ·{" "}
               <a
                 href="https://github.com/alex-g-davies/LiveNear"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Source on GitHub
+                {t("map.about.github")}
               </a>
             </p>
           </div>

@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 
 import { getGeocode } from "../api/client";
+import { useT } from "../i18n/react";
 
 interface Props {
   /** Called with the geocoded work location and a human-readable label. */
@@ -21,7 +22,9 @@ type Status = "idle" | "loading" | "error";
 export default function AddressSearch({ onLocated, proximity, target, onTargetChange }: Props) {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<Status>("idle");
-  const [msg, setMsg] = useState("");
+  // Kept as a key so a language switch re-translates it (spec 028).
+  const [msg, setMsg] = useState<"" | "map.address.noMatch" | "map.address.unavailable">("");
+  const { t } = useT();
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -37,8 +40,8 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
       setStatus("error");
       setMsg(
         (err as Error).message === "not_found"
-          ? "No match for that address."
-          : "Address search unavailable.",
+          ? "map.address.noMatch"
+          : "map.address.unavailable",
       );
     }
   }
@@ -46,22 +49,22 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
   return (
     <form className="address" onSubmit={submit}>
       <label className="address__label" htmlFor="address-input">
-        Find a work address
+        {t("map.address.label")}
       </label>
       <div className="address__row">
         {target != null && onTargetChange && (
-          <div className="switcher address__target" role="group" aria-label="Search target pin">
-            {(["A", "B"] as const).map((t) => (
+          <div className="switcher address__target" role="group" aria-label={t("map.address.target")}>
+            {(["A", "B"] as const).map((pin) => (
               <button
-                key={t}
+                key={pin}
                 type="button"
                 className={
-                  t === target ? "switcher__btn switcher__btn--active" : "switcher__btn"
+                  pin === target ? "switcher__btn switcher__btn--active" : "switcher__btn"
                 }
-                aria-pressed={t === target}
-                onClick={() => onTargetChange(t)}
+                aria-pressed={pin === target}
+                onClick={() => onTargetChange(pin)}
               >
-                {t}
+                {pin}
               </button>
             ))}
           </div>
@@ -71,7 +74,7 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
           className="address__input"
           type="text"
           enterKeyHint="search"
-          placeholder="Search an address or landmark"
+          placeholder={t("map.address.placeholder")}
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
@@ -83,7 +86,7 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
           }}
         />
         <button className="address__btn" type="submit" disabled={status === "loading"}>
-          {status === "loading" ? "…" : "Go"}
+          {status === "loading" ? "…" : t("map.address.go")}
         </button>
       </div>
       {msg && (
@@ -91,7 +94,7 @@ export default function AddressSearch({ onLocated, proximity, target, onTargetCh
           role={status === "error" ? "alert" : undefined}
           className={status === "error" ? "address__msg address__msg--error" : "address__msg"}
         >
-          {msg}
+          {t(msg)}
         </span>
       )}
     </form>

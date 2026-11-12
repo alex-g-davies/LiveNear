@@ -11,6 +11,7 @@ import CurvesChart from "../components/CurvesChart";
 import MeasureSelect from "../components/MeasureSelect";
 import RangeBar from "../components/RangeBar";
 import { useColorOf } from "../lib/colors";
+import { useT } from "../../i18n/react";
 import { formatKm, formatPct, formatYears } from "../lib/format";
 import { MODE_LABELS, measureDef, modeBorderStyle } from "../lib/measures";
 import type { WhatIf } from "../lib/profile";
@@ -20,6 +21,7 @@ import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
 export const DEFAULT_LOAN_RATE_PCT = 6.5;
 
 export default function CompareCurves() {
+  const { t } = useT();
   const { state, setMeasure, setWhatIf, saveWhatIf, scenario, request, exitMonth, setExitMonth } = useCarState();
   const { profile, whatIf, overrides } = state;
   const def = measureDef(state.measure);
@@ -52,33 +54,38 @@ export default function CompareCurves() {
     return rows.map((r) => ({ ...r, maxHi }));
   }, [data, state.measure, exitMonth]);
 
-  const driftLabel = drift < -2 ? "Falling faster" : drift > 1 ? "Holding up" : "As expected";
+  const driftLabel =
+    drift < -2
+      ? t("carsCompare.curves.fallingFaster")
+      : drift > 1
+        ? t("carsCompare.curves.holdingUp")
+        : t("carsCompare.curves.asExpected");
 
   return (
     <>
       <CompareHeader view="curves" />
       <div className="cars-layout cars-layout--rail-left">
-        <aside className="cars-card cars-layout__aside" aria-label="What-if controls">
+        <aside className="cars-card cars-layout__aside" aria-label={t("carsCompare.curves.controls")}>
           <div className="cars-card__head">
-            <h2 className="cars-h3">What if</h2>
-            <p className="cars-hint">Changes here only affect this view until you save them.</p>
+            <h2 className="cars-h3">{t("carsCompare.curves.whatIf")}</h2>
+            <p className="cars-hint">{t("carsCompare.curves.whatIfHint")}</p>
           </div>
           <fieldset className="cars-fieldset">
-            <legend className="cars-legend-label">If buying, pay with</legend>
+            <legend className="cars-legend-label">{t("carsCompare.curves.payWith")}</legend>
             <div className="cars-inline">
               <label className="cars-check">
                 <input type="radio" name="whatif-pay" checked={pay === "loan"} onChange={() => update({ pay_mode: "loan" })} />{" "}
-                Loan
+                {t("carsCompare.curves.loan")}
               </label>
               <label className="cars-check">
                 <input type="radio" name="whatif-pay" checked={pay === "cash"} onChange={() => update({ pay_mode: "cash" })} />{" "}
-                Cash
+                {t("carsCompare.curves.cash")}
               </label>
             </div>
           </fieldset>
           <label className="cars-field">
             <span className="cars-field__label cars-field__label--row">
-              <span>Return your cash earns</span>
+              <span>{t("carsCompare.curves.return")}</span>
               <span className="cars-hint">{formatPct(ret, 1)}</span>
             </span>
             <input
@@ -93,7 +100,7 @@ export default function CompareCurves() {
           </label>
           <label className="cars-field">
             <span className="cars-field__label cars-field__label--row">
-              <span>Loan rate</span>
+              <span>{t("carsCompare.curves.loanRate")}</span>
               <span className="cars-hint">{formatPct(rate, 2)}</span>
             </span>
             <input
@@ -108,7 +115,7 @@ export default function CompareCurves() {
           </label>
           <label className="cars-field">
             <span className="cars-field__label cars-field__label--row">
-              <span>Km per year</span>
+              <span>{t("carsCompare.curves.kmPerYear")}</span>
               <span className="cars-hint">{formatKm(km)}</span>
             </span>
             <input
@@ -123,7 +130,7 @@ export default function CompareCurves() {
           </label>
           <label className="cars-field">
             <span className="cars-field__label cars-field__label--row">
-              <span>Used-car prices</span>
+              <span>{t("carsCompare.curves.usedPrices")}</span>
               <span className="cars-hint">
                 {driftLabel} ({drift > 0 ? "+" : ""}
                 {formatPct(drift, 1)})
@@ -139,20 +146,20 @@ export default function CompareCurves() {
               onChange={(e) => update({ used_price_drift_pct: Number(e.target.value) })}
             />
             <span className="cars-slider__ends">
-              <span>Falling faster</span>
-              <span>Holding up</span>
+              <span>{t("carsCompare.curves.fallingFaster")}</span>
+              <span>{t("carsCompare.curves.holdingUp")}</span>
             </span>
           </label>
           <label className="cars-check cars-check--top">
-            <input type="checkbox" checked={showBands} onChange={(e) => setShowBands(e.target.checked)} /> Show
-            uncertainty bands
+            <input type="checkbox" checked={showBands} onChange={(e) => setShowBands(e.target.checked)} />{" "}
+            {t("carsCompare.curves.showBands")}
           </label>
           <div className="cars-inline">
             <button type="button" className="cars-btn" onClick={() => setWhatIf(null)} disabled={!whatIf}>
-              Reset
+              {t("carsCompare.curves.reset")}
             </button>
             <button type="button" className="cars-btn cars-btn--outline" onClick={saveWhatIf} disabled={!whatIf}>
-              Save as my assumptions
+              {t("carsCompare.curves.save")}
             </button>
           </div>
         </aside>
@@ -162,32 +169,32 @@ export default function CompareCurves() {
             <div className="cars-card__bar-left">
               <MeasureSelect value={state.measure} onChange={setMeasure} />
               <h2 id="curves" className="cars-h2">
-                by years of ownership
+                {t("carsCompare.curves.byYears")}
               </h2>
             </div>
             <div className="cars-legend">
-              <span className="cars-legend__item">Colour = car</span>
+              <span className="cars-legend__item">{t("carsCompare.curves.legendColour")}</span>
               <span className="cars-legend__item">
                 <span aria-hidden="true" className="cars-legend__swatch" style={{ borderTopStyle: "solid" }} />
-                Used
+                {t("carsCompare.curves.legendUsed")}
               </span>
               <span className="cars-legend__item">
                 <span aria-hidden="true" className="cars-legend__swatch" style={{ borderTopStyle: "dashed" }} />
-                Lease
+                {t("carsCompare.curves.legendLease")}
               </span>
               <span className="cars-legend__item">
                 <span aria-hidden="true" className="cars-legend__swatch" style={{ borderTopStyle: "dotted" }} />
-                New
+                {t("carsCompare.curves.legendNew")}
               </span>
             </div>
           </div>
 
           {!request && (
             <p className="cars-empty">
-              No cars selected yet. <Link to={DRIVE_PATH}>Pick some on Your situation</Link>.
+              {t("carsCompare.noCars")} <Link to={DRIVE_PATH}>{t("carsCompare.pickSome")}</Link>.
             </p>
           )}
-          {request && !data && scenario.loading && <p className="cars-empty">Computing curves…</p>}
+          {request && !data && scenario.loading && <p className="cars-empty">{t("carsCompare.curves.computing")}</p>}
           {data && data.options.length > 0 && (
             <CurvesChart
               options={data.options}
@@ -197,11 +204,11 @@ export default function CompareCurves() {
               colorOf={colorOf}
             />
           )}
-          {data && data.options.length === 0 && <p className="cars-empty">No options to draw.</p>}
+          {data && data.options.length === 0 && <p className="cars-empty">{t("carsCompare.curves.noOptions")}</p>}
 
           <label className="cars-field cars-field--exit">
             <span className="cars-field__label cars-field__label--row">
-              <span>Mark an exit point</span>
+              <span>{t("carsCompare.markExit")}</span>
               <span className="cars-hint">{formatYears(exitYears)}</span>
             </span>
             <input
@@ -217,7 +224,7 @@ export default function CompareCurves() {
 
           {ranking.length > 0 && (
             <div className="cars-rankat">
-              <span className="cars-strong">Ranking if you leave at {formatYears(exitYears)}</span>
+              <span className="cars-strong">{t("carsCompare.curves.rankingAt", { years: formatYears(exitYears) })}</span>
               <ol className="cars-rankat__list">
                 {ranking.map((r, i) => {
                   const color = colorOf(r.o.variant_id);
@@ -245,7 +252,7 @@ export default function CompareCurves() {
                         label={`P10 ${def.format(r.p10)}, P50 ${def.format(r.p50)}, P90 ${def.format(r.p90)}`}
                       />
                       <Link to={drivePath(`/option/${encodeURIComponent(r.o.result.option_id)}`)} className="cars-link">
-                        Detail
+                        {t("carsCompare.curves.detail")}
                       </Link>
                     </li>
                   );

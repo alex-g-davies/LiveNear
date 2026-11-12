@@ -1,4 +1,9 @@
 // Shared value formatting so the legend, popups, and panel stay consistent.
+// US numbers keep the US style in every language (spec 028 R10); the words
+// and units around them follow the site language.
+
+import { getLang, t, type Lang } from "../i18n/core";
+import { monthYear } from "../i18n/dates";
 
 /** Full currency, e.g. 937500 -> "$937,500". */
 export function formatUsd(value: number): string {
@@ -21,7 +26,7 @@ export function formatPct(value: number): string {
 
 /** Price per square foot, e.g. 612 -> "$612/sqft". */
 export function formatPpsf(value: number): string {
-  return `$${Math.round(value)}/sqft`;
+  return t("map.unit.perSqft", { value: `$${Math.round(value)}` });
 }
 
 /** Area in square miles, e.g. 467.8 -> "468 mi²"; null -> "—". */
@@ -41,18 +46,20 @@ export function formatBudgetInput(value: number): string {
 
 /** Whole-dollar monthly amount, e.g. 3180 -> "$3,180/mo". */
 export function formatMonthly(value: number): string {
-  return `${formatUsd(value)}/mo`;
+  return t("map.unit.perMonth", { value: formatUsd(value) });
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-/** Data vintage label from an ISO date, e.g. "2026-04-30" -> "Apr 2026";
- * anything unparseable -> "" so callers can simply omit the line. */
+/** Data vintage label from an ISO date, e.g. "2026-04-30" -> "Apr 2026"
+ * ("apr. 2026", "Nis 2026"); anything unparseable -> "" so callers can simply
+ * omit the line. */
 export function formatMonthYear(iso: string | null | undefined): string {
   const m = /^(\d{4})-(\d{2})/.exec(iso ?? "");
   if (!m) return "";
   const month = Number(m[2]);
   if (month < 1 || month > 12) return "";
+  if (getLang() !== "en") return monthYear(month - 1, m[1]);
   return `${MONTHS[month - 1]} ${m[1]}`;
 }
 
@@ -68,27 +75,35 @@ export function placeLabel(
   name: string | null | undefined,
   stateCode?: string | null,
 ): string {
-  if (!name) return `ZIP ${zip}`;
+  if (!name) return t("map.place.zip", { zip });
   return stateCode ? `${name}, ${stateCode} ${zip}` : `${name} ${zip}`;
 }
 
 /** Minute range, e.g. (55, 73) -> "55–73 min", collapsing to "~55 min". */
 export function rangeLabel(minMinutes: number, maxMinutes: number): string {
   return minMinutes === maxMinutes
-    ? `~${minMinutes} min`
-    : `${minMinutes}–${maxMinutes} min`;
+    ? t("map.unit.minutesApprox", { min: minMinutes })
+    : t("map.unit.minutesRange", { min: minMinutes, max: maxMinutes });
 }
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+// Written out by hand, like the month names, so every ICU build agrees.
+const WEEKDAYS: Record<Lang, readonly string[]> = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  nb: ["søn.", "man.", "tir.", "ons.", "tor.", "fre.", "lør."],
+  tr: ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"],
+};
 
 /** Naive local departure timestamp -> "Mon 8:00 AM", or "Mon 08:00" with a
- * 24-hour clock (026 R15); bad input -> "". */
+ * 24-hour clock (026 R15); bad input -> "". Bokmål and Turkish always use a
+ * 24-hour clock ("man. 08:00", "Pzt 08:00"). */
 export function departLabel(iso: string, hour24 = false): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
+  const lang = getLang();
+  const day = WEEKDAYS[lang][d.getDay()];
   const hours = d.getHours();
   const h12 = hours % 12 || 12;
   const mins = String(d.getMinutes()).padStart(2, "0");
-  if (hour24) return `${WEEKDAYS[d.getDay()]} ${String(hours).padStart(2, "0")}:${mins}`;
-  return `${WEEKDAYS[d.getDay()]} ${h12}:${mins} ${hours >= 12 ? "PM" : "AM"}`;
+  if (hour24 || lang !== "en") return `${day} ${String(hours).padStart(2, "0")}:${mins}`;
+  return `${day} ${h12}:${mins} ${hours >= 12 ? "PM" : "AM"}`;
 }

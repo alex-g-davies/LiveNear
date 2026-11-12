@@ -21,21 +21,20 @@ import {
   type MustHave,
 } from "../lib/profile";
 import { useCarState } from "../state";
+import { t } from "../../i18n/core";
+import { useT } from "../../i18n/react";
 import { drivePath } from "../../lib/productRoutes";
 
-const EXIT_FIELDS: { key: ExitKey; label: string }[] = [
-  { key: "p12", label: "About 1 year" },
-  { key: "p24", label: "About 2 years" },
-  { key: "p36", label: "About 3 years" },
-  { key: "p48", label: "4+ years" },
+// Labels are getters, so each read is in the current language (spec 028).
+const EXIT_FIELDS: { key: ExitKey; readonly label: string }[] = [
+  { key: "p12", get label() { return t("carsPlan.situation.exit.about", { count: 1 }); } },
+  { key: "p24", get label() { return t("carsPlan.situation.exit.about", { count: 2 }); } },
+  { key: "p36", get label() { return t("carsPlan.situation.exit.about", { count: 3 }); } },
+  { key: "p48", get label() { return t("carsPlan.situation.exit.plus", { n: 4 }); } },
 ];
 const ODDS_SHADES = ["var(--c-neutral-400)", "var(--c-neutral-500)", "var(--c-neutral-600)", "var(--c-neutral-700)"];
 
-const MUST_LABELS: Record<MustHave, string> = {
-  heat_pump: "Heat pump",
-  auto_precondition: "Automatic battery preconditioning",
-  awd: "AWD",
-};
+const mustLabel = (m: MustHave): string => t(`carsPlan.situation.must.${m}`);
 
 const numOf = (e: ChangeEvent<HTMLInputElement>): number => {
   const n = Number(e.target.value);
@@ -43,10 +42,11 @@ const numOf = (e: ChangeEvent<HTMLInputElement>): number => {
 };
 
 export default function Situation() {
+  const { t } = useT();
   const { state, updateProfile, setSelection, saveDraft, vehicles } = useCarState();
   const navigate = useNavigate();
   const { profile, selection } = state;
-  const [savedMsg, setSavedMsg] = useState<string | null>(null);
+  const [saved, setSaved] = useState<boolean | null>(null);
   const [showQuotes, setShowQuotes] = useState(Object.keys(profile.insurance_quotes_nok).length > 0);
 
   const oddsTotal = exitOddsSum(profile.exit_odds);
@@ -60,7 +60,7 @@ export default function Situation() {
     on ? (list.includes(item) ? list : [...list, item]) : list.filter((x) => x !== item);
 
   const onSave = () => {
-    setSavedMsg(saveDraft() ? "Draft saved on this device." : "Could not save: browser storage is unavailable.");
+    setSaved(saveDraft());
   };
 
   const selectedVehicles = (vehicles.data ?? []).filter((v) =>
@@ -71,11 +71,8 @@ export default function Situation() {
     <>
       <div className="cars-titlebar">
         <div className="cars-titlebar__text">
-          <h1 className="cars-h1">Your situation</h1>
-          <p className="cars-lede">
-            About five minutes. Every answer can be changed later, and the results show how much each one
-            moves the ranking.
-          </p>
+          <h1 className="cars-h1">{t("carsPlan.situation.title")}</h1>
+          <p className="cars-lede">{t("carsPlan.situation.lede")}</p>
         </div>
       </div>
 
@@ -83,11 +80,9 @@ export default function Situation() {
         <section className="cars-card" aria-labelledby="hold">
           <div className="cars-card__head">
             <h2 id="hold" className="cars-h2">
-              How long will you keep the car?
+              {t("carsPlan.situation.hold.title")}
             </h2>
-            <p className="cars-hint">
-              Give your rough odds. They don't need to be precise, but they must add up to 100%.
-            </p>
+            <p className="cars-hint">{t("carsPlan.situation.hold.hint", { total: 100 })}</p>
           </div>
           <div className="cars-grid cars-grid--4">
             {EXIT_FIELDS.map((f) => (
@@ -120,10 +115,12 @@ export default function Situation() {
             ))}
           </div>
           <p className={`cars-gate ${oddsOk ? "cars-gate--ok" : "cars-gate--bad"}`} role="status">
-            {oddsOk ? "Odds add up to 100 %." : `Odds add up to ${oddsTotal} %. They must total 100 %.`}
+            {oddsOk
+              ? t("carsPlan.situation.oddsOk", { total: 100 })
+              : t("carsPlan.situation.oddsBad", { sum: oddsTotal, total: 100 })}
           </p>
           <fieldset className="cars-fieldset">
-            <legend className="cars-legend-label">If you leave Norway, the car is</legend>
+            <legend className="cars-legend-label">{t("carsPlan.situation.exitLegend")}</legend>
             <div className="cars-inline">
               <label className="cars-check">
                 <input
@@ -132,7 +129,7 @@ export default function Situation() {
                   checked={!profile.export_on_exit}
                   onChange={() => updateProfile({ export_on_exit: false })}
                 />{" "}
-                Sold here
+                {t("carsPlan.situation.soldHere")}
               </label>
               <label className="cars-check">
                 <input
@@ -141,7 +138,7 @@ export default function Situation() {
                   checked={profile.export_on_exit}
                   onChange={() => updateProfile({ export_on_exit: true })}
                 />{" "}
-                Exported with me
+                {t("carsPlan.situation.exported")}
               </label>
             </div>
           </fieldset>
@@ -150,12 +147,12 @@ export default function Situation() {
         <section className="cars-card" aria-labelledby="drive">
           <div className="cars-card__head">
             <h2 id="drive" className="cars-h2">
-              Driving and charging
+              {t("carsPlan.situation.drive.title")}
             </h2>
-            <p className="cars-hint">How far you drive affects resale value and lease km limits, not just energy.</p>
+            <p className="cars-hint">{t("carsPlan.situation.drive.hint")}</p>
           </div>
           <label className="cars-field">
-            <span className="cars-field__label">Km per year</span>
+            <span className="cars-field__label">{t("carsPlan.situation.km")}</span>
             <span className="cars-field__unit">
               <input
                 type="number"
@@ -170,13 +167,13 @@ export default function Situation() {
             </span>
           </label>
           <div className="cars-field">
-            <span className="cars-field__label">Where you charge (share of energy)</span>
+            <span className="cars-field__label">{t("carsPlan.situation.chargeWhere")}</span>
             <div className="cars-grid cars-grid--3">
               {(
                 [
-                  ["work_free_pct", "Free at work"],
-                  ["home_pct", "Home"],
-                  ["public_pct", "Public fast"],
+                  ["work_free_pct", t("carsPlan.situation.charge.work")],
+                  ["home_pct", t("carsPlan.situation.charge.home")],
+                  ["public_pct", t("carsPlan.situation.charge.public")],
                 ] as const
               ).map(([key, label]) => (
                 <label key={key} className="cars-field">
@@ -200,23 +197,23 @@ export default function Situation() {
             </div>
             <p className={`cars-gate ${chargeOk ? "cars-gate--ok" : "cars-gate--bad"}`} role="status">
               {chargeOk
-                ? "Charging shares add up to 100 %."
-                : `Charging shares add up to ${chargeTotal} %. They must total 100 %.`}
+                ? t("carsPlan.situation.chargeOk", { total: 100 })
+                : t("carsPlan.situation.chargeBad", { sum: chargeTotal, total: 100 })}
             </p>
           </div>
           <div className="cars-grid cars-grid--2">
             <label className="cars-field">
-              <span className="cars-field__label">Home area (for tolls and climate)</span>
+              <span className="cars-field__label">{t("carsPlan.situation.homeArea")}</span>
               <input
                 type="text"
                 className="cars-input"
-                placeholder="Municipality"
+                placeholder={t("carsPlan.situation.municipality")}
                 value={profile.municipality}
                 onChange={(e) => updateProfile({ municipality: e.target.value })}
               />
             </label>
             <label className="cars-field">
-              <span className="cars-field__label">Toll ring passages per week</span>
+              <span className="cars-field__label">{t("carsPlan.situation.tollPassages")}</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -228,26 +225,23 @@ export default function Situation() {
                   updateProfile({ toll_passages_per_week: Math.max(0, Math.min(200, Math.round(numOf(e)))) })
                 }
               />
-              <span className="cars-hint">
-                Trips through the toll ring per week, both directions count. Leave 0 if you will not commute
-                through one.
-              </span>
+              <span className="cars-hint">{t("carsPlan.situation.tollHint")}</span>
             </label>
           </div>
         </section>
 
         <section className="cars-card" aria-labelledby="money">
           <h2 id="money" className="cars-h2">
-            Money
+            {t("carsPlan.situation.money.title")}
           </h2>
           <fieldset className="cars-fieldset">
-            <legend className="cars-legend-label">If buying, you would pay with</legend>
+            <legend className="cars-legend-label">{t("carsPlan.situation.payWith")}</legend>
             <div className="cars-inline">
               {(
                 [
-                  ["cash", "Cash"],
-                  ["loan", "Car loan"],
-                  ["both", "Compare both"],
+                  ["cash", t("carsPlan.situation.pay.cash")],
+                  ["loan", t("carsPlan.situation.pay.loan")],
+                  ["both", t("carsPlan.situation.pay.both")],
                 ] as const
               ).map(([key, label]) => (
                 <label key={key} className="cars-check">
@@ -264,7 +258,7 @@ export default function Situation() {
           </fieldset>
           <div className="cars-grid cars-grid--2">
             <label className="cars-field">
-              <span className="cars-field__label">Return your cash earns elsewhere</span>
+              <span className="cars-field__label">{t("carsPlan.situation.returnOnCash")}</span>
               <span className="cars-field__unit">
                 <input
                   type="number"
@@ -276,11 +270,11 @@ export default function Situation() {
                   value={profile.return_on_cash_pct}
                   onChange={(e) => updateProfile({ return_on_cash_pct: numOf(e) })}
                 />
-                <span aria-hidden="true">% per year</span>
+                <span aria-hidden="true">{t("carsPlan.situation.pctPerYear")}</span>
               </span>
             </label>
             <label className="cars-field">
-              <span className="cars-field__label">Down payment available</span>
+              <span className="cars-field__label">{t("carsPlan.situation.downPayment")}</span>
               <span className="cars-field__unit">
                 <input
                   type="number"
@@ -301,20 +295,20 @@ export default function Situation() {
               checked={profile.has_id_and_bankid}
               onChange={(e) => updateProfile({ has_id_and_bankid: e.target.checked })}
             />{" "}
-            I have a Norwegian ID number and BankID (needed for most loans)
+            {t("carsPlan.situation.bankId")}
           </label>
         </section>
 
         <section className="cars-card" aria-labelledby="ins">
           <div className="cars-card__head">
             <h2 id="ins" className="cars-h2">
-              Insurance profile
+              {t("carsPlan.situation.ins.title")}
             </h2>
-            <p className="cars-hint">Norwegian insurers price by claims-free history. Newcomers often start low.</p>
+            <p className="cars-hint">{t("carsPlan.situation.ins.hint")}</p>
           </div>
           <div className="cars-grid cars-grid--2">
             <label className="cars-field">
-              <span className="cars-field__label">Years claims-free</span>
+              <span className="cars-field__label">{t("carsPlan.situation.ins.claimsFree")}</span>
               <input
                 type="number"
                 inputMode="numeric"
@@ -328,7 +322,7 @@ export default function Situation() {
               />
             </label>
             <label className="cars-field">
-              <span className="cars-field__label">Age band</span>
+              <span className="cars-field__label">{t("carsPlan.situation.ins.ageBand")}</span>
               <select
                 className="cars-select"
                 value={profile.insurance.age_band}
@@ -354,7 +348,7 @@ export default function Situation() {
                 updateProfile({ insurance: { ...profile.insurance, has_claims_free_letter: e.target.checked } })
               }
             />{" "}
-            I can get a claims-free letter from my previous insurer
+            {t("carsPlan.situation.ins.letter")}
           </label>
           <label className="cars-check">
             <input
@@ -365,15 +359,15 @@ export default function Situation() {
                 if (!e.target.checked) updateProfile({ insurance_quotes_nok: {} });
               }}
             />{" "}
-            I have my own insurance quotes to enter
+            {t("carsPlan.situation.ins.ownQuotes")}
           </label>
           {showQuotes && (
             <div className="cars-grid cars-grid--2">
-              {selectedVehicles.length === 0 && <p className="cars-hint">Pick cars below first.</p>}
+              {selectedVehicles.length === 0 && <p className="cars-hint">{t("carsPlan.situation.ins.pickFirst")}</p>}
               {selectedVehicles.map((v) => (
                 <label key={v.variant_id} className="cars-field">
                   <span className="cars-field__label">
-                    {v.make} {v.model} {v.trim_group} quote
+                    {t("carsPlan.situation.ins.quote", { name: `${v.make} ${v.model} ${v.trim_group}` })}
                   </span>
                   <span className="cars-field__unit">
                     <input
@@ -389,7 +383,7 @@ export default function Situation() {
                         updateProfile({ insurance_quotes_nok: next });
                       }}
                     />
-                    <span aria-hidden="true">kr per year</span>
+                    <span aria-hidden="true">{t("carsPlan.situation.krPerYear")}</span>
                   </span>
                 </label>
               ))}
@@ -400,13 +394,13 @@ export default function Situation() {
         <section className="cars-card" aria-labelledby="limits">
           <div className="cars-card__head">
             <h2 id="limits" className="cars-h2">
-              Limits
+              {t("carsPlan.situation.limits.title")}
             </h2>
-            <p className="cars-hint">These rule options out. They are never traded off against cost.</p>
+            <p className="cars-hint">{t("carsPlan.situation.limits.hint")}</p>
           </div>
           <div className="cars-grid cars-grid--2">
             <label className="cars-field">
-              <span className="cars-field__label">Max purchase price</span>
+              <span className="cars-field__label">{t("carsPlan.situation.limits.maxPrice")}</span>
               <span className="cars-field__unit">
                 <input
                   type="number"
@@ -425,7 +419,7 @@ export default function Situation() {
               </span>
             </label>
             <label className="cars-field">
-              <span className="cars-field__label">Need the car by</span>
+              <span className="cars-field__label">{t("carsPlan.situation.limits.needBy")}</span>
               <input
                 type="date"
                 className="cars-input"
@@ -436,18 +430,18 @@ export default function Situation() {
               />
             </label>
             <label className="cars-field">
-              <span className="cars-field__label">When did/will you arrive in Norway?</span>
+              <span className="cars-field__label">{t("carsPlan.situation.limits.arrival")}</span>
               <input
                 type="date"
                 className="cars-input"
                 value={profile.arrival_date ?? ""}
                 onChange={(e) => updateProfile({ arrival_date: e.target.value || null })}
               />
-              <span className="cars-hint">Optional; sets the deadlines on the checklist.</span>
+              <span className="cars-hint">{t("carsPlan.situation.limits.arrivalHint")}</span>
             </label>
           </div>
           <fieldset className="cars-fieldset">
-            <legend className="cars-legend-label">Must have</legend>
+            <legend className="cars-legend-label">{t("carsPlan.situation.limits.mustHave")}</legend>
             <div className="cars-inline">
               {MUST_HAVES.map((m) => (
                 <label key={m} className="cars-check">
@@ -463,13 +457,13 @@ export default function Situation() {
                       })
                     }
                   />{" "}
-                  {MUST_LABELS[m]}
+                  {mustLabel(m)}
                 </label>
               ))}
             </div>
           </fieldset>
           <fieldset className="cars-fieldset">
-            <legend className="cars-legend-label">Ways to get a car</legend>
+            <legend className="cars-legend-label">{t("carsPlan.situation.limits.ways")}</legend>
             <div className="cars-inline">
               {MODES.map((m: Mode) => (
                 <label key={m} className="cars-check">
@@ -492,12 +486,12 @@ export default function Situation() {
         <section className="cars-card" aria-labelledby="prio">
           <div className="cars-card__head">
             <h2 id="prio" className="cars-h2">
-              What matters besides cost
+              {t("carsPlan.situation.prio.title")}
             </h2>
-            <p className="cars-hint">Shown as a separate score next to cost, never folded into it.</p>
+            <p className="cars-hint">{t("carsPlan.situation.prio.hint")}</p>
           </div>
           <label className="cars-field">
-            <span className="cars-field__label">Utility vs fun</span>
+            <span className="cars-field__label">{t("carsPlan.situation.prio.slider")}</span>
             <input
               type="range"
               min={0}
@@ -507,8 +501,8 @@ export default function Situation() {
               onChange={(e) => updateProfile({ fun_weight: numOf(e) })}
             />
             <span className="cars-slider__ends">
-              <span>Range, space, comfort</span>
-              <span>Punch, agility, RWD</span>
+              <span>{t("carsPlan.situation.prio.utility")}</span>
+              <span>{t("carsPlan.situation.prio.fun")}</span>
             </span>
           </label>
         </section>
@@ -518,12 +512,12 @@ export default function Situation() {
         <section className="cars-card cars-card--wide" aria-labelledby="pick">
           <div className="cars-card__head">
             <h2 id="pick" className="cars-h2">
-              Cars to compare
+              {t("carsPlan.situation.pick.title")}
             </h2>
             <p className="cars-hint">
-              The cars and model years to put side by side. Add one by name here, or pick from the Market
-              map.
-              {selection.length > 0 && ` ${variantCount(selection)} of ${MAX_COMPARE_VARIANTS} cars selected.`}
+              {t("carsPlan.situation.pick.hint")}
+              {selection.length > 0 &&
+                ` ${t("carsPlan.situation.pick.count", { n: variantCount(selection), max: MAX_COMPARE_VARIANTS })}`}
             </p>
           </div>
           <SelectionTray
@@ -540,22 +534,22 @@ export default function Situation() {
         {!canContinue && (
           <p className="cars-gate cars-gate--bad" role="status">
             {!oddsOk
-              ? "Fix the exit odds to continue."
+              ? t("carsPlan.situation.fixOdds")
               : !chargeOk
-                ? "Fix the charging shares to continue."
-                : "Pick at least one car to compare."}
+                ? t("carsPlan.situation.fixCharging")
+                : t("carsPlan.situation.pickOne")}
           </p>
         )}
-        {savedMsg && (
+        {saved !== null && (
           <p className="cars-hint" role="status">
-            {savedMsg}
+            {saved ? t("carsPlan.situation.saved") : t("carsPlan.situation.saveFailed")}
           </p>
         )}
         <button type="button" className="cars-btn" onClick={onSave}>
-          Save draft
+          {t("carsPlan.situation.save")}
         </button>
         <Link to={drivePath("/market")} className="cars-btn cars-btn--outline">
-          Browse the market
+          {t("carsPlan.situation.browse")}
         </Link>
         <button
           type="button"
@@ -563,7 +557,7 @@ export default function Situation() {
           disabled={!canContinue}
           onClick={() => navigate(drivePath("/compare"))}
         >
-          Compare options
+          {t("carsPlan.situation.compare")}
         </button>
       </div>
     </>

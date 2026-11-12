@@ -18,6 +18,8 @@ import type { ZipValue } from "../api/client";
 import { fillColorExpression, fillOpacityExpression, overBudgetFilter } from "../lib/colorScale";
 import { type Locale, US_LOCALE } from "../lib/locale";
 import { buildZipPopupHtml } from "../lib/popup";
+import { t } from "../i18n/core";
+import { useLang } from "../i18n/react";
 
 interface Props {
   geojson: FeatureCollection | null;
@@ -94,7 +96,7 @@ function makePinElement(label: string): { el: HTMLDivElement; badge: HTMLSpanEle
   el.className = "work-pin-wrap";
   const img = document.createElement("img");
   img.src = "/brand/mark-512.png";
-  img.alt = `Work location ${label}`;
+  img.alt = t("map.pin.alt", { label });
   img.className = "work-pin";
   const badge = document.createElement("span");
   badge.className = "work-pin__badge";
@@ -211,6 +213,11 @@ export default function MapView({
       style: BASEMAP_STYLE_URL,
       center: MAP_CENTER,
       zoom: MAP_ZOOM,
+      // MapLibre's own control tooltips, in the language at map creation.
+      locale: {
+        "NavigationControl.ZoomIn": t("map.nav.zoomIn"),
+        "NavigationControl.ZoomOut": t("map.nav.zoomOut"),
+      },
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 
@@ -226,7 +233,7 @@ export default function MapView({
         new maplibregl.Popup({ closeButton: false, offset: 22 }).setText(
           // First visit: actionable label, opened immediately — the welcome
           // modal says "drag the pin" but nothing on the map identifies it.
-          pinHint ? "Drag me to your workplace" : "Work location",
+          pinHint ? t("map.pin.hint") : t("map.pin.label"),
         ),
       )
       .addTo(m);
@@ -412,7 +419,7 @@ export default function MapView({
       const pin = new maplibregl.Marker({ element: el, draggable: true, anchor: "center" })
         .setLngLat([work2.lon, work2.lat])
         .setPopup(
-          new maplibregl.Popup({ closeButton: false, offset: 22 }).setText("Work location B"),
+          new maplibregl.Popup({ closeButton: false, offset: 22 }).setText(t("map.pin.labelB")),
         )
         .addTo(m);
       pin.on("dragend", () => {
@@ -424,6 +431,25 @@ export default function MapView({
       marker2.current.setLngLat([work2.lon, work2.lat]);
     }
   }, [work2]);
+
+  // Language switch (spec 028): relabel the pins in place, keeping the map.
+  const lang = useLang();
+  const firstLang = useRef(true);
+  useEffect(() => {
+    if (firstLang.current) {
+      firstLang.current = false;
+      return;
+    }
+    marker.current?.getPopup()?.setText(t("map.pin.label"));
+    marker2.current?.getPopup()?.setText(t("map.pin.labelB"));
+    for (const [m, label] of [
+      [marker.current, "A"],
+      [marker2.current, "B"],
+    ] as const) {
+      const img = m?.getElement().querySelector("img");
+      if (img) img.alt = t("map.pin.alt", { label });
+    }
+  }, [lang]);
 
   // Re-sync layers when data arrives.
   useEffect(syncZips, [geojson]);

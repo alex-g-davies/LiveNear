@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+import { useT } from "../i18n/react";
+
 interface Props {
   budgetSet: boolean;
   workSet: boolean;
@@ -14,10 +16,11 @@ interface Props {
  * state rather than clicks — so a user who already did the thing gets credit.
  * Renders at the top of the controls panel; first session only. */
 export default function GettingStarted({ budgetSet, workSet, explored, onDone }: Props) {
+  const { t } = useT();
   const steps = [
-    { key: "budget", label: "Set your budget", done: budgetSet },
-    { key: "work", label: "Put the pin on your workplace", done: workSet },
-    { key: "explore", label: "Click an area that looks good", done: explored },
+    { key: "budget", label: t("map.checklist.budget"), done: budgetSet },
+    { key: "work", label: t("map.checklist.work"), done: workSet },
+    { key: "explore", label: t("map.checklist.explore"), done: explored },
   ];
   const allDone = steps.every((s) => s.done);
 
@@ -29,13 +32,13 @@ export default function GettingStarted({ budgetSet, workSet, explored, onDone }:
   }, [allDone, onDone]);
 
   return (
-    <aside className="checklist" aria-label="Getting started checklist">
+    <aside className="checklist" aria-label={t("map.checklist.label")}>
       <div className="checklist__head">
-        <span className="checklist__title">{allDone ? "You’re set 🎉" : "Getting started"}</span>
+        <span className="checklist__title">{allDone ? t("map.checklist.allDone") : t("map.checklist.title")}</span>
         <button
           type="button"
           className="checklist__dismiss"
-          aria-label="Dismiss checklist"
+          aria-label={t("map.checklist.dismiss")}
           onClick={onDone}
         >
           ×
@@ -51,7 +54,7 @@ export default function GettingStarted({ budgetSet, workSet, explored, onDone }:
               {s.done ? "✓" : "○"}
             </span>
             {s.label}
-            {s.done && <span className="sr-only"> (done)</span>}
+            {s.done && <span className="sr-only"> {t("map.checklist.done")}</span>}
           </li>
         ))}
       </ul>

@@ -1,3 +1,5 @@
+import "./i18n/registerMap";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { type CommuteVariation, type RegionInfo, getRegions } from "./api/client";
@@ -23,6 +25,8 @@ import { NOTICE_ISOCHRONE, useIsochrone } from "./hooks/useIsochrone";
 import { useReverseGeocode } from "./hooks/useReverseGeocode";
 import { useMapData } from "./hooks/useMapData";
 import { useWikiSummary } from "./hooks/useWikiSummary";
+import { type TKey } from "./i18n/core";
+import { useT } from "./i18n/react";
 import { type BudgetSpec, defaultBudgetSpec, effectiveBudget } from "./lib/affordability";
 import { metricValuesFromFeatures, resolveStops } from "./lib/colorScale";
 import { rangeLabel } from "./lib/format";
@@ -64,6 +68,7 @@ function checklistCompleted(): boolean {
 }
 
 export default function App() {
+  const { t, lang } = useT();
   // Parsed on each mount (009 R5, 025 R8): seeds the initial state so a
   // deep-linked region is the FIRST fetch, and returning from DriveCheap
   // restores the latest view. Geolocate only the first cold landing in a page
@@ -187,7 +192,8 @@ export default function App() {
   const locale = localeFor(region, stateCode);
   const metrics = useMemo(
     () => metricsFor(region, locale, referenceM2),
-    [region, locale, referenceM2],
+    // Labels are read in the current language (spec 028).
+    [region, locale, referenceM2, lang],
   );
   // A region without the chosen metric shows its first one (026 R10).
   const activeMetric = metrics.find((m) => m.key === metricKey) ?? metrics[0];
@@ -286,41 +292,43 @@ export default function App() {
       // containing the ZIP center is the strongest guarantee.
       const best = [...SCENARIO_STYLES].reverse().find((s) => contained.has(s.key));
       // Walk/cycle reach is time-invariant (013 R2): no traffic framing.
-      const trip = { drive: "drive", walk: "walk", cycle: "ride" }[mode];
-      if (mode === "drive") {
-        commuteReach = best
-          ? `Within a ${minutes}-min drive of work in typical ${best.label.toLowerCase()} — bad days run longer`
-          : `Beyond a ${minutes}-min drive of work in typical traffic`;
-      } else {
-        commuteReach = best
-          ? `Within a ${minutes}-min ${trip} of work`
-          : `Beyond a ${minutes}-min ${trip} of work`;
-      }
+      const key: TKey =
+        mode === "drive"
+          ? best
+            ? (`map.reach.driveWithin.${best.key}` as const)
+            : "map.reach.driveBeyond"
+          : best
+            ? (`map.reach.${mode}Within` as const)
+            : (`map.reach.${mode}Beyond` as const);
+      commuteReach = t(key, { minutes });
     }
     // Mode-aware estimate lines (013 R3; compact A/B form in dual, 016 R4).
-    const verb = { drive: "Drive", walk: "Walk", cycle: "Cycle" }[mode];
+    // The weekday is dropped from the end time ("Mon 8:00 AM–9:00 AM").
     const window = (start: string | null, end: string | null) =>
       !dual && start && end
-        ? ` (departing ${locale.departure(start)}–${locale.departure(end).replace(/^\w+ /, "")})`
+        ? t("map.trip.window", {
+            start: locale.departure(start),
+            end: locale.departure(end).replace(/^\S+ /, ""),
+          })
         : "";
     const lines = (
       est: typeof commute,
-      workLabel: string,
+      target: "work" | "workA" | "workB",
     ): [string | null, string | null] => {
       if (!est) return [null, null];
       return [
-        `${verb} to ${workLabel}: ${rangeLabel(est.am_min_minutes, est.am_max_minutes)}${window(
-          est.am_window_start_local,
-          est.am_window_end_local,
-        )}`,
-        `${verb} home: ${rangeLabel(est.pm_min_minutes, est.pm_max_minutes)}${window(
-          est.pm_window_start_local,
-          est.pm_window_end_local,
-        )}`,
+        t(`map.trip.${mode}.to.${target}`, {
+          range: rangeLabel(est.am_min_minutes, est.am_max_minutes),
+          window: window(est.am_window_start_local, est.am_window_end_local),
+        }),
+        t(`map.trip.${mode}.home`, {
+          range: rangeLabel(est.pm_min_minutes, est.pm_max_minutes),
+          window: window(est.pm_window_start_local, est.pm_window_end_local),
+        }),
       ];
     };
-    const [driveToWork, driveHome] = lines(commute, dual ? "Work A" : "work");
-    const [driveToWork2, driveHome2] = dual ? lines(commuteB, "Work B") : [null, null];
+    const [driveToWork, driveHome] = lines(commute, dual ? "workA" : "work");
+    const [driveToWork2, driveHome2] = dual ? lines(commuteB, "workB") : [null, null];
     return {
       percentile,
       vsStateMedianPct,
@@ -330,7 +338,7 @@ export default function App() {
       driveToWork2,
       driveHome2,
     };
-  }, [selectedZip, records, centroids, isochrone, minutes, commute, commuteB, mode, dual, locale]);
+  }, [selectedZip, records, centroids, isochrone, minutes, commute, commuteB, mode, dual, locale, lang]);
 
   // First area opened -> the "explore" step is done, even if closed again.
   useEffect(() => {
@@ -482,7 +490,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <h1 className="sr-only">LiveNear — housing affordability and commute map</h1>
+      <h1 className="sr-only">{t("map.app.heading", { brand: "LiveNear" })}</h1>
       <MapView
         geojson={geojson}
         isochrone={isochrone}
@@ -579,20 +587,20 @@ export default function App() {
       <button
         type="button"
         className="recenter"
-        aria-label="Recenter on the work pin"
-        title="Recenter on the work pin"
+        aria-label={t("map.app.recenter")}
+        title={t("map.app.recenter")}
         onClick={() => setRecenter((n) => n + 1)}
       >
         ⌖
       </button>
       {isoLoading && (
         <div className="iso-chip" role="status">
-          Updating reach…
+          {t("map.app.updatingReach")}
         </div>
       )}
       {dual && intersection?.empty && !isoLoading && (
         <div className="status status--warn iso-empty" role="status">
-          No area within both commutes — try a longer time or move a pin
+          {t("map.app.noSharedReach")}
         </div>
       )}
       {showWelcome && (
@@ -605,19 +613,19 @@ export default function App() {
       )}
       <Toasts
         messages={[
-          ...notices,
-          ...(iso1.failed || iso2.failed ? [NOTICE_ISOCHRONE] : []),
-          ...(regionsFailed ? [`Region list unavailable — showing ${stateCode} only`] : []),
+          ...notices.map((key) => t(key)),
+          ...(iso1.failed || iso2.failed ? [t(NOTICE_ISOCHRONE)] : []),
+          ...(regionsFailed ? [t("map.notice.regions", { code: stateCode })] : []),
         ]}
       />
       {loading && (
         <div className="status" role="status">
-          Loading map…
+          {t("map.app.loading")}
         </div>
       )}
       {error && (
         <div className="status status--error" role="alert">
-          Couldn’t load map data: {error}
+          {t("map.app.loadError", { error })}
         </div>
       )}
     </div>
