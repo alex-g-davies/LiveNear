@@ -205,6 +205,95 @@ body,
   }
 }
 
+/* Language picker (028 R1): the short code on top, a transparent native
+   select over it, so the list, keyboard and touch stay native. */
+.lang-picker {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  min-height: 40px;
+  padding: 0 22px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: var(--fs-control);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.lang-picker::after {
+  content: "";
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.lang-picker:hover {
+  color: var(--accent-dark);
+  background: var(--page-bg);
+}
+
+.lang-picker:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lang-picker__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.panel-head__tools,
+.cars-header__tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-head__tools .product-switcher {
+  flex: 1 1 auto;
+}
+
+.landing__head {
+  position: relative;
+  padding-right: 64px;
+}
+
+.landing__lang {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+/* Untranslated backend prose (028 R7). */
+.en-tag {
+  color: var(--muted);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+@media (pointer: coarse) {
+  .lang-picker {
+    min-height: 44px;
+  }
+}
+
 /* Brand-badge work pin (circular crop of the shield mark). */
 .work-pin {
   width: 40px;
@@ -1679,8 +1768,8 @@ body,
     margin-bottom: 0;
   }
 
-  .panel-head .product-switcher {
-    flex: 0 1 200px;
+  .panel-head__tools {
+    flex: 0 1 260px;
   }
 
   .panel,

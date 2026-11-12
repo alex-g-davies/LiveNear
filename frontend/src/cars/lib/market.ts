@@ -4,38 +4,46 @@
 
 import type { CohortOut, Drive, EnergyType, MarketPoint, VehicleOut } from "../api";
 import type { SelectionItem } from "./profile";
+import { hasKey, t, tDynamic } from "../../i18n/core";
 
 export type XAxis = "year" | "km" | "range";
 export type YAxis = "price" | "range" | "efficiency" | "accel";
 export type ColorBy = "energy" | "drive" | "body";
 
-export const X_AXES: { key: XAxis; label: string }[] = [
-  { key: "year", label: "Model year" },
-  { key: "km", label: "Km driven" },
-  { key: "range", label: "Range" },
+// Labels are getters, so every read is in the current language (spec 028).
+export const X_AXES: { key: XAxis; readonly label: string }[] = [
+  { key: "year", get label() { return t("carsPlan.axis.year"); } },
+  { key: "km", get label() { return t("carsPlan.axis.km"); } },
+  { key: "range", get label() { return t("carsPlan.axis.range"); } },
 ];
-export const Y_AXES: { key: YAxis; label: string; unit: string }[] = [
-  { key: "price", label: "Asking price", unit: "kr" },
-  { key: "range", label: "Range", unit: "km" },
-  { key: "efficiency", label: "Efficiency", unit: "Wh/km" },
+export const Y_AXES: { key: YAxis; readonly label: string; unit: string }[] = [
+  { key: "price", get label() { return t("carsPlan.axis.price"); }, unit: "kr" },
+  { key: "range", get label() { return t("carsPlan.axis.range"); }, unit: "km" },
+  { key: "efficiency", get label() { return t("carsPlan.axis.efficiency"); }, unit: "Wh/km" },
   { key: "accel", label: "0–100 km/h", unit: "s" },
 ];
-export const COLOR_BYS: { key: ColorBy; label: string }[] = [
-  { key: "energy", label: "Energy type" },
-  { key: "drive", label: "Drive" },
-  { key: "body", label: "Body style" },
+export const COLOR_BYS: { key: ColorBy; readonly label: string }[] = [
+  { key: "energy", get label() { return t("carsPlan.colourBy.energy"); } },
+  { key: "drive", get label() { return t("carsPlan.colourBy.drive"); } },
+  { key: "body", get label() { return t("carsPlan.colourBy.body"); } },
 ];
 
-export const ENERGY_LABELS: Record<EnergyType, string> = {
-  ev: "Electric",
-  phev: "Plug-in hybrid",
-  hybrid: "Hybrid",
-  ice: "Petrol or diesel",
+export const ENERGY_LABELS: Readonly<Record<EnergyType, string>> = {
+  get ev() { return t("carsPlan.energy.ev"); },
+  get phev() { return t("carsPlan.energy.phev"); },
+  get hybrid() { return t("carsPlan.energy.hybrid"); },
+  get ice() { return t("carsPlan.energy.ice"); },
 };
+// Drive codes are the same in every language.
 export const DRIVE_LABELS: Record<Drive, string> = { rwd: "RWD", fwd: "FWD", awd: "AWD" };
 
+/** A body style from the catalogue in the current language; unknown styles
+ * keep the catalogue's word, capitalised. */
 export function bodyLabel(body: string): string {
-  return body ? body.charAt(0).toUpperCase() + body.slice(1) : "Other";
+  if (!body) return t("carsPlan.body.other");
+  const key = `carsPlan.body.${body.toLowerCase()}`;
+  if (hasKey(key)) return tDynamic(key);
+  return body.charAt(0).toUpperCase() + body.slice(1);
 }
 
 /** One dot: a listing, or a cohort median when listings are unavailable. */
@@ -180,6 +188,11 @@ export function addPairs(selection: SelectionItem[], pairs: Iterable<[string, nu
 /** Distinct variants one scenario may compare. Mirrors MAX_COMPARE_VARIANTS
  * in backend/app/cars/schemas.py (spec 024 R18); the server refuses more. */
 export const MAX_COMPARE_VARIANTS = 30;
+/** The cap message in the current language. */
+export function capHint(): string {
+  return t("carsPlan.capHint", { max: MAX_COMPARE_VARIANTS });
+}
+/** English cap message; screens use `capHint()` (spec 028). */
 export const CAP_HINT = `You can compare up to ${MAX_COMPARE_VARIANTS} cars at once. Remove one to add another.`;
 
 export function variantCount(selection: SelectionItem[]): number {

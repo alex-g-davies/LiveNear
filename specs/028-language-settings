@@ -1,0 +1,234 @@
+# Spec 028 — Language settings
+
+Status: Draft
+Owner: <you>
+Related: GitHub #19; 025 (shared shell), 026 (Norway locale), 027 (copy and
+date formats), 010 (target sizes)
+
+## Overview
+
+Let a visitor choose the site's language from a picker on every page. The first
+three languages are English, Norwegian (Bokmål) and Turkish. Switching language
+changes words, number formats and dates. It never changes a number, a ranking
+or a calculation.
+
+## Context
+
+- There is no i18n library and no string catalogue. The text lives inline in
+  about 42 component files, plus `lib/checklist.ts`, `lib/popup.ts` and
+  `lib/locale.ts`. That is roughly 600-800 strings across both products.
+- `lib/locale.ts` mixes two ideas: the **country** of the map region (currency,
+  km² vs sq mi, "Fylke" vs "State") and the **language** of the words
+  ("Budget in kroner", "e.g. 5,000,000"). Number formatting is hard-coded to
+  `en-US` in `lib/format.ts` and `lib/locale.ts`.
+- DriveCheap money uses the Norwegian style (`12 345 kr`, decimal comma) in
+  every language, by spec 022 R11.
+- The backend sends English labels for keyed items: `DISPLAY_LABELS` and
+  `INPUT_LABELS` in `engine/result.py`, `ITEM_LABELS` in `engine/schedule.py`.
+  Each label arrives beside its key. Longer prose (tax and toll notes,
+  provenance `basis`, ruled-out reasons, API error details) has no key.
+- `index.html` declares `lang="en"`. The browser's date picker follows the
+  page language, which spec 027 left for this spec.
+- About 309 text queries in the frontend tests look for English strings.
+
+Owner decisions (2026-11-12, planning for #19):
+
+- Claude drafts the Bokmål and Turkish text and it ships as final, without a
+  native-speaker review.
+- The first release translates the UI and the keyed backend labels. Longer
+  backend prose stays in English and is marked as English.
+- Only these three languages for now.
+
+## Requirements
+
+### Choosing a language
+
+- **R1 — Picker.** A language picker appears in the header of the landing
+  page, the LiveNear map panel (including the collapsed phone strip) and every
+  DriveCheap screen. Closed, it shows the current language's short code (EN,
+  NB, TR). Open, its options are full names written in their own language:
+  "English", "Norsk (bokmål)", "Türkçe". It meets the spec 010 target sizes and
+  has an accessible name, in the current language, that names the current
+  language in full.
+- **R2 — Starting language.** The first match wins:
+  1. the visitor's earlier choice, kept in this browser (`livenear.lang`);
+  2. a `?lang=en|nb|tr` parameter on the URL;
+  3. the browser's language: `nb`, `no` or `nn` → Bokmål; `tr` → Turkish;
+  4. English.
+- **R3 — Choice persists.** A chosen language survives reloads, moving between
+  pages, and switching between LiveNear and DriveCheap. Changing it takes
+  effect immediately, without a reload, and keeps the map position, inputs
+  and selections.
+- **R4 — Share links stay neutral.** Share and copy-link URLs never contain the
+  language. Someone opening a shared link sees their own language (R2). The
+  stored choice is a preference only: it is the one thing kept, and it is not
+  personal data.
+
+### What is translated
+
+- **R5 — UI text.** Every visible string written in the frontend is translated
+  in both products: headings, labels, buttons, hints, placeholders, empty and
+  error states, tooltips, `aria-label`s and alt text. This includes the landing
+  page, About, the welcome modal, the crash screen, map popups and legends,
+  the checklist and its Markdown download, and `document.title`.
+- **R6 — Keyed backend labels.** Labels the backend sends with a key (cost
+  lines, inputs, schedule items) show in the chosen language, looked up by key
+  on the frontend. A key with no translation falls back to the backend's
+  English label, so a new backend item never shows a blank.
+- **R7 — English prose is marked.** Backend text without a key stays in English
+  in this release. Where it shows in Norwegian or Turkish, it carries
+  `lang="en"` and a small "(English)" tag in the current language. Moving it to
+  keys is a follow-up issue.
+- **R8 — Names stay as they are.** Brand, product, data-source and legal names
+  are never translated: LiveNear, DriveCheap, SSB, Kartverket, Statens
+  vegvesen, Zillow, Redfin, Mapbox, and the names of laws and fees where the
+  Norwegian term is the official one.
+
+### Formats
+
+- **R9 — Language and country are separate.** The map region decides
+  currency, area units and number style (kroner, km² and `5 000 000` in
+  Norway; dollars, sq mi and `5,000,000` in the US). The language decides the
+  words around them. "Fylke" and "State" are translated as words.
+- **R10 — Numbers follow the country.** Numbers on the LiveNear map use the
+  region's country style in every language, so a Norwegian price always reads
+  `5 000 000 kr` and a US price `$5,000,000`. DriveCheap keeps the Norwegian
+  money style in every language (022 R11). Today the Norway map prints
+  `5,000,000 kr`; this spec corrects it to `5 000 000 kr`.
+- **R11 — Dates follow the language.** Dates read "1 Jan 2027", "1. jan. 2027"
+  or "1 Oca 2027". Month names, "1 year / 2 years" and relative times are
+  translated, including plurals. Machine formats (URLs, the API, the checklist
+  file's metadata) stay unchanged.
+- **R12 — Page language.** `<html lang>` matches the chosen language, so screen
+  readers, hyphenation and the browser's date picker follow it.
+
+### Quality
+
+- **R13 — Nothing missing.** Every language defines every key. A missing key
+  fails the type check and a test, and nothing ever shows a raw key or a
+  `{placeholder}`.
+- **R14 — Long words fit.** Norwegian compounds and Turkish suffixes fit in
+  buttons, pills, tabs, the step navigation and the 56px phone strip at 390px,
+  without overflow or clipped text.
+- **R15 — Terms of art.** Money, tax and loan words use the terms Norwegians and
+  Turks would see from banks and the government, for example *egenkapital*,
+  *årsavgift*, *trafikkforsikringsavgift*, *omregistreringsavgift*; Turkish
+  *peşinat*, *kasko*, *trafik sigortası*. A short glossary in
+  `docs/i18n-glossary.md` records the choices so later text stays consistent.
+
+## Design
+
+- **Dictionaries in the repo, no new dependency.** `frontend/src/i18n/en.ts` is
+  the source of truth. `nb.ts` and `tr.ts` are typed against its keys, so `tsc`
+  fails on a missing key (R13).
+- **Placeholders and plurals.** `{name}` placeholders, and plurals through
+  `Intl.PluralRules` with `_one` / `_other` keys.
+- **Loading.** English is bundled. Bokmål and Turkish load on demand, so an
+  English visitor downloads nothing extra.
+- **Access.** A `useT()` hook for components (a small external store, so no
+  provider is needed), and a plain `t()` for non-React modules such as
+  `checklist.ts` and `popup.ts`. With nothing set up everything renders in
+  English, so the existing tests keep working unchanged.
+- **English per product.** The shared English strings ship with the entry
+  chunk; LiveNear's and DriveCheap's register when their own chunk loads, to
+  stay inside the size budget below.
+- **Formatters.** Number formatters in `lib/format.ts` and `lib/locale.ts` take
+  the region's country tag (`en-US` or `nb-NO`) instead of hard-coding
+  `en-US`. Date and month formatters, including `cars/lib/format.ts`, take the
+  language tag (`en-US`, `nb-NO`, `tr-TR`).
+
+## Non-functional / Constraints
+
+- No change to any number, ranking or calculation. Golden scenarios and engine
+  tests pass unchanged.
+- No new runtime dependency. No backend change except, if needed, exposing
+  keys that already exist.
+- The English bundle grows by at most 10 kB gzipped; each other language loads
+  as its own chunk.
+- Spec 010 target sizes and contrast still hold in every language.
+- Nothing about the visitor is sent to the backend; the language stays in the
+  browser.
+
+## Acceptance Criteria
+
+- [ ] The picker appears on the landing page, the map panel (desktop and phone
+      strip) and every DriveCheap screen, shows EN / NB / TR when closed, and
+      lists the three options in their own language (R1).
+- [ ] Tests cover the R2 order: stored choice, `?lang=`, browser language,
+      English (R2).
+- [ ] Switching language keeps the map view, inputs and selections, and
+      survives a reload and a product switch (R3).
+- [ ] Share and copy-link URLs contain no language parameter (R4).
+- [ ] Rendering every surface in Bokmål and Turkish finds no English UI string
+      outside R7 prose and R8 names (R5).
+- [ ] Keyed backend labels show translated, and an unknown key falls back to the
+      English label (R6).
+- [ ] Untranslated prose carries `lang="en"` and the "(English)" tag (R7).
+- [ ] Unit tests show Norway map prices as `5 000 000 kr` and US prices as
+      `$5,000,000` in all three languages, unchanged DriveCheap money, and
+      dates and month counts per language (R9-R11).
+- [ ] `<html lang>` follows the choice (R12).
+- [ ] `tsc` and a completeness test fail on a missing key; no rendered page
+      shows a raw key or `{placeholder}` (R13).
+- [ ] Screenshots of every surface at 1280 and 390px in all three languages
+      show no overflow or clipped text (R14).
+- [ ] `docs/i18n-glossary.md` exists and the translations follow it (R15).
+- [ ] `npm run test`, `npm run build`, `pytest`, `ruff check .` pass, with
+      golden scenarios unchanged.
+
+## Out of Scope (explicit)
+
+- Translating backend prose (tax and toll notes, `basis`, ruled-out reasons,
+  error details). It is marked as English (R7) and gets its own issue.
+- Nynorsk and any language beyond these three.
+- Right-to-left layout.
+- Translating data: place names, area names, source names.
+- A native-speaker review. The owner chose to ship Claude's drafts as final.
+
+## Risks
+
+- **Unreviewed translations.** No native speaker checks the Bokmål or Turkish.
+  Wrong tax, fee or loan wording could mislead someone making a real decision.
+  The glossary (R15) and the English fallback for prose reduce the risk but
+  don't remove it. The PR states this, and a later native review can correct
+  the dictionaries without code changes.
+- **Strings added later in English only.** R13 makes this a type error, so new
+  text must arrive in all three languages.
+
+## Open Questions (resolve in review)
+
+None open. Resolved by the owner, 2026-11-12:
+
+1. Money and numbers on the map follow the region's country style in every
+   language, not the reader's (R9, R10).
+2. The picker shows a short code (EN / NB / TR) when closed, with full names in
+   the list (R1).
+
+## Verification notes
+
+R1-R4, R12 → component tests plus a browser check; R5, R13 → a render test
+per language that fails on English UI strings, raw keys or placeholders; R6-R7
+→ unit tests on the label lookup and the English tag; R9-R11 → formatter unit
+tests; R14 → the headless screenshot tour in three languages; R15 → glossary
+review. The human verifies; the implementing agent does not self-certify done.
+
+Results, 2026-11-12:
+
+- `tsc -b`, `npm run build` and `npm run test` pass: 332 tests, of which 56
+  are new for this spec (catalogue completeness, R2 order, switching, R4, R6,
+  R7, R10, R11, and render checks of every surface in Bokmål and Turkish for
+  English leftovers and raw keys). No existing test changed apart from three
+  Norway number assertions in `norway.test.tsx` (R10).
+- A headless tour of 10 surfaces at 1280 and 390px in all three languages
+  found no sideways overflow, no clipped control text, no raw key or
+  `{placeholder}`, and no page errors. `<html lang>` matched each language.
+- Size (gzipped, against `main`): entry chunk +2.0 kB; a map visit +4.9 kB;
+  a DriveCheap visit +9.4 kB. Bokmål and Turkish load as their own chunks of
+  about 14 kB each.
+- `?lang=` is read once and then removed from the address bar, so a link
+  copied from it carries no language (R4). It is not stored; only a choice
+  made in the picker is.
+- Known limits: MapLibre's zoom-button tooltips keep the language the map was
+  created in until the page reloads; a dismissed map notice reappears after a
+  language switch. DriveCheap's sample data uses a few labels the real
+  backend never sends, and those stay English in sample mode.

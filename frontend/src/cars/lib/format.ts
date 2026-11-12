@@ -4,6 +4,8 @@
 // group by hand rather than via Intl so the output is identical on every
 // ICU build (Node, jsdom, browsers).
 
+import { dayMonthYear, monthsText, yearsText } from "../../i18n/dates";
+
 const NBSP = " ";
 
 function groupDigits(n: number): string {
@@ -48,18 +50,16 @@ export function formatKm(km: number): string {
   return `${groupDigits(km)}${NBSP}km`;
 }
 
-/** Months of ownership -> "1 year", "2.5 years", "6 months". */
+/** Months of ownership -> "1 year", "2.5 years", "6 months", in the site
+ *  language (028 R11). */
 export function formatMonths(months: number): string {
-  if (months < 12) return `${months} months`;
-  const years = months / 12;
-  const text = Number.isInteger(years) ? String(years) : years.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
-  return `${text} ${years === 1 ? "year" : "years"}`;
+  if (months < 12) return monthsText(months);
+  return yearsText(months / 12);
 }
 
 /** Years (may be fractional) -> "2 years", "2.5 years". */
 export function formatYears(years: number): string {
-  const text = Number.isInteger(years) ? String(years) : String(years);
-  return `${text} ${years === 1 ? "year" : "years"}`;
+  return yearsText(years);
 }
 
 /** Provenance text for display (027 R6). The data marks defaults with no
@@ -68,13 +68,32 @@ export function formatYears(years: number): string {
  *  still say it is an estimate, so nothing is hidden, only renamed. */
 export function plainSource(text: string | null | undefined): string {
   if (!text) return "";
-  return readableDates(
-    text
-      .replace(/^Placeholder(?=\s+[a-z])(?!\s+until\b)/, "Typical value:") // "…: winter uplift"
-      .replace(/^Placeholder\b/, "Typical value")
-      .replace(/^Owner input\b/, "Your input")
-      .replace(/^Owner enters\b/, "You enter"),
-  );
+  const { prefix, rest } = sourceParts(text);
+  return readableDates((prefix ? SOURCE_PREFIX_EN[prefix] : "") + rest);
+}
+
+/** The relabelled prefix of a provenance text, kept apart from the rest so
+ *  other languages can translate the prefix while the rest stays English
+ *  backend prose (028 R7). */
+export type SourcePrefix = "typical" | "yours";
+
+const SOURCE_PREFIX_EN: Record<SourcePrefix, string> = { typical: "Typical value", yours: "Your input" };
+
+const RELABEL: [RegExp, SourcePrefix, string][] = [
+  [/^Placeholder(?=\s+[a-z])(?!\s+until\b)/, "typical", ":"], // "…: winter uplift"
+  [/^Placeholder\b/, "typical", ""],
+  [/^Owner input\b/, "yours", ""],
+];
+
+/** Split a provenance text into its relabelled prefix (if any) and the rest,
+ *  e.g. "Placeholder winter uplift" -> typical + ": winter uplift". The rest
+ *  has no ISO dates rewritten yet. */
+export function sourceParts(text: string): { prefix: SourcePrefix | null; rest: string } {
+  for (const [re, prefix, sep] of RELABEL) {
+    const m = re.exec(text);
+    if (m) return { prefix, rest: sep + text.slice(m[0].length) };
+  }
+  return { prefix: null, rest: text.replace(/^Owner enters\b/, "You enter") };
 }
 
 /** ISO dates inside free text -> "6 Aug 2026" (027 R7), the rest untouched. */
@@ -82,13 +101,10 @@ export function readableDates(text: string): string {
   return text.replace(/\b\d{4}-\d{2}-\d{2}\b/g, (iso) => formatDate(iso));
 }
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-/** ISO date -> "1 Jan 2027" (027 R7), a dash for missing values. By hand, like
- *  the numbers above, so every ICU build prints the same thing. */
+/** ISO date -> "1 Jan 2027" (027 R7), "1. jan. 2027" or "1 Oca 2027" by site
+ *  language (028 R11); a dash for missing values. */
 export function formatDate(iso: string | null | undefined): string {
   const m = iso ? /^(\d{4})-(\d{2})-(\d{2})/.exec(iso) : null;
   if (!m) return "—";
-  const month = MONTHS[Number(m[2]) - 1];
-  return month ? `${Number(m[3])}${NBSP}${month}${NBSP}${m[1]}` : "—";
+  return dayMonthYear(Number(m[3]), Number(m[2]) - 1, m[1]);
 }

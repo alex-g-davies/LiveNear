@@ -25,6 +25,8 @@ import {
 } from "../lib/market";
 import { CAR_COLORS } from "../lib/measures";
 import type { SelectionItem } from "../lib/profile";
+import { LANG_TAGS } from "../../i18n/core";
+import { useT } from "../../i18n/react";
 
 interface Props {
   dots: Dot[];
@@ -57,6 +59,8 @@ function compactX(axis: XAxis, v: number): string {
 }
 
 export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, onToggle, onBoxSelect }: Props) {
+  const { t, lang } = useT();
+  const lower = (s: string) => s.toLocaleLowerCase(LANG_TAGS[lang]);
   const { ref, width } = useContainerWidth<HTMLDivElement>(820);
   const innerW = Math.max(200, width - MARGIN.left - MARGIN.right);
   const innerH = HEIGHT - MARGIN.top - MARGIN.bottom;
@@ -99,7 +103,7 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
   const legend = useMemo(() => {
     const keys = [...new Set(plotted.map((p) => colorKey(p.d, colorBy)))].sort();
     return new Map(keys.map((k, i) => [k, CAR_COLORS[i % CAR_COLORS.length]]));
-  }, [plotted, colorBy]);
+  }, [plotted, colorBy, lang]);
 
   // Box-select: d3-brush on a <g>; on end, report the pairs under the box and
   // clear the brush so the chips are the single source of truth.
@@ -151,10 +155,14 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
   const colorDef = COLOR_BYS.find((c) => c.key === colorBy)!;
   const nSelected = plotted.filter((p) => selectedKeys.has(p.d.cohort_id)).length;
   const isCohort = plotted.length > 0 && plotted[0].d.isCohort;
-  const ariaLabel =
-    `Scatter plot of ${plotted.length} ${isCohort ? "cohort medians" : "listings"}: ${yDef.label.toLowerCase()} against ` +
-    `${xDef.label.toLowerCase()}, coloured by ${colorDef.label.toLowerCase()}. ${nSelected} dots belong to your selection. ` +
-    "Drag across the plot to select a region, or click a dot to add its model year.";
+  const ariaLabel = t("carsPlan.scatter.aria", {
+    n: plotted.length,
+    what: isCohort ? t("carsPlan.scatter.cohortMedians") : t("carsPlan.scatter.listings"),
+    y: lower(yDef.label),
+    x: lower(xDef.label),
+    colour: lower(colorDef.label),
+    selected: nSelected,
+  });
 
   const yearTicks = useMemo(() => {
     const lo = Math.ceil(xMin);
@@ -167,7 +175,7 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
 
   return (
     <div className="cars-market__plotwrap">
-      <div className="cars-market__legend" aria-label={`Legend: ${colorDef.label}`}>
+      <div className="cars-market__legend" aria-label={t("carsPlan.scatter.legend", { name: colorDef.label })}>
         {[...legend].map(([k, c]) => (
           <span key={k} className="cars-legend__item">
             <span aria-hidden="true" className="cars-swatch" style={{ background: c }} />
@@ -225,7 +233,7 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
               const on = selectedKeys.has(p.d.cohort_id);
               const color = legend.get(colorKey(p.d, colorBy)) ?? CAR_COLORS[0];
               const r = p.d.isCohort ? (on ? 8 : 6.5) : on ? 6 : 4.5;
-              const name = `${p.d.label} ${p.d.model_year}${p.d.isCohort ? " (cohort median)" : ""}`;
+              const name = `${p.d.label} ${p.d.model_year}${p.d.isCohort ? t("carsPlan.scatter.cohortSuffix") : ""}`;
               return (
                 <circle
                   key={p.d.key}
@@ -268,7 +276,11 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
             <strong>{hover.dot.label}</strong>
             <span>
               {hover.dot.model_year}
-              {hover.dot.isCohort ? " · cohort median" : hover.dot.seller ? ` · ${hover.dot.seller}` : ""}
+              {hover.dot.isCohort
+                ? t("carsPlan.scatter.tipCohort")
+                : hover.dot.seller
+                  ? ` · ${t(hover.dot.seller === "dealer" ? "carsPlan.scatter.seller.dealer" : "carsPlan.scatter.seller.private")}`
+                  : ""}
             </span>
             <span>
               {formatKm(hover.dot.km)} · {formatNok(hover.dot.ask_ore)}
@@ -276,10 +288,7 @@ export default function MarketScatter({ dots, xAxis, yAxis, colorBy, selection, 
           </div>
         )}
       </div>
-      <p className="cars-hint">
-        Drag across the plot to select a region, or click a dot to add its model year. Hover or focus a dot to
-        see the {isCohort ? "cohort" : "listing"}.
-      </p>
+      <p className="cars-hint">{t(isCohort ? "carsPlan.scatter.hintCohort" : "carsPlan.scatter.hintListing")}</p>
     </div>
   );
 }

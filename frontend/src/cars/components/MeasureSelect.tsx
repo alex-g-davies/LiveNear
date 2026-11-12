@@ -1,5 +1,6 @@
 // Cost-measure selector shared by Compare (table, curves) and Detail.
 
+import { useT } from "../../i18n/react";
 import { MEASURE_DEFS } from "../lib/measures";
 import type { Measure } from "../lib/profile";
 
@@ -10,9 +11,10 @@ interface Props {
 }
 
 export default function MeasureSelect({ value, onChange, id = "cars-measure" }: Props) {
+  const { t } = useT();
   return (
     <label className="cars-measure">
-      <span className="sr-only">Cost measure</span>
+      <span className="sr-only">{t("carsCompare.measure.select")}</span>
       <select
         id={id}
         className="cars-select cars-measure__select"

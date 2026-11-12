@@ -5,6 +5,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import Landing from "./components/Landing";
+import { useT } from "./i18n/react";
 import {
   DRIVE_PATH,
   LANDING_PATH,
@@ -36,6 +37,7 @@ function LegacyCars() {
 
 export default function AppRoutes() {
   const { pathname } = useLocation();
+  const { t } = useT();
   useEffect(() => {
     document.title = titleForPath(pathname);
   }, [pathname]);
@@ -44,7 +46,7 @@ export default function AppRoutes() {
     <Suspense
       fallback={
         <div className="route-loading" role="status">
-          Loading…
+          {t("common.loading")}
         </div>
       }
     >

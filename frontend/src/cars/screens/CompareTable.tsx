@@ -11,14 +11,26 @@ import CompareHeader from "../components/CompareHeader";
 import MeasureSelect from "../components/MeasureSelect";
 import RangeBar from "../components/RangeBar";
 import { RecommendStrip } from "../components/Recommendations";
+import EnglishText from "../../components/EnglishText";
+import { LANG_TAGS, hasKey, tDynamic } from "../../i18n/core";
+import { monthsText } from "../../i18n/dates";
+import { useT } from "../../i18n/react";
 import { formatMonths, formatNokSigned } from "../lib/format";
 import { MODES, type Mode } from "../lib/profile";
-import { MODE_FILTER_LABELS, MODE_LABELS, measureDef } from "../lib/measures";
+import { MODE_FILTER_LABELS, MODE_LABELS, estimateLabels, measureDef, measureInSentence } from "../lib/measures";
 import { useCarState } from "../state";
 import { useColorOf } from "../lib/colors";
 import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
 
+/** Sensitivity drivers are a fixed set (engine/run.py); unknown ones keep
+ *  the backend's English label. */
+function sensLabel(driver: string, fallback: string): string {
+  const key = `carsCompare.sens.${driver}`;
+  return hasKey(key) ? tDynamic(key) : fallback;
+}
+
 export default function CompareTable() {
+  const { t, lang } = useT();
   const { state, setMeasure, scenario, request } = useCarState();
   const [filter, setFilter] = useState<Mode | "all">("all");
   const def = measureDef(state.measure);
@@ -51,18 +63,18 @@ export default function CompareTable() {
           <div className="cars-card__bar">
             <div className="cars-card__bar-left">
               <h2 id="ranked" className="cars-h2">
-                Ranked by
+                {t("carsCompare.table.rankedBy")}
               </h2>
               <MeasureSelect value={state.measure} onChange={setMeasure} />
             </div>
-            <div role="group" aria-label="Filter by way to get a car" className="cars-filters">
+            <div role="group" aria-label={t("carsCompare.table.filterGroup")} className="cars-filters">
               <button
                 type="button"
                 className="cars-filter"
                 aria-pressed={filter === "all"}
                 onClick={() => setFilter("all")}
               >
-                All
+                {t("carsCompare.table.all")}
               </button>
               {MODES.map((m) => (
                 <button
@@ -80,11 +92,11 @@ export default function CompareTable() {
 
           {!request && (
             <p className="cars-empty">
-              No cars selected yet. <Link to={DRIVE_PATH}>Pick some on Your situation</Link>.
+              {t("carsCompare.noCars")} <Link to={DRIVE_PATH}>{t("carsCompare.pickSome")}</Link>.
             </p>
           )}
-          {request && !data && scenario.loading && <p className="cars-empty">Computing options…</p>}
-          {data && rows.length === 0 && <p className="cars-empty">No options match this filter.</p>}
+          {request && !data && scenario.loading && <p className="cars-empty">{t("carsCompare.table.computing")}</p>}
+          {data && rows.length === 0 && <p className="cars-empty">{t("carsCompare.table.noMatch")}</p>}
 
           {data && rows.length > 0 && (
             <div className="cars-tablewrap">
@@ -94,17 +106,17 @@ export default function CompareTable() {
                     <th scope="col" className="cars-table__rank">
                       #
                     </th>
-                    <th scope="col">Car and way to get it</th>
+                    <th scope="col">{t("carsCompare.table.colCar")}</th>
                     <th scope="col" className="cars-table__num">
-                      Expected ({def.unit})
+                      {t("carsCompare.table.colExpected", { unit: def.unit })}
                     </th>
                     <th scope="col" className="cars-table__range">
-                      Best to worst exit
+                      {t("carsCompare.table.colRange")}
                     </th>
                     <th scope="col" className="cars-table__num">
-                      Fun score
+                      {t("carsCompare.table.colFun")}
                     </th>
-                    <th scope="col">Data</th>
+                    <th scope="col">{t("carsCompare.table.colData")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -112,7 +124,11 @@ export default function CompareTable() {
                     const r = o.result;
                     const m = r.measures[state.measure];
                     const seller =
-                      o.seller_type === "dealer" ? " · dealer" : o.seller_type === "private" ? " · private" : "";
+                      o.seller_type === "dealer"
+                        ? ` · ${t("carsCompare.seller.dealer")}`
+                        : o.seller_type === "private"
+                          ? ` · ${t("carsCompare.seller.private")}`
+                          : "";
                     return (
                       <tr key={r.option_id} data-testid="option-row">
                         <td className="cars-table__rank">{i + 1}</td>
@@ -127,7 +143,7 @@ export default function CompareTable() {
                           </Link>
                           <div className="cars-hint">
                             {MODE_LABELS[o.option_kind]}
-                            {o.option_kind === "lease" ? ", 36 months" : ` · ${r.model_year}`}
+                            {o.option_kind === "lease" ? `, ${monthsText(36)}` : ` · ${r.model_year}`}
                             {seller}
                           </div>
                         </td>
@@ -139,12 +155,18 @@ export default function CompareTable() {
                             lo={m.best.value / scaleMax}
                             mid={m.expected.p50 / scaleMax}
                             hi={m.worst.value / scaleMax}
-                            label={`Best ${def.format(m.best.value)} at ${formatMonths(m.best.month)}, worst ${def.format(m.worst.value)} at ${formatMonths(m.worst.month)}, expected ${def.format(m.expected.p50)}`}
+                            label={t("carsCompare.table.rangeLabel", {
+                              best: def.format(m.best.value),
+                              bestAt: formatMonths(m.best.month),
+                              worst: def.format(m.worst.value),
+                              worstAt: formatMonths(m.worst.month),
+                              expected: def.format(m.expected.p50),
+                            })}
                           />
                         </td>
                         <td className="cars-table__num cars-hint">{r.fun_score} / 10</td>
                         <td>
-                          <Badge status={r.status} estimates={r.material_estimate_labels} />
+                          <Badge status={r.status} estimates={estimateLabels(r)} />
                         </td>
                       </tr>
                     );
@@ -158,11 +180,11 @@ export default function CompareTable() {
             <div className="cars-card__foot">
               {data.ruled_out.length > 0 && (
                 <>
-                  <span className="cars-strong">Ruled out by your limits ({data.ruled_out.length})</span>
+                  <span className="cars-strong">{t("carsCompare.table.ruledOut", { count: data.ruled_out.length })}</span>
                   <ul className="cars-list">
                     {data.ruled_out.map((r) => (
                       <li key={r.option_id}>
-                        {r.label}: {r.reasons.join("; ")}
+                        {r.label}: <EnglishText>{r.reasons.join("; ")}</EnglishText>
                       </li>
                     ))}
                   </ul>
@@ -170,10 +192,12 @@ export default function CompareTable() {
               )}
               {data.skipped.length > 0 && (
                 <>
-                  <span className="cars-strong">Not shown ({data.skipped.length})</span>
+                  <span className="cars-strong">{t("carsCompare.table.notShown", { count: data.skipped.length })}</span>
                   <ul className="cars-list">
                     {data.skipped.map((s, i) => (
-                      <li key={i}>{s}</li>
+                      <li key={i}>
+                        <EnglishText>{s}</EnglishText>
+                      </li>
                     ))}
                   </ul>
                 </>
@@ -186,23 +210,33 @@ export default function CompareTable() {
           <section className="cars-card" aria-labelledby="moves">
             <div className="cars-card__head">
               <h2 id="moves" className="cars-h3">
-                What moves the top result
+                {t("carsCompare.table.movesTitle")}
               </h2>
               <p className="cars-hint">
-                Change in expected {def.label.toLowerCase()} if each input moves across its likely range.
-                {topLabel ? ` Top option: ${topLabel.label}, ${MODE_LABELS[topLabel.mode].toLowerCase()}.` : ""}
+                {t("carsCompare.table.movesHint", { measure: measureInSentence(def) })}
+                {topLabel
+                  ? ` ${t("carsCompare.table.topOption", {
+                      label: topLabel.label,
+                      mode: MODE_LABELS[topLabel.mode].toLocaleLowerCase(LANG_TAGS[lang]),
+                    })}`
+                  : ""}
               </p>
             </div>
-            {sensRows.length === 0 && <p className="cars-hint">No sensitivity yet.</p>}
+            {sensRows.length === 0 && <p className="cars-hint">{t("carsCompare.table.noSensitivity")}</p>}
             {sensRows.map((s) => {
               const lo = Math.min(s.low, s.high);
               const hi = Math.max(s.low, s.high);
               const left = 50 + (lo / sensMax) * 50;
               const width = ((hi - lo) / sensMax) * 50;
+              const label = sensLabel(s.driver, s.label);
+              // The per-row note is English prose (R7). In English it is the
+              // row tooltip as before; elsewhere it sits on the bar, marked
+              // lang="en", so the translated label is not marked English.
+              const english = lang === "en";
               return (
-                <div key={s.driver} className="cars-sens" title={s.note}>
+                <div key={s.driver} className="cars-sens" title={english ? s.note : undefined}>
                   <span className="cars-sens__label">
-                    {s.label}
+                    {label}
                     <span className="cars-hint">
                       {" "}
                       {formatNokSigned(lo)} … {formatNokSigned(hi)}
@@ -211,32 +245,40 @@ export default function CompareTable() {
                   <div
                     className="cars-sens__track"
                     role="img"
-                    aria-label={`${s.label}: from ${formatNokSigned(lo)} to ${formatNokSigned(hi)}`}
+                    aria-label={t("carsCompare.table.sensRange", { label, lo: formatNokSigned(lo), hi: formatNokSigned(hi) })}
                   >
                     <div className="cars-sens__zero" />
-                    <div className="cars-sens__bar" style={{ left: `${left}%`, width: `${width}%` }} />
+                    <div
+                      className="cars-sens__bar"
+                      style={{ left: `${left}%`, width: `${width}%` }}
+                      {...(english || !s.note ? {} : { title: `${s.note} ${t("common.englishTag")}`, lang: "en" })}
+                    />
                   </div>
                 </div>
               );
             })}
-            {sensNote && <p className="cars-hint">{sensNote}</p>}
+            {sensNote && (
+              <p className="cars-hint">
+                <EnglishText>{sensNote}</EnglishText>
+              </p>
+            )}
           </section>
 
           <section className="cars-card" aria-labelledby="read">
             <h2 id="read" className="cars-h3">
-              How to read this
+              {t("carsCompare.table.readTitle")}
             </h2>
             <div className="cars-read">
-              <RangeBar lo={0.15} mid={0.35} hi={0.8} label="Example range bar" />
-              <span>Bar spans your best and worst exit year. The mark is the expected cost.</span>
+              <RangeBar lo={0.15} mid={0.35} hi={0.8} label={t("carsCompare.table.readExample")} />
+              <span>{t("carsCompare.table.readBar")}</span>
             </div>
             <div className="cars-read">
               <Badge status="live" />
-              <span>Every key input pulled from a dated source.</span>
+              <span>{t("carsCompare.badge.liveTitle")}</span>
             </div>
             <div className="cars-read">
               <Badge status="estimate" />
-              <span>At least one key input is modelled or a default. Hover the badge to see which.</span>
+              <span>{t("carsCompare.table.readEstimate")}</span>
             </div>
           </section>
         </aside>

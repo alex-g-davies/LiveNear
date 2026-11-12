@@ -6,17 +6,20 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { EnergyType, MarketFilters } from "../api";
+import EnglishText from "../../components/EnglishText";
+import { LANG_TAGS } from "../../i18n/core";
+import { useT } from "../../i18n/react";
 import MarketScatter from "../components/MarketScatter";
 import { useMarket } from "../hooks/useMarket";
 import { formatDate } from "../lib/format";
 import {
-  CAP_HINT,
   COLOR_BYS,
   ENERGY_LABELS,
   MAX_COMPARE_VARIANTS,
   X_AXES,
   Y_AXES,
   addPairs,
+  capHint,
   dotsFromCohorts,
   dotsFromPoints,
   fullRange,
@@ -37,6 +40,7 @@ const MIN_YEAR = 2010;
 const MAX_YEAR = 2030;
 
 export default function MarketMap() {
+  const { t, lang } = useT();
   const navigate = useNavigate();
   const { state, setSelection, vehicles } = useCarState();
   const { selection, profile } = state;
@@ -109,27 +113,24 @@ export default function MarketMap() {
     <>
       <div className="cars-titlebar">
         <div className="cars-titlebar__text">
-          <h1 className="cars-h1">Market map</h1>
-          <p className="cars-lede">
-            Every model and model year in the catalogue. Pick the cars you want costed; only your selection
-            goes to Compare.
-          </p>
+          <h1 className="cars-h1">{t("carsPlan.market.title")}</h1>
+          <p className="cars-lede">{t("carsPlan.market.lede")}</p>
         </div>
         <div className="cars-titlebar__tools">
           <span className="cars-hint" data-testid="market-count">
-            {nListings} listings · as of {formatDate(asOf)}
-            {market.loading && <span className="cars-hint__loading"> · updating…</span>}
+            {t("carsPlan.market.count", { count: nListings, date: formatDate(asOf) })}
+            {market.loading && <span className="cars-hint__loading">{t("carsPlan.market.updating")}</span>}
           </span>
         </div>
       </div>
 
       <div className="cars-layout cars-layout--rail-left">
-        <aside className="cars-layout__aside" aria-label="Filters">
+        <aside className="cars-layout__aside" aria-label={t("carsPlan.market.filters")}>
           <section className="cars-card">
             <label className="cars-field">
-              <span className="cars-field__label">Brand</span>
+              <span className="cars-field__label">{t("carsPlan.market.brand")}</span>
               <select className="cars-select" value={make} onChange={(e) => setMake(e.target.value)}>
-                <option value="">All brands</option>
+                <option value="">{t("carsPlan.market.allBrands")}</option>
                 {makes.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -138,18 +139,18 @@ export default function MarketMap() {
               </select>
             </label>
             <label className="cars-field">
-              <span className="cars-field__label">Find a model</span>
+              <span className="cars-field__label">{t("carsPlan.market.find")}</span>
               <input
                 type="search"
                 className="cars-input"
-                placeholder="e.g. Model 3"
+                placeholder={t("carsPlan.market.findPlaceholder", { example: "Model 3" })}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </label>
             <div className="cars-grid cars-grid--2">
               <label className="cars-field">
-                <span className="cars-field__label cars-field__label--muted">Year from</span>
+                <span className="cars-field__label cars-field__label--muted">{t("carsPlan.market.yearFrom")}</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -161,7 +162,7 @@ export default function MarketMap() {
                 />
               </label>
               <label className="cars-field">
-                <span className="cars-field__label cars-field__label--muted">Year to</span>
+                <span className="cars-field__label cars-field__label--muted">{t("carsPlan.market.yearTo")}</span>
                 <input
                   type="number"
                   inputMode="numeric"
@@ -174,7 +175,7 @@ export default function MarketMap() {
               </label>
             </div>
             <label className="cars-field">
-              <span className="cars-field__label">Max asking price</span>
+              <span className="cars-field__label">{t("carsPlan.market.maxAsk")}</span>
               <span className="cars-field__unit">
                 <input
                   type="text"
@@ -188,7 +189,7 @@ export default function MarketMap() {
               </span>
             </label>
             <fieldset className="cars-fieldset">
-              <legend className="cars-legend-label">Energy type</legend>
+              <legend className="cars-legend-label">{t("carsPlan.market.energy")}</legend>
               <div className="cars-market__energy">
                 {energyTypes.map((e) => (
                   <label key={e} className="cars-check">
@@ -200,13 +201,13 @@ export default function MarketMap() {
                     {ENERGY_LABELS[e]}
                   </label>
                 ))}
-                {energyTypes.length === 0 && <span className="cars-hint">Loading catalogue…</span>}
+                {energyTypes.length === 0 && <span className="cars-hint">{t("carsPlan.market.loadingCatalogue")}</span>}
               </div>
             </fieldset>
             <label className="cars-check cars-check--top">
               <input type="checkbox" checked={hideFailing} onChange={(e) => setHideFailing(e.target.checked)} />{" "}
-              Hide cars that fail my must-haves
-              {profile.limits.must_haves.length === 0 && <span className="cars-hint"> (none set)</span>}
+              {t("carsPlan.market.hideFailing")}
+              {profile.limits.must_haves.length === 0 && <span className="cars-hint">{t("carsPlan.market.noneSet")}</span>}
             </label>
           </section>
         </aside>
@@ -215,11 +216,14 @@ export default function MarketMap() {
           <section className="cars-card" aria-labelledby="market-plot">
             <div className="cars-market__head">
               <h2 id="market-plot" className="cars-h2">
-                {Y_AXES.find((a) => a.key === yAxis)!.label} by {X_AXES.find((a) => a.key === xAxis)!.label.toLowerCase()}
+                {t("carsPlan.market.plotTitle", {
+                  y: Y_AXES.find((a) => a.key === yAxis)!.label,
+                  x: X_AXES.find((a) => a.key === xAxis)!.label.toLocaleLowerCase(LANG_TAGS[lang]),
+                })}
               </h2>
               <div className="cars-market__axes">
                 <label className="cars-field cars-field--inline">
-                  <span className="cars-field__label cars-field__label--muted">X axis</span>
+                  <span className="cars-field__label cars-field__label--muted">{t("carsPlan.market.xAxis")}</span>
                   <select className="cars-select cars-select--sm" value={xAxis} onChange={(e) => setXAxis(e.target.value as XAxis)}>
                     {X_AXES.map((a) => (
                       <option key={a.key} value={a.key}>
@@ -229,7 +233,7 @@ export default function MarketMap() {
                   </select>
                 </label>
                 <label className="cars-field cars-field--inline">
-                  <span className="cars-field__label cars-field__label--muted">Y axis</span>
+                  <span className="cars-field__label cars-field__label--muted">{t("carsPlan.market.yAxis")}</span>
                   <select className="cars-select cars-select--sm" value={yAxis} onChange={(e) => setYAxis(e.target.value as YAxis)}>
                     {Y_AXES.map((a) => (
                       <option key={a.key} value={a.key}>
@@ -241,8 +245,8 @@ export default function MarketMap() {
               </div>
             </div>
             <div className="cars-market__colorby">
-              <span className="cars-hint">Colour by</span>
-              <div role="group" aria-label="Colour by" className="cars-filters">
+              <span className="cars-hint">{t("carsPlan.market.colourBy")}</span>
+              <div role="group" aria-label={t("carsPlan.market.colourBy")} className="cars-filters">
                 {COLOR_BYS.map((c) => (
                   <button
                     key={c.key}
@@ -258,17 +262,16 @@ export default function MarketMap() {
             </div>
             {market.error && (
               <div className="status status--error" role="alert">
-                Could not load the market: {market.error}
+                {t("carsPlan.market.error")} <EnglishText>{market.error}</EnglishText>
               </div>
             )}
             {!usePoints && dots.length > 0 && (
               <p className="cars-market__fallback" data-testid="market-fallback">
-                Cohort medians: listing detail unavailable. Each dot is the fitted asking value of one model year
-                at its typical mileage.
+                {t("carsPlan.market.fallback")}
               </p>
             )}
             {!market.loading && dots.length === 0 && !market.error && (
-              <p className="cars-empty">No cars match these filters.</p>
+              <p className="cars-empty">{t("carsPlan.market.empty")}</p>
             )}
             <MarketScatter
               dots={dots}
@@ -284,11 +287,13 @@ export default function MarketMap() {
           <section className="cars-card" aria-labelledby="market-selection">
             <div className="cars-card__bar cars-card__bar--plain">
               <h2 id="market-selection" className="cars-h2">
-                Your selection
+                {t("carsPlan.market.selection")}
               </h2>
               <span className="cars-hint" data-testid="selection-summary">
-                {selectedVariants.length} model{selectedVariants.length === 1 ? "" : "s"} ·{" "}
-                {selectedVariants.reduce((n, vid) => n + (pointsByVariant.get(vid) ?? 0), 0)} listings
+                {t("carsPlan.market.models", { count: selectedVariants.length })} ·{" "}
+                {t("carsPlan.market.listings", {
+                  count: selectedVariants.reduce((n, vid) => n + (pointsByVariant.get(vid) ?? 0), 0),
+                })}
               </span>
             </div>
             <div className="cars-market__tray">
@@ -300,13 +305,14 @@ export default function MarketMap() {
                     <div className="cars-market__sel-text">
                       <span className="cars-market__sel-name">{name}</span>
                       <span className="cars-market__sel-sub">
-                        {yearRangeLabel(selection, vid)} · {pointsByVariant.get(vid) ?? 0} listings
+                        {yearRangeLabel(selection, vid)} ·{" "}
+                        {t("carsPlan.market.listings", { count: pointsByVariant.get(vid) ?? 0 })}
                       </span>
                     </div>
                     <button
                       type="button"
                       className="cars-market__remove"
-                      aria-label={`Remove ${name}`}
+                      aria-label={t("carsPlan.market.remove", { name })}
                       onClick={() => setSelection(removeVariant(selection, vid))}
                     >
                       ×
@@ -320,11 +326,11 @@ export default function MarketMap() {
                 aria-expanded={pickerOpen}
                 onClick={() => setPickerOpen((o) => !o)}
               >
-                {pickerOpen ? "Close" : "Add model"}
+                {pickerOpen ? t("carsPlan.market.close") : t("carsPlan.market.addModel")}
               </button>
             </div>
             {pickerOpen && (
-              <div className="cars-market__picker" role="group" aria-label="Add model">
+              <div className="cars-market__picker" role="group" aria-label={t("carsPlan.market.addModel")}>
                 {catalogue.map((v) => {
                   const on = selection.some((s) => s.variant_id === v.variant_id);
                   const name = `${v.make} ${v.model} ${v.trim_group}`;
@@ -350,18 +356,18 @@ export default function MarketMap() {
                     </label>
                   );
                 })}
-                {catalogue.length === 0 && <span className="cars-hint">Loading catalogue…</span>}
+                {catalogue.length === 0 && <span className="cars-hint">{t("carsPlan.market.loadingCatalogue")}</span>}
               </div>
             )}
             <div className="cars-actions">
-              {selection.length === 0 && <span className="cars-hint">Pick at least one car to compare.</span>}
+              {selection.length === 0 && <span className="cars-hint">{t("carsPlan.market.pickOne")}</span>}
               {variantCount(selection) >= MAX_COMPARE_VARIANTS && (
                 <span className="cars-hint" role="status" data-testid="market-full">
-                  {CAP_HINT}
+                  {capHint()}
                 </span>
               )}
               <button type="button" className="cars-btn" onClick={() => setSelection([])} disabled={selection.length === 0}>
-                Clear
+                {t("carsPlan.market.clear")}
               </button>
               <button
                 type="button"
@@ -369,7 +375,7 @@ export default function MarketMap() {
                 disabled={selection.length === 0}
                 onClick={() => navigate(drivePath("/compare"))}
               >
-                Compare selection
+                {t("carsPlan.market.compare")}
               </button>
             </div>
           </section>

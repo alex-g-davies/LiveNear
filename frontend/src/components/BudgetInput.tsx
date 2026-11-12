@@ -2,8 +2,9 @@ import type { ChangeEvent } from "react";
 
 import { MORTGAGE_TERM_YEARS, TAX_INSURANCE_PCT } from "../config";
 import { type BudgetMode, type BudgetSpec, maxPriceForPayment } from "../lib/affordability";
-import { formatBudgetInput } from "../lib/format";
+import { useT } from "../i18n/react";
 import { type Locale, US_LOCALE } from "../lib/locale";
+import { rich } from "../lib/rich";
 
 interface Props {
   spec: BudgetSpec;
@@ -17,10 +18,7 @@ interface Props {
 
 // Short enough to sit side by side in the 240 px panel without ellipsis;
 // the "/mo" unit on the field below completes "Monthly".
-const MODES: { key: BudgetMode; label: string; title: string }[] = [
-  { key: "price", label: "Home price", title: "Budget as a purchase price" },
-  { key: "payment", label: "Monthly", title: "Budget as a monthly payment" },
-];
+const MODES: BudgetMode[] = ["price", "payment"];
 
 /** Digits only -> number; empty -> 0 (015 R2 semantics, shared by both modes). */
 function parseDollars(raw: string): number {
@@ -42,6 +40,9 @@ function parsePct(raw: string, lo: number, hi: number): number {
  * downstream consumer receives as "the budget".
  */
 export default function BudgetInput({ spec, onChange, label, hint, locale = US_LOCALE }: Props) {
+  const { t } = useT();
+  // Separators while typing, empty for 0 (015 R2), in the country's style.
+  const display = (value: number) => (value > 0 ? locale.count(value) : "");
   const setPrice = (e: ChangeEvent<HTMLInputElement>) =>
     onChange({ ...spec, price: parseDollars(e.target.value) });
   const setPayment = (e: ChangeEvent<HTMLInputElement>) =>
@@ -57,18 +58,18 @@ export default function BudgetInput({ spec, onChange, label, hint, locale = US_L
 
   return (
     <div className="budget-input">
-      <span className="budget-input__label">{label ?? "Budget"}</span>
-      <div className="switcher switcher--tight" role="group" aria-label="Budget as">
+      <span className="budget-input__label">{label ?? t("map.budget.label")}</span>
+      <div className="switcher switcher--tight" role="group" aria-label={t("map.budget.modeGroup")}>
         {MODES.map((m) => (
           <button
-            key={m.key}
+            key={m}
             type="button"
-            className={m.key === spec.mode ? "switcher__btn switcher__btn--active" : "switcher__btn"}
-            aria-pressed={m.key === spec.mode}
-            title={m.title}
-            onClick={() => onChange({ ...spec, mode: m.key })}
+            className={m === spec.mode ? "switcher__btn switcher__btn--active" : "switcher__btn"}
+            aria-pressed={m === spec.mode}
+            title={t(`map.budget.mode.${m}.title`)}
+            onClick={() => onChange({ ...spec, mode: m })}
           >
-            {m.label}
+            {t(`map.budget.mode.${m}`)}
           </button>
         ))}
       </div>
@@ -79,9 +80,9 @@ export default function BudgetInput({ spec, onChange, label, hint, locale = US_L
           <input
             type="text"
             inputMode="numeric"
-            aria-label={`Budget in ${locale.currencyName}`}
+            aria-label={t("map.budget.priceInput", { currency: locale.currencyName })}
             placeholder={locale.budgetExample}
-            value={formatBudgetInput(spec.price)}
+            value={display(spec.price)}
             onChange={setPrice}
           />
         </label>
@@ -92,39 +93,39 @@ export default function BudgetInput({ spec, onChange, label, hint, locale = US_L
             <input
               type="text"
               inputMode="numeric"
-              aria-label={`Monthly payment in ${locale.currencyName}`}
+              aria-label={t("map.budget.paymentInput", { currency: locale.currencyName })}
               placeholder={locale.paymentExample}
-              value={formatBudgetInput(spec.payment)}
+              value={display(spec.payment)}
               onChange={setPayment}
             />
             <span className="budget-input__unit" aria-hidden="true">
-              /mo
+              {t("map.unit.perMonthShort")}
             </span>
           </label>
           <div className="budget-input__assumptions">
             <label className="budget-input__assumption">
-              <span>Down</span>
+              <span>{t("map.budget.down")}</span>
               <input
                 type="number"
                 inputMode="decimal"
                 min={0}
                 max={99}
                 step={1}
-                aria-label="Down payment percent"
+                aria-label={t("map.budget.downInput")}
                 value={spec.downPct}
                 onChange={setDown}
               />
               <span aria-hidden="true">%</span>
             </label>
             <label className="budget-input__assumption">
-              <span>Rate</span>
+              <span>{t("map.budget.rate")}</span>
               <input
                 type="number"
                 inputMode="decimal"
                 min={0}
                 max={30}
                 step={0.1}
-                aria-label="Interest rate percent"
+                aria-label={t("map.budget.rateInput")}
                 value={spec.ratePct}
                 onChange={setRate}
               />
@@ -133,21 +134,22 @@ export default function BudgetInput({ spec, onChange, label, hint, locale = US_L
           </div>
           <p className="budget-input__derived" aria-live="polite">
             {derived > 0 ? (
-              <>
-                ≈ max price <strong>{locale.money(derived)}</strong>
-              </>
+              rich(t("map.budget.maxPrice"), { price: <strong>{locale.money(derived)}</strong> })
             ) : (
-              "Enter a monthly payment to set a budget"
+              t("map.budget.enterPayment")
             )}
             <span className="budget-input__assumes">
               {" "}
-              · assumes {MORTGAGE_TERM_YEARS}-yr, {taxPct}%/yr tax + insurance
+              ·{" "}
+              {t("map.budget.assumes", {
+                years: MORTGAGE_TERM_YEARS,
+                pct: locale.decimal(String(taxPct)),
+              })}
             </span>
           </p>
           {locale.country === "NO" && (
             <p className="budget-input__assumes">
-              Estimates. 10% is the legal minimum equity. Banks also cap debt at 5× income and test
-              a 3-point rate rise (minimum 7%); this tool doesn’t check those limits.
+              {t("map.budget.noRules", { equity: 10, debt: 5, rise: 3, floor: 7 })}
             </p>
           )}
         </>

@@ -4,7 +4,9 @@
 
 import { Link } from "react-router-dom";
 
+import { useT } from "../i18n/react";
 import { DRIVE_NAME, MAP_NAME, SITE_NAME, driveHref, loadDriveApp, loadMapApp, mapHref } from "../lib/productRoutes";
+import LanguagePicker from "./LanguagePicker";
 
 function ContourArt() {
   return (
@@ -40,30 +42,32 @@ function CostCurveArt() {
 }
 
 export default function Landing() {
+  const { t } = useT();
   return (
     <div className="landing">
       <main className="landing__inner">
         <header className="landing__head">
+          <LanguagePicker className="landing__lang" />
           <h1 className="landing__title">{SITE_NAME}</h1>
-          <p className="landing__lede">Weigh up where to live and what to drive before you commit.</p>
+          <p className="landing__lede">{t("landing.lede")}</p>
         </header>
         <div className="landing__cards">
           <Link to={mapHref()} className="landing-card" onMouseEnter={() => void loadMapApp()} onFocus={() => void loadMapApp()}>
             <ContourArt />
             <span className="landing-card__body">
               <img src="/brand/livenear-logo.svg" alt={MAP_NAME} className="landing-card__logo" />
-              <span className="landing-card__text">Find where you can afford a home and still reach work.</span>
-              <span className="landing-card__coverage">Home values and commute times · United States and Norway</span>
-              <span className="landing-card__cta">Explore the map →</span>
+              <span className="landing-card__text">{t("landing.map.text")}</span>
+              <span className="landing-card__coverage">{t("landing.map.coverage")}</span>
+              <span className="landing-card__cta">{t("landing.map.cta")}</span>
             </span>
           </Link>
           <Link to={driveHref()} className="landing-card" onMouseEnter={() => void loadDriveApp()} onFocus={() => void loadDriveApp()}>
             <CostCurveArt />
             <span className="landing-card__body">
               <img src="/brand/drivecheap-logo.svg" alt={DRIVE_NAME} className="landing-card__logo" />
-              <span className="landing-card__text">See what a car will really cost you, from purchase to sale.</span>
-              <span className="landing-card__coverage">Total cost of ownership · Norway</span>
-              <span className="landing-card__cta">Compare car costs →</span>
+              <span className="landing-card__text">{t("landing.drive.text")}</span>
+              <span className="landing-card__coverage">{t("landing.drive.coverage")}</span>
+              <span className="landing-card__cta">{t("landing.drive.cta")}</span>
             </span>
           </Link>
         </div>

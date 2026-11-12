@@ -1,6 +1,7 @@
 // Single source of truth for shared map/legend constants. The color ramps live
 // here so the choropleth and the legend can never drift apart (R2).
 
+import { t } from "./i18n/core";
 import { formatPct, formatPpsf, formatUsdCompact } from "./lib/format";
 
 // Product name, referenced by components instead of hardcoding it so a
@@ -127,11 +128,16 @@ export interface MetricDef {
   fixedStops?: ColorStop[]; // when set, skip per-region quantile breaks
 }
 
+// Labels are getters so they read the site language each time (spec 028).
 export const METRICS: MetricDef[] = [
   {
     key: "value",
-    label: "Median value",
-    short: "Value",
+    get label() {
+      return t("map.metric.value.label");
+    },
+    get short() {
+      return t("map.metric.value.short");
+    },
     property: "median_value",
     colors: VALUE_COLORS,
     diverging: false,
@@ -139,8 +145,12 @@ export const METRICS: MetricDef[] = [
   },
   {
     key: "yoy",
-    label: "YoY change",
-    short: "YoY",
+    get label() {
+      return t("map.metric.yoy.label");
+    },
+    get short() {
+      return t("map.metric.yoy.short");
+    },
     property: "yoy_pct",
     colors: YOY_STOPS.map((s) => s.color),
     diverging: true,
@@ -149,8 +159,12 @@ export const METRICS: MetricDef[] = [
   },
   {
     key: "ppsf",
-    label: "$/sqft",
-    short: "$/sqft",
+    get label() {
+      return t("map.metric.ppsf.label");
+    },
+    get short() {
+      return t("map.metric.ppsf.label");
+    },
     property: "ppsf",
     colors: PPSF_COLORS,
     diverging: false,
@@ -158,8 +172,12 @@ export const METRICS: MetricDef[] = [
   },
   {
     key: "afford",
-    label: "Affordability (price ÷ income)",
-    short: "Afford.",
+    get label() {
+      return t("map.metric.afford.label");
+    },
+    get short() {
+      return t("map.metric.afford.short");
+    },
     property: "price_to_income",
     colors: AFFORD_COLORS,
     diverging: false,
@@ -211,10 +229,28 @@ export const DEFAULT_MINUTES = 30;
 
 // Travel modes (013 R2). Public transit deferred: Mapbox has no transit API.
 export type TravelMode = "drive" | "walk" | "cycle";
-export const TRAVEL_MODES: { key: TravelMode; icon: string; label: string }[] = [
-  { key: "drive", icon: "🚗", label: "Driving" },
-  { key: "cycle", icon: "🚲", label: "Cycling" },
-  { key: "walk", icon: "🚶", label: "Walking" },
+export const TRAVEL_MODES: { key: TravelMode; icon: string; readonly label: string }[] = [
+  {
+    key: "drive",
+    icon: "🚗",
+    get label() {
+      return t("map.mode.drive");
+    },
+  },
+  {
+    key: "cycle",
+    icon: "🚲",
+    get label() {
+      return t("map.mode.cycle");
+    },
+  },
+  {
+    key: "walk",
+    icon: "🚶",
+    get label() {
+      return t("map.mode.walk");
+    },
+  },
 ];
 export const DEFAULT_MODE: TravelMode = "drive";
 
@@ -222,11 +258,20 @@ export const DEFAULT_MODE: TravelMode = "drive";
 // `scenario` property; order drives the legend.
 export interface ScenarioStyle {
   key: "offpeak" | "typical" | "peak";
-  label: string;
+  readonly label: string;
   line: string;
 }
+function scenario(key: ScenarioStyle["key"], line: string): ScenarioStyle {
+  return {
+    key,
+    line,
+    get label() {
+      return t(`map.scenario.${key}`);
+    },
+  };
+}
 export const SCENARIO_STYLES: ScenarioStyle[] = [
-  { key: "offpeak", label: "Light traffic", line: "#2e7d32" },
-  { key: "typical", label: "Midday", line: "#f9a825" },
-  { key: "peak", label: "Evening rush", line: "#c62828" },
+  scenario("offpeak", "#2e7d32"),
+  scenario("typical", "#f9a825"),
+  scenario("peak", "#c62828"),
 ];

@@ -9,6 +9,11 @@
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import EnglishText from "../../components/EnglishText";
+import { displayLabel, inputLabel } from "../../i18n/backendLabels";
+import { t as tCore } from "../../i18n/core";
+import { monthsText } from "../../i18n/dates";
+import { useT } from "../../i18n/react";
 import type { InputView, OptionSummary } from "../api";
 import Badge from "../components/Badge";
 import ExitChart from "../components/ExitChart";
@@ -22,8 +27,9 @@ import {
   formatYears,
   plainSource,
   readableDates,
+  sourceParts,
 } from "../lib/format";
-import { MODE_LABELS, measureDef } from "../lib/measures";
+import { MODE_LABELS, estimateLabels, measureDef, measureInSentence } from "../lib/measures";
 import { useCarState } from "../state";
 import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
 
@@ -54,7 +60,52 @@ function isUrl(s: string): boolean {
   return /^https?:\/\/\S+$/.test(s);
 }
 
+const UNIT_RE = /\/(year|month|day|passage)\b/g;
+
+/** "kr/year" -> "kr/år" / "kr/yıl"; identical in English. */
+function localUnits(text: string): string {
+  return text.replace(UNIT_RE, (_, unit: "year" | "month" | "day" | "passage") => `/${tUnit(unit)}`);
+}
+
+function tUnit(unit: "year" | "month" | "day" | "passage"): string {
+  return tCore(`carsCompare.unit.${unit}`);
+}
+
+/** True if a backend display value has words beyond its units. */
+function hasWords(text: string): boolean {
+  return /[A-Za-z]{2,}/.test(text.replace(/kWh|Wh|kr|km|øre/g, "").replace(UNIT_RE, ""));
+}
+
+/** A backend display value: numbers and units in the site language; text
+ *  values (rule tables, cycles) are English prose (028 R7). */
+function ValueText({ text }: { text: string }) {
+  const { lang } = useT();
+  if (lang === "en") return <>{text}</>;
+  if (hasWords(text)) return <EnglishText>{text}</EnglishText>;
+  return <>{localUnits(text)}</>;
+}
+
+/** Provenance text: the relabelled "Typical value" / "Your input" prefix is
+ *  translated, the rest is English backend prose (028 R7). English output is
+ *  exactly `plainSource`. */
+function SourceText({ text }: { text: string | null | undefined }) {
+  const { t, lang } = useT();
+  if (!text) return null;
+  if (lang === "en") return <>{plainSource(text)}</>;
+  const { prefix, rest } = sourceParts(text);
+  if (prefix && !rest.trim()) return <>{t(`carsCompare.source.${prefix}`)}</>;
+  if (prefix && rest.startsWith(":")) {
+    return (
+      <>
+        {t(`carsCompare.source.${prefix}`)}: <EnglishText>{readableDates(rest.slice(1).trim())}</EnglishText>
+      </>
+    );
+  }
+  return <EnglishText>{plainSource(text)}</EnglishText>;
+}
+
 export default function OptionDetail() {
+  const { t } = useT();
   const { optionId } = useParams();
   const { state, scenario, setMeasure, setOverride, clearOverride, request, exitMonth, setExitMonth } = useCarState();
   const def = measureDef(state.measure);
@@ -66,7 +117,7 @@ export default function OptionDetail() {
   if (!request) {
     return (
       <p className="cars-empty">
-        No cars selected yet. <Link to={DRIVE_PATH}>Pick some on Your situation</Link>.
+        {t("carsCompare.noCars")} <Link to={DRIVE_PATH}>{t("carsCompare.pickSome")}</Link>.
       </p>
     );
   }
@@ -74,17 +125,15 @@ export default function OptionDetail() {
     return (
       <>
         <Link to={drivePath("/compare")} className="cars-link cars-back">
-          Back to all options
+          {t("carsCompare.detail.back")}
         </Link>
         {scenario.error && (
           <div className="status status--error" role="alert">
-            Could not compute the scenario: {scenario.error}
+            {t("carsCompare.scenarioError")} <EnglishText>{scenario.error}</EnglishText>
           </div>
         )}
         <p className="cars-empty">
-          {!data && scenario.loading
-            ? "Loading option…"
-            : "This option is not in the current results (it may be ruled out by your limits)."}
+          {!data && scenario.loading ? t("carsCompare.detail.loading") : t("carsCompare.detail.notFound")}
         </p>
       </>
     );
@@ -92,17 +141,21 @@ export default function OptionDetail() {
 
   const r = option.result;
   const m = r.measures[state.measure];
-  const t = exitMonth;
-  const years = t / 12;
-  const atExit = m.deterministic[t];
-  const lo = m.band.p10[t];
-  const hi = m.band.p90[t];
+  const at = exitMonth;
+  const years = at / 12;
+  const atExit = m.deterministic[at];
+  const lo = m.band.p10[at];
+  const hi = m.band.p90[at];
   const rowLabels = r.display["36"] ?? [];
-  const items = rowLabels.map((d) => ({ key: d.key, label: d.label, ore: r.display_series?.[d.key]?.[t] ?? 0 }));
+  const items = rowLabels.map((d) => ({
+    key: d.key,
+    label: displayLabel(d.key, d.label),
+    ore: r.display_series?.[d.key]?.[at] ?? 0,
+  }));
   const total = items.reduce((s, i) => s + i.ore, 0);
   const maxItem = Math.max(1, ...items.map((i) => Math.abs(i.ore)));
-  const perMonthAt = r.measures.per_month.deterministic[t];
-  const perKmAt = r.measures.per_km.deterministic[t];
+  const perMonthAt = r.measures.per_month.deterministic[at];
+  const perKmAt = r.measures.per_km.deterministic[at];
   const bestLease = bestOfKind(data?.options ?? [], option, "lease", state.measure);
   const bestNew = bestOfKind(data?.options ?? [], option, "new", state.measure);
   const isLease = option.option_kind === "lease";
@@ -111,16 +164,22 @@ export default function OptionDetail() {
   const resaleInput = findInput(r.inputs, "resale_path", "resale_retention", "resale_curve");
   const rentInput = findInput(r.inputs, "lease_monthly", "monthly", "lease_rent");
   const purchase = r.purchase_price;
-  const sale = r.resale_band?.p50[t] ?? r.resale_p50?.[t] ?? null;
-  const saleLo = r.resale_band?.p10[t] ?? null;
-  const saleHi = r.resale_band?.p90[t] ?? null;
-  const valueLost = r.display_series?.value_lost?.[t] ?? null;
+  const sale = r.resale_band?.p50[at] ?? r.resale_p50?.[at] ?? null;
+  const saleLo = r.resale_band?.p10[at] ?? null;
+  const saleHi = r.resale_band?.p90[at] ?? null;
+  const valueLost = r.display_series?.value_lost?.[at] ?? null;
   const sellCost = purchase !== null && sale !== null && valueLost !== null ? valueLost - (purchase - sale) : null;
 
   const subtitle = [
-    isLease ? "Lease, 36 months" : `${MODE_LABELS[option.option_kind]} · model year ${r.model_year}`,
-    option.seller_type === "dealer" ? "bought from a dealer" : option.seller_type === "private" ? "bought privately" : null,
-    r.km_at[0] > 0 ? `${formatKm(r.km_at[0])} on the clock` : null,
+    isLease
+      ? t("carsCompare.leaseTerm", { term: monthsText(36) })
+      : t("carsCompare.detail.modelYear", { mode: MODE_LABELS[option.option_kind], year: r.model_year }),
+    option.seller_type === "dealer"
+      ? t("carsCompare.detail.fromDealer")
+      : option.seller_type === "private"
+        ? t("carsCompare.detail.privately")
+        : null,
+    r.km_at[0] > 0 ? t("carsCompare.detail.onClock", { km: formatKm(r.km_at[0]) }) : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -139,7 +198,7 @@ export default function OptionDetail() {
     <>
       <div className="cars-detailhead">
         <Link to={drivePath("/compare")} className="cars-link cars-back">
-          Back to all options
+          {t("carsCompare.detail.back")}
         </Link>
         <div className="cars-titlebar">
           <div className="cars-titlebar__text">
@@ -147,14 +206,14 @@ export default function OptionDetail() {
             <p className="cars-lede">{subtitle}</p>
           </div>
           <div className="cars-titlebar__tools">
-            <Badge status={r.status} estimates={r.material_estimate_labels} />
+            <Badge status={r.status} estimates={estimateLabels(r)} />
             <MeasureSelect value={state.measure} onChange={setMeasure} />
-            {scenario.loading && <span className="cars-hint">updating…</span>}
+            {scenario.loading && <span className="cars-hint">{t("carsCompare.updating")}</span>}
           </div>
         </div>
         {scenario.error && (
           <div className="status status--error" role="alert">
-            Could not compute the scenario: {scenario.error} — showing the last good result.
+            {t("carsCompare.scenarioError")} <EnglishText>{scenario.error}</EnglishText> {t("carsCompare.lastGood")}
           </div>
         )}
       </div>
@@ -162,105 +221,131 @@ export default function OptionDetail() {
       <div className="cars-tiles">
         <div className="cars-tile cars-tile--accent">
           <span className="cars-hint">
-            {def.label} if you leave at {formatYears(years)}
+            {t("carsCompare.detail.atExit", { measure: def.label, years: formatYears(years) })}
           </span>
           <span className="cars-tile__value" data-testid="tile-at-exit">
             {def.format(atExit)}
           </span>
           <span className="cars-hint">
-            Likely {def.format(lo)} to {def.format(hi)}
+            {t("carsCompare.likely", { lo: def.format(lo), hi: def.format(hi) })}
           </span>
         </div>
         <div className="cars-tile">
-          <span className="cars-hint">Expected {def.label.toLowerCase()}</span>
+          <span className="cars-hint">{t("carsCompare.detail.expected", { measure: measureInSentence(def) })}</span>
           <span className="cars-tile__value" data-testid="tile-expected">
             {def.format(m.expected.p50)}
           </span>
-          <span className="cars-hint">Weighted by your exit odds, as ranked on Compare</span>
+          <span className="cars-hint">{t("carsCompare.detail.expectedHint")}</span>
         </div>
         <div className="cars-tile">
-          <span className="cars-hint">Best and worst exit</span>
+          <span className="cars-hint">{t("carsCompare.detail.bestWorst")}</span>
           <span className="cars-tile__value" data-testid="tile-best">
             {def.format(m.best.value)}
           </span>
           <span className="cars-hint">
-            Best at {formatMonths(m.best.month)} · worst {def.format(m.worst.value)} at {formatMonths(m.worst.month)}
+            {t("carsCompare.detail.bestWorstHint", {
+              bestAt: formatMonths(m.best.month),
+              worst: def.format(m.worst.value),
+              worstAt: formatMonths(m.worst.month),
+            })}
           </span>
         </div>
         <div className="cars-tile">
-          <span className="cars-hint">Cash up front</span>
+          <span className="cars-hint">{measureDef("cash_up_front").label}</span>
           <span className="cars-tile__value">{formatNok(r.cash_up_front)}</span>
-          <span className="cars-hint">{isLease ? "Upfront rent" : "Down payment and fees"}</span>
+          <span className="cars-hint">
+            {isLease ? t("carsCompare.detail.upfrontRent") : t("carsCompare.detail.downPayment")}
+          </span>
         </div>
       </div>
 
       <section className="cars-card cars-card--wide" aria-labelledby="deal">
         <div className="cars-card__head">
           <h2 id="deal" className="cars-h2">
-            {isLease ? "What you pay for the lease" : "Buying and selling"}
+            {isLease ? t("carsCompare.detail.leaseTitle") : t("carsCompare.detail.buyTitle")}
           </h2>
           <p className="cars-hint">
             {isLease
-              ? `Rent to ${formatYears(years)} and what it costs to hand the car back then. Nothing comes back at the end of a lease.`
-              : `What you pay now and what the market model expects you to get back if you sell at ${formatYears(years)}.`}
+              ? t("carsCompare.detail.leaseHint", { years: formatYears(years) })
+              : t("carsCompare.detail.buyHint", { years: formatYears(years) })}
           </p>
         </div>
         {isLease ? (
           <div className="cars-deal">
             <div className="cars-deal__item">
-              <span className="cars-hint">Monthly rent</span>
-              <span className="cars-deal__value">{rentInput ? rentInput.display_value ?? rentInput.value : "—"}</span>
+              <span className="cars-hint">{t("carsCompare.detail.monthlyRent")}</span>
+              <span className="cars-deal__value">
+                {rentInput ? <ValueText text={String(rentInput.display_value ?? rentInput.value)} /> : "—"}
+              </span>
               <span className="cars-deal__meta">
                 {rentInput && <Badge status={rentInput.status} />}
-                {rentInput && <span className="cars-hint">{plainSource(rentInput.source)}</span>}
+                {rentInput && (
+                  <span className="cars-hint">
+                    <SourceText text={rentInput.source} />
+                  </span>
+                )}
               </span>
             </div>
             <div className="cars-deal__item">
-              <span className="cars-hint">Rent paid by {formatYears(years)}</span>
-              <span className="cars-deal__value">{formatNok(r.display_series?.lease_payments?.[t] ?? 0)}</span>
-              <span className="cars-hint">Including the upfront rent</span>
+              <span className="cars-hint">{t("carsCompare.detail.rentPaid", { years: formatYears(years) })}</span>
+              <span className="cars-deal__value">{formatNok(r.display_series?.lease_payments?.[at] ?? 0)}</span>
+              <span className="cars-hint">{t("carsCompare.detail.rentPaidHint")}</span>
             </div>
             <div className="cars-deal__item">
-              <span className="cars-hint">Cost to hand it back at {formatYears(years)}</span>
-              <span className="cars-deal__value">{formatNok(r.display_series?.exit_costs?.[t] ?? 0)}</span>
-              <span className="cars-hint">Early-exit charge, excess km and end-of-lease fees</span>
+              <span className="cars-hint">{t("carsCompare.detail.handBack", { years: formatYears(years) })}</span>
+              <span className="cars-deal__value">{formatNok(r.display_series?.exit_costs?.[at] ?? 0)}</span>
+              <span className="cars-hint">{t("carsCompare.detail.handBackHint")}</span>
             </div>
           </div>
         ) : (
           <div className="cars-deal">
             <div className="cars-deal__item">
-              <span className="cars-hint">Purchase price</span>
+              <span className="cars-hint">{t("carsCompare.detail.purchasePrice")}</span>
               <span className="cars-deal__value" data-testid="deal-purchase">
-                {purchase !== null ? formatNok(purchase) : priceInput ? priceInput.display_value ?? priceInput.value : "—"}
+                {purchase !== null ? (
+                  formatNok(purchase)
+                ) : priceInput ? (
+                  <ValueText text={String(priceInput.display_value ?? priceInput.value)} />
+                ) : (
+                  "—"
+                )}
               </span>
               <span className="cars-deal__meta">
                 {priceInput && <Badge status={priceInput.status} />}
-                {priceInput && <span className="cars-hint">{plainSource(priceInput.source)}</span>}
+                {priceInput && (
+                  <span className="cars-hint">
+                    <SourceText text={priceInput.source} />
+                  </span>
+                )}
               </span>
             </div>
             <div className="cars-deal__item">
-              <span className="cars-hint">Sale price if you leave at {formatYears(years)}</span>
+              <span className="cars-hint">{t("carsCompare.detail.salePrice", { years: formatYears(years) })}</span>
               <span className="cars-deal__value" data-testid="deal-sale">
                 {sale !== null ? formatNok(sale) : "—"}
               </span>
               <span className="cars-deal__meta">
                 {resaleInput && <Badge status={resaleInput.status} />}
                 <span className="cars-hint">
-                  {saleLo !== null && saleHi !== null
-                    ? `Likely ${formatNok(saleLo)} to ${formatNok(saleHi)}`
-                    : plainSource(resaleInput?.source) || "Market model"}
+                  {saleLo !== null && saleHi !== null ? (
+                    t("carsCompare.likely", { lo: formatNok(saleLo), hi: formatNok(saleHi) })
+                  ) : resaleInput?.source ? (
+                    <SourceText text={resaleInput.source} />
+                  ) : (
+                    t("carsCompare.detail.marketModel")
+                  )}
                 </span>
               </span>
             </div>
             <div className="cars-deal__item">
-              <span className="cars-hint">Value lost by {formatYears(years)}</span>
+              <span className="cars-hint">{t("carsCompare.detail.valueLost", { years: formatYears(years) })}</span>
               <span className="cars-deal__value" data-testid="deal-value-lost">
                 {valueLost !== null ? formatNok(valueLost) : "—"}
               </span>
               <span className="cars-hint">
                 {sellCost !== null && sellCost !== 0
-                  ? `Price minus sale price, plus ${formatNok(sellCost)} to sell`
-                  : "Price minus sale price"}
+                  ? t("carsCompare.detail.valueLostSell", { cost: formatNok(sellCost) })
+                  : t("carsCompare.detail.valueLostHint")}
               </span>
             </div>
           </div>
@@ -271,9 +356,9 @@ export default function OptionDetail() {
         <section className="cars-card cars-layout__main" aria-labelledby="exitchart">
           <div className="cars-card__head">
             <h2 id="exitchart" className="cars-h2">
-              {def.label} by when you leave
+              {t("carsCompare.detail.byLeave", { measure: def.label })}
             </h2>
-            <p className="cars-hint">Compared with the best lease and best new-car option for the same model.</p>
+            <p className="cars-hint">{t("carsCompare.detail.chartHint")}</p>
           </div>
           <ExitChart
             option={option}
@@ -281,11 +366,11 @@ export default function OptionDetail() {
             bestNew={bestNew}
             measure={state.measure}
             exitOdds={data?.exit_odds ?? { "12": 0.25, "24": 0.25, "36": 0.25, "48": 0.25 }}
-            exitMonth={t}
+            exitMonth={at}
           />
           <label className="cars-field cars-field--exit">
             <span className="cars-field__label cars-field__label--row">
-              <span>Mark an exit point</span>
+              <span>{t("carsCompare.markExit")}</span>
               <span className="cars-hint">{formatYears(years)}</span>
             </span>
             <input
@@ -297,19 +382,22 @@ export default function OptionDetail() {
               value={years}
               onChange={(e) => setExitMonth(Number(e.target.value) * 12)}
             />
-            <span className="cars-hint">The tiles, the figures above and the breakdown all follow this point. Compare uses the same one.</span>
+            <span className="cars-hint">{t("carsCompare.detail.markHint")}</span>
           </label>
         </section>
 
         <section className="cars-card cars-layout__aside cars-layout__aside--wide" aria-labelledby="money">
           <div className="cars-card__head">
             <h2 id="money" className="cars-h2">
-              Where the money goes
+              {t("carsCompare.detail.moneyTitle")}
             </h2>
             <p className="cars-hint">
-              Totals if you leave at {formatYears(years)}. That is {formatNok(perMonthAt)} per month, or{" "}
-              {formatPerKm(perKmAt)}.
-              {state.measure === "npc" && " Net present cost discounts later payments, so it sits below this total."}
+              {t("carsCompare.detail.moneyHint", {
+                years: formatYears(years),
+                perMonth: formatNok(perMonthAt),
+                perKm: formatPerKm(perKmAt),
+              })}
+              {state.measure === "npc" && ` ${t("carsCompare.detail.npcNote")}`}
             </p>
           </div>
           {items.map((it) => (
@@ -325,7 +413,7 @@ export default function OptionDetail() {
             </div>
           ))}
           <div className="cars-bar cars-bar--total">
-            <span>Total</span>
+            <span>{t("carsCompare.detail.total")}</span>
             <span />
             <span className="cars-bar__value" data-testid="money-total">
               {formatNok(total)}
@@ -337,39 +425,39 @@ export default function OptionDetail() {
       <section className="cars-card cars-card--flush" aria-labelledby="inputs">
         <div className="cars-card__bar cars-card__bar--plain">
           <h2 id="inputs" className="cars-h2">
-            Inputs and sources
+            {t("carsCompare.detail.inputsTitle")}
           </h2>
-          <span className="cars-hint">Replace any estimate with your own number</span>
+          <span className="cars-hint">{t("carsCompare.detail.inputsHint")}</span>
         </div>
         <div className="cars-tablewrap">
           <table className="cars-table cars-table--inputs">
             <thead>
               <tr>
-                <th scope="col">Input</th>
-                <th scope="col">Value</th>
-                <th scope="col">Source</th>
-                <th scope="col">Status</th>
+                <th scope="col">{t("carsCompare.detail.colInput")}</th>
+                <th scope="col">{t("carsCompare.detail.colValue")}</th>
+                <th scope="col">{t("carsCompare.detail.colSource")}</th>
+                <th scope="col">{t("carsCompare.detail.colStatus")}</th>
                 <th scope="col">
-                  <span className="sr-only">Action</span>
+                  <span className="sr-only">{t("carsCompare.detail.colAction")}</span>
                 </th>
               </tr>
             </thead>
             <tbody>
               {r.inputs.map((inp) => {
                 const overridden = inp.id in state.overrides;
-                const label = inp.label;
+                const label = inputLabel(inp.id, inp.label);
                 const range = inp.display_range ?? inp.range;
                 return (
                   <tr key={inp.id} data-testid={`input-${inp.id}`}>
                     <td className="cars-strong">
                       {label}
-                      {inp.material && <span className="cars-hint"> · key input</span>}
+                      {inp.material && <span className="cars-hint"> · {t("carsCompare.detail.keyInput")}</span>}
                     </td>
                     <td>
-                      {readableDates(String(inp.display_value ?? inp.value))}
+                      <ValueText text={readableDates(String(inp.display_value ?? inp.value))} />
                       {range && (
                         <div className="cars-hint">
-                          Range {range[0]} to {range[1]}
+                          {t("carsCompare.detail.range", { lo: localUnits(String(range[0])), hi: localUnits(String(range[1])) })}
                         </div>
                       )}
                     </td>
@@ -379,9 +467,13 @@ export default function OptionDetail() {
                           {inp.source.replace(/^https?:\/\/(www\.)?/, "")}
                         </a>
                       ) : (
-                        plainSource(inp.source)
+                        <SourceText text={inp.source} />
                       )}
-                      {inp.basis && <div className="cars-inputs__basis">Basis: {plainSource(inp.basis)}</div>}
+                      {inp.basis && (
+                        <div className="cars-inputs__basis">
+                          {t("carsCompare.detail.basis")} <SourceText text={inp.basis} />
+                        </div>
+                      )}
                     </td>
                     <td>
                       <Badge status={inp.status} />
@@ -391,7 +483,7 @@ export default function OptionDetail() {
                       {editing === inp.id ? (
                         <form className="cars-override" onSubmit={(e) => submitOverride(e, inp)}>
                           <label className="cars-field cars-field--inline">
-                            <span className="sr-only">New value for {label}</span>
+                            <span className="sr-only">{t("carsCompare.detail.newValue", { label })}</span>
                             <input
                               type="number"
                               inputMode="decimal"
@@ -401,10 +493,14 @@ export default function OptionDetail() {
                               onChange={(e) => setDraft(e.target.value)}
                               autoFocus
                             />
-                            {inp.unit && <span className="cars-hint cars-override__unit">{inp.unit}</span>}
+                            {inp.unit && (
+                              <span className="cars-hint cars-override__unit">
+                                <ValueText text={inp.unit} />
+                              </span>
+                            )}
                           </label>
                           <button type="submit" className="cars-btn cars-btn--sm cars-btn--primary">
-                            Apply
+                            {t("carsCompare.detail.apply")}
                           </button>
                           <button
                             type="button"
@@ -414,7 +510,7 @@ export default function OptionDetail() {
                               setDraft("");
                             }}
                           >
-                            Cancel
+                            {t("carsCompare.detail.cancel")}
                           </button>
                         </form>
                       ) : overridden ? (
@@ -422,9 +518,9 @@ export default function OptionDetail() {
                           type="button"
                           className="cars-btn cars-btn--sm"
                           onClick={() => clearOverride(inp.id)}
-                          aria-label={`Clear override for ${label}`}
+                          aria-label={t("carsCompare.detail.clearFor", { label })}
                         >
-                          Clear
+                          {t("carsCompare.detail.clear")}
                         </button>
                       ) : (
                         <button
@@ -434,9 +530,9 @@ export default function OptionDetail() {
                             setEditing(inp.id);
                             setDraft("");
                           }}
-                          aria-label={`Override ${label}`}
+                          aria-label={t("carsCompare.detail.overrideFor", { label })}
                         >
-                          Override
+                          {t("carsCompare.detail.override")}
                         </button>
                       )}
                     </td>

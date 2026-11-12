@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useT } from "../i18n/react";
+
 interface Props {
   messages: string[];
 }
@@ -8,6 +10,7 @@ interface Props {
  * message stays hidden for the session; a recovered source simply stops
  * sending it. */
 export default function Toasts({ messages }: Props) {
+  const { t } = useT();
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const visible = messages.filter((m) => !dismissed.has(m));
   if (visible.length === 0) return null;
@@ -20,7 +23,7 @@ export default function Toasts({ messages }: Props) {
           <button
             type="button"
             className="status__dismiss"
-            aria-label="Dismiss"
+            aria-label={t("map.dismiss")}
             onClick={() => setDismissed((prev) => new Set(prev).add(m))}
           >
             ×

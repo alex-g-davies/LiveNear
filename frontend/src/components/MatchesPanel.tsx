@@ -1,3 +1,4 @@
+import { useT } from "../i18n/react";
 import type { MatchResult } from "../lib/matches";
 import { type Locale, US_LOCALE } from "../lib/locale";
 
@@ -13,25 +14,27 @@ interface Props {
  * states the answer the overlays only show. Follows the Top-movers fold and
  * row pattern. */
 export default function MatchesPanel({ result, budget, onZipChosen, locale = US_LOCALE }: Props) {
+  const { t } = useT();
   if (!result) return null;
+  const us = locale.country === "US";
   const { matches, total } = result;
 
   return (
     <details className="matches panel-fold" open>
       <summary>
-        Your matches{total > 0 && <span className="matches__count"> ({total})</span>}
+        {t("map.matches.title")}
+        {total > 0 && <span className="matches__count"> ({total})</span>}
       </summary>
       {total === 0 ? (
         <p className="matches__empty">
           {budget > 0
-            ? `No ${locale.areaPlural} are within both budget and reach — try raising either`
-            : `No ${locale.areaPlural} are within commute reach — try a longer time`}
+            ? t(us ? "map.matches.noneBudget.us" : "map.matches.noneBudget.no")
+            : t(us ? "map.matches.none.us" : "map.matches.none.no")}
         </p>
       ) : (
         <>
           <p className="matches__hint">
-            {budget > 0 ? "Within budget and commute reach" : "Within commute reach"} · most
-            affordable first
+            {budget > 0 ? t("map.matches.hintBudget") : t("map.matches.hint")}
           </p>
           <ul className="matches__list">
             {matches.map((m) => (
@@ -41,7 +44,7 @@ export default function MatchesPanel({ result, budget, onZipChosen, locale = US_
                   <span className="matches__stats">
                     <span className="matches__value">{locale.moneyCompact(m.median_value)}</span>
                     {m.price_to_income != null && (
-                      <span className="matches__p2i">{m.price_to_income.toFixed(1)}×</span>
+                      <span className="matches__p2i">{locale.decimal(m.price_to_income.toFixed(1))}×</span>
                     )}
                   </span>
                 </button>

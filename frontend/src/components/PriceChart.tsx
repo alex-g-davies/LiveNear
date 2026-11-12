@@ -1,3 +1,4 @@
+import { useT } from "../i18n/react";
 import { formatUsdCompact } from "../lib/format";
 
 interface Props {
@@ -11,8 +12,9 @@ const PAD = { top: 10, right: 8, bottom: 18, left: 44 };
 /** Readable SVG line chart of a ZIP's quarterly price history (009 R4) —
  * a real chart with min/max gridlines, unlike the popup sparkline. */
 export default function PriceChart({ history }: Props) {
+  const { t } = useT();
   if (!history || history.length < 2) {
-    return <p className="chart-empty">No price history for this ZIP.</p>;
+    return <p className="chart-empty">{t("map.chart.empty")}</p>;
   }
 
   const values = history.map(([, v]) => v);
@@ -44,7 +46,7 @@ export default function PriceChart({ history }: Props) {
       height={H}
       viewBox={`0 0 ${W} ${H}`}
       role="img"
-      aria-label={`Median value by quarter, ${firstQ} to ${lastQ}`}
+      aria-label={t("map.chart.label", { first: firstQ, last: lastQ })}
     >
       {[max, min].map((v) => (
         <g key={v}>

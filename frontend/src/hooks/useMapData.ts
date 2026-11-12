@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import type { FeatureCollection } from "geojson";
 
 import { type ZipValue, getHousing, getZipsGeojson } from "../api/client";
+import type { TKey } from "../i18n/core";
 
 export interface MapData {
   geojson: FeatureCollection | null;
   records: Map<string, ZipValue>;
   loading: boolean;
   error: string | null;
-  /** Non-blocking degradations to surface as toasts (005 R2). */
-  notices: string[];
+  /** Non-blocking degradations to surface as toasts (005 R2), as dictionary
+   * keys. */
+  notices: TKey[];
   /** Vintage of the loaded state's values (ISO date from the payload's
    * `as_of`); null until the records arrive. Surfaced in the legend and
    * About so nobody mistakes a months-old snapshot for live prices. */
@@ -18,7 +20,8 @@ export interface MapData {
 
 const EMPTY: Map<string, ZipValue> = new Map();
 
-export const NOTICE_RECORDS = "ZIP details unavailable — popups will be limited";
+/** Dictionary key of the records-failed toast (translated where shown, 028). */
+export const NOTICE_RECORDS = "map.notice.records" satisfies TKey;
 
 /**
  * Loads the choropleth geometry and the per-ZIP records per state (the records
@@ -63,7 +66,7 @@ export function useMapData(state: string): MapData {
     };
   }, [state]);
 
-  const notices: string[] = [];
+  const notices: TKey[] = [];
   if (recordsFailed) notices.push(NOTICE_RECORDS);
 
   return { geojson, records, loading, error, notices, asOf };

@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react";
 
 import { BRAND_NAME } from "../config";
+import type { TKey } from "../i18n/core";
+import { useT } from "../i18n/react";
 import type { BudgetSpec } from "../lib/affordability";
 import type { Locale } from "../lib/locale";
+import { rich } from "../lib/rich";
 import BudgetInput from "./BudgetInput";
 
-const HOW_TOS: { icon: string; text: string }[] = [
-  { icon: "💰", text: "Set a budget — areas you can't afford fade out." },
-  {
-    icon: "📍",
-    text: "Drag the pin to work and pick a commute — the bands show how far you can live.",
-  },
-  { icon: "👆", text: "Click or tap any area for prices, commute estimates, and local context." },
+const HOW_TOS: { icon: string; text: TKey }[] = [
+  { icon: "💰", text: "map.welcome.step.budget" },
+  { icon: "📍", text: "map.welcome.step.pin" },
+  { icon: "👆", text: "map.welcome.step.explore" },
 ];
 
 interface Props {
@@ -30,6 +30,7 @@ interface Props {
  * About panel's "How it works" link reopens it. */
 export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange, locale }: Props) {
   // Keyboard users land inside the dialog instead of on the map behind it.
+  const { t } = useT();
   const ctaRef = useRef<HTMLButtonElement>(null);
   useEffect(() => ctaRef.current?.focus(), []);
 
@@ -44,7 +45,7 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange, loca
       className="about welcome"
       role="dialog"
       aria-modal="true"
-      aria-label={`Welcome to ${BRAND_NAME}`}
+      aria-label={t("map.welcome.label", { brand: BRAND_NAME })}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="about__card welcome__card">
@@ -52,14 +53,14 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange, loca
           {/* The slogan banner, not the plain wordmark — this is the one
               landing surface where the tagline earns its space (018 R2). */}
           <img src="/brand/livenear-logo.svg" alt={BRAND_NAME} className="welcome__logo" />
-          <button type="button" className="about__close" aria-label="Close" onClick={onClose}>
+          <button type="button" className="about__close" aria-label={t("map.close")} onClick={onClose}>
             ×
           </button>
         </header>
         <p className="about__blurb">
-          See where you could live. {BRAND_NAME} shades every area by housing cost
-          and overlays how far you can really get from work at rush hour — so
-          affordable <em>and</em> commutable shows up at a glance.
+          {rich(t("map.welcome.blurb", { brand: BRAND_NAME }), {
+            and: <em>{t("map.welcome.and")}</em>,
+          })}
         </p>
         <ul className="welcome__steps">
           {HOW_TOS.map((h) => (
@@ -67,7 +68,7 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange, loca
               <span className="welcome__icon" aria-hidden="true">
                 {h.icon}
               </span>
-              {h.text}
+              {t(h.text)}
             </li>
           ))}
         </ul>
@@ -75,15 +76,15 @@ export default function WelcomeModal({ onClose, budgetSpec, onBudgetChange, loca
           <BudgetInput
             spec={budgetSpec}
             onChange={onBudgetChange}
-            label="Your budget (optional)"
+            label={t("map.welcome.budget")}
             locale={locale}
           />
         )}
         <button type="button" ref={ctaRef} className="welcome__cta" onClick={onClose}>
-          Explore the map
+          {t("map.welcome.cta")}
         </button>
         <p className="welcome__reopen">
-          Reopen this intro anytime via ⓘ About &amp; data → “How it works”.
+          {t("map.welcome.reopen")}
         </p>
       </div>
     </div>

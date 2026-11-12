@@ -5,13 +5,14 @@
 import type { ScenarioResponse, SensitivityRow } from "../api";
 import { formatDate, formatNok, formatNokSigned, formatPerKm } from "./format";
 import type { Measure, Mode } from "./profile";
+import { t, tDynamic } from "../../i18n/core";
 import { DRIVE_PATH } from "../../lib/productRoutes";
 
 export type ChecklistGroupId = "before_choose" | "before_sign" | "after";
 
 export interface ChecklistGroup {
   id: ChecklistGroupId;
-  title: string;
+  readonly title: string;
 }
 
 export type DueKind = "licence" | "winter_tyres" | "ev_tax";
@@ -19,104 +20,64 @@ export type DueKind = "licence" | "winter_tyres" | "ev_tax";
 export interface ChecklistItem {
   id: string;
   group: ChecklistGroupId;
-  title: string;
-  why: string;
-  tag: string;
+  readonly title: string;
+  readonly why: string;
+  readonly tag: string;
   /** Ways to get the car this item applies to; undefined = always. */
   modes?: Mode[];
   due?: DueKind;
 }
 
-export const CHECKLIST_GROUPS: ChecklistGroup[] = [
-  { id: "before_choose", title: "Before you choose" },
-  { id: "before_sign", title: "Before you sign" },
-  { id: "after", title: "After you get the car" },
-];
+// Words are getters read at call time, so they follow the site language
+// (spec 028); ids, groups and modes stay fixed.
+function group(id: ChecklistGroupId): ChecklistGroup {
+  return {
+    id,
+    get title() {
+      return tDynamic(`carsPlan.check.group.${id}`);
+    },
+  };
+}
+
+type TagId =
+  | "insurance" | "deadline" | "financing" | "price" | "resale" | "risk" | "exit" | "tyres" | "running" | "energy";
+
+function item(
+  id: string,
+  groupId: ChecklistGroupId,
+  tag: TagId,
+  extra: { modes?: Mode[]; due?: DueKind } = {},
+): ChecklistItem {
+  return {
+    id,
+    group: groupId,
+    ...extra,
+    get title() {
+      return tDynamic(`carsPlan.check.${id}.title`);
+    },
+    get why() {
+      return tDynamic(`carsPlan.check.${id}.why`);
+    },
+    get tag() {
+      return tDynamic(`carsPlan.check.tag.${tag}`);
+    },
+  };
+}
+
+export const CHECKLIST_GROUPS: ChecklistGroup[] = [group("before_choose"), group("before_sign"), group("after")];
 
 export const CHECKLIST_ITEMS: ChecklistItem[] = [
-  {
-    id: "claims_free_letter",
-    group: "before_choose",
-    title: "Ask your previous insurer for a claims-free letter",
-    why: "Some Norwegian insurers accept it, which can raise your starting bonus.",
-    tag: "Insurance",
-  },
-  {
-    id: "licence_exchange",
-    group: "before_choose",
-    title: "Find your driving licence exchange deadline",
-    why: "Missing it can mean taking a Norwegian driving test.",
-    tag: "Deadline",
-    due: "licence",
-  },
-  {
-    id: "id_and_bankid",
-    group: "before_choose",
-    title: "Get a Norwegian ID number and BankID",
-    why: "Most lenders and lease companies need both before they will quote.",
-    tag: "Financing",
-  },
-  {
-    id: "ev_tax_changes",
-    group: "before_choose",
-    title: "Check upcoming tax changes for new EVs",
-    why: "Registration timing can change the price of a new car.",
-    tag: "Price",
-    due: "ev_tax",
-  },
-  {
-    id: "insurance_quotes",
-    group: "before_sign",
-    title: "Get real insurance quotes",
-    why: "Replaces the estimate in your results with your actual number.",
-    tag: "Insurance",
-  },
-  {
-    id: "battery_health_report",
-    group: "before_sign",
-    title: "Used car: ask for a battery health report",
-    why: "The biggest unknown in an older EV.",
-    tag: "Resale",
-    modes: ["used_1_3", "used_5_plus"],
-  },
-  {
-    id: "prefer_dealer",
-    group: "before_sign",
-    title: "Used car: prefer a dealer over a private seller",
-    why: "Dealer sales come with stronger complaint rights.",
-    tag: "Risk",
-    modes: ["used_1_3", "used_5_plus"],
-  },
-  {
-    id: "lease_terms",
-    group: "before_sign",
-    title: "Lease: check the km cap, excess-km charge and early-exit fee",
-    why: "The early-exit fee decides the cost if you leave before the term ends.",
-    tag: "Cost to exit",
-    modes: ["lease"],
-  },
-  {
-    id: "winter_tyres",
-    group: "after",
-    title: "Fit winter tyres",
-    why: "A second set is a real cost in Norway; check what your lease includes.",
-    tag: "Tyres",
-    due: "winter_tyres",
-  },
-  {
-    id: "toll_tag",
-    group: "after",
-    title: "Get a toll tag",
-    why: "Needed for EV toll rates on most roads.",
-    tag: "Running cost",
-  },
-  {
-    id: "charging_accounts",
-    group: "after",
-    title: "Set up charging accounts at work and on your routes",
-    why: "Lets the app use your actual charging prices.",
-    tag: "Energy",
-  },
+  item("claims_free_letter", "before_choose", "insurance"),
+  item("licence_exchange", "before_choose", "deadline", { due: "licence" }),
+  item("id_and_bankid", "before_choose", "financing"),
+  item("ev_tax_changes", "before_choose", "price", { due: "ev_tax" }),
+  item("insurance_quotes", "before_sign", "insurance"),
+  item("battery_health_report", "before_sign", "resale", { modes: ["used_1_3", "used_5_plus"] }),
+  item("prefer_dealer", "before_sign", "risk", { modes: ["used_1_3", "used_5_plus"] }),
+  item("lease_terms", "before_sign", "exit", { modes: ["lease"] }),
+  item("winter_tyres", "after", "tyres", { due: "winter_tyres" }),
+  item("toll_tag", "after", "running"),
+  item("charging_accounts", "after", "energy"),
 ];
 
 export const CHECKLIST_IDS: string[] = CHECKLIST_ITEMS.map((i) => i.id);
@@ -125,7 +86,7 @@ export const CHECKLIST_IDS: string[] = CHECKLIST_ITEMS.map((i) => i.id);
 export function appliesNote(item: ChecklistItem, modes: Mode[]): string | null {
   if (!item.modes) return null;
   if (item.modes.some((m) => modes.includes(m))) return null;
-  return item.modes.includes("lease") ? "only if you lease" : "only if you go used";
+  return item.modes.includes("lease") ? t("carsPlan.check.onlyLease") : t("carsPlan.check.onlyUsed");
 }
 
 // ---------------------------------------------------------------------------
@@ -184,13 +145,9 @@ export type DueInfo =
   | { kind: "missing"; text: string; to: string }
   | { kind: "unknown"; text: string };
 
-export const LICENCE_BASIS =
-  "Most non-EEA licences must be exchanged within one year of taking residence; " +
-  "EEA licences need no exchange. Check Statens vegvesen for your country.";
+export const licenceBasis = (): string => t("carsPlan.check.licenceBasis");
 export const LICENCE_URL = "https://www.vegvesen.no/en/driving-licences/";
-export const WINTER_BASIS =
-  "Studded-tyre season and typical first snow; the legal duty is to have adequate tyres " +
-  "for the conditions.";
+export const winterBasis = (): string => t("carsPlan.check.winterBasis");
 export const WINTER_URL = "https://www.vegvesen.no/en/vehicles/own-and-maintain/tyres-and-wheels/";
 export const EV_TAX_URL = "https://www.skatteetaten.no/bedrift-og-organisasjon/avgifter/mva/kjop-og-salg-av-elbil/";
 
@@ -201,20 +158,20 @@ export function dueFor(item: ChecklistItem, inputs: DueInputs): DueInfo | null {
       if (!a) {
         return {
           kind: "missing",
-          text: "Add your arrival date on Your situation to see the deadline",
+          text: t("carsPlan.check.addArrival"),
           to: DRIVE_PATH,
         };
       }
-      return { kind: "date", iso: addMonths(a, 12), basis: LICENCE_BASIS, url: LICENCE_URL };
+      return { kind: "date", iso: addMonths(a, 12), basis: licenceBasis(), url: LICENCE_URL };
     }
     case "winter_tyres": {
       const from = inputs.startDate && ISO.test(inputs.startDate) ? inputs.startDate : inputs.today;
-      return { kind: "date", iso: nextAnniversary(from, 11, 1), basis: WINTER_BASIS, url: WINTER_URL };
+      return { kind: "date", iso: nextAnniversary(from, 11, 1), basis: winterBasis(), url: WINTER_URL };
     }
     case "ev_tax": {
       const p = inputs.pendingEvRule;
       if (p === undefined) return null;
-      if (p === "unknown") return { kind: "unknown", text: "could not check pending rules" };
+      if (p === "unknown") return { kind: "unknown", text: t("carsPlan.check.couldNotCheck") };
       if (p === null) return null;
       const iso =
         p.effective_from && ISO.test(p.effective_from)
@@ -223,9 +180,7 @@ export function dueFor(item: ChecklistItem, inputs: DueInputs): DueInfo | null {
       return {
         kind: "date",
         iso,
-        basis:
-          "Proposed change, not yet law: a reported change to VAT on electric cars. " +
-          "Applied in the results only once an official source is cited.",
+        basis: t("carsPlan.check.evTaxBasis"),
         url: EV_TAX_URL,
       };
     }
@@ -263,17 +218,19 @@ export interface ImpactRow {
   /** e.g. "± 2 340 kr / yr" or "up to 12 000 kr". */
   text: string;
   note: string;
+  /** True when `note` is backend prose, still English (028 R7). */
+  noteIsBackend: boolean;
 }
 
 function money(value: number, measure: Measure): string {
   if (measure === "per_km") return formatPerKm(value);
-  if (measure === "per_month") return `${formatNok(value * 12)} / yr`;
+  if (measure === "per_month") return t("carsPlan.impact.perYear", { value: formatNok(value * 12) });
   return formatNok(value);
 }
 
 function signed(value: number, measure: Measure): string {
   if (measure === "per_km") return formatPerKm(value);
-  if (measure === "per_month") return `${formatNokSigned(value * 12)} / yr`;
+  if (measure === "per_month") return t("carsPlan.impact.perYear", { value: formatNokSigned(value * 12) });
   return formatNokSigned(value);
 }
 
@@ -289,23 +246,26 @@ export function impactRows(data: ScenarioResponse | null): ImpactRow[] {
     const half = Math.round((insurance.high - insurance.low) / 2);
     out.push({
       id: "insurance_quotes",
-      label: "Real insurance quotes",
+      label: t("carsPlan.impact.insurance"),
       text: `± ${money(half, measure)}`,
-      note: insurance.note || "Quote range for your profile",
+      note: insurance.note || t("carsPlan.impact.insuranceNote"),
+      noteIsBackend: Boolean(insurance.note),
     });
     out.push({
       id: "claims_free_letter",
-      label: "Claims-free letter",
-      text: `up to ${signed(insurance.low, measure)}`,
-      note: "Low end of the insurance range if your bonus carries over",
+      label: t("carsPlan.impact.letter"),
+      text: t("carsPlan.impact.upTo", { value: signed(insurance.low, measure) }),
+      note: t("carsPlan.impact.letterNote"),
+      noteIsBackend: false,
     });
   }
   if (exit && option?.option_kind === "lease") {
     out.push({
       id: "lease_terms",
-      label: "Lease early-exit terms",
-      text: `up to ${signed(exit.high, measure)}`,
-      note: exit.note || "Worst exit point for the top lease",
+      label: t("carsPlan.impact.lease"),
+      text: t("carsPlan.impact.upTo", { value: signed(exit.high, measure) }),
+      note: exit.note || t("carsPlan.impact.leaseNote"),
+      noteIsBackend: Boolean(exit.note),
     });
   }
   return out;
@@ -322,7 +282,13 @@ export interface MarkdownInputs {
 }
 
 export function checklistMarkdown({ ticked, dues, modes, generatedOn }: MarkdownInputs): string {
-  const lines: string[] = ["# Norway car checklist", "", `Generated ${generatedOn}.`, ""];
+  // The date stays ISO (machine metadata, 028 R11); the words translate.
+  const lines: string[] = [
+    `# ${t("carsPlan.md.title")}`,
+    "",
+    t("carsPlan.md.generated", { date: generatedOn }),
+    "",
+  ];
   for (const g of CHECKLIST_GROUPS) {
     lines.push(`## ${g.title}`, "");
     for (const item of CHECKLIST_ITEMS.filter((i) => i.group === g.id)) {
@@ -332,9 +298,9 @@ export function checklistMarkdown({ ticked, dues, modes, generatedOn }: Markdown
       const d = dues.get(item.id);
       if (d?.kind === "date") {
         const due = formatDate(d.iso).replace(/ /g, " ");
-        lines.push(`  Due ${due} (estimate: ${d.basis})`);
+        lines.push(`  ${t("carsPlan.md.due", { date: due, basis: d.basis })}`);
       }
-      else if (d?.kind === "missing") lines.push(`  Due date: ${d.text}`);
+      else if (d?.kind === "missing") lines.push(`  ${t("carsPlan.md.dueDate", { text: d.text })}`);
     }
     lines.push("");
   }

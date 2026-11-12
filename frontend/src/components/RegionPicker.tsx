@@ -1,4 +1,5 @@
 import type { RegionInfo } from "../api/client";
+import { useT } from "../i18n/react";
 
 interface Props {
   regions: RegionInfo[];
@@ -8,12 +9,24 @@ interface Props {
 
 /** State selector for the cost layer (national region-on-demand). */
 export default function RegionPicker({ regions, state, onStateChange }: Props) {
+  const { t } = useT();
   const current = regions.find((r) => r.code === state);
-  const label = current?.region_label ?? "State";
+  // The backend sends the English word; known words are translated (028 R9).
+  const sent = current?.region_label;
+  const label =
+    sent === "Fylke"
+      ? t("map.locale.no.region")
+      : sent == null || sent === "State"
+        ? t("map.locale.us.region")
+        : sent;
   const option = (r: RegionInfo) => (
     <option key={r.code} value={r.code}>
       {/* Say what the number is — a bare "(484)" reads as noise. */}
-      {r.name} · {r.zip_count} {r.country === "NO" ? "areas" : "ZIPs"}
+      {r.name} ·{" "}
+      {t(r.country === "NO" ? "map.region.areas" : "map.region.zips", {
+        count: r.zip_count,
+        value: r.zip_count,
+      })}
     </option>
   );
   const us = regions.filter((r) => (r.country ?? "US") === "US");
@@ -31,8 +44,8 @@ export default function RegionPicker({ regions, state, onStateChange }: Props) {
           us.map(option)
         ) : (
           <>
-            <optgroup label="United States">{us.map(option)}</optgroup>
-            <optgroup label="Norway">{norway.map(option)}</optgroup>
+            <optgroup label={t("map.region.us")}>{us.map(option)}</optgroup>
+            <optgroup label={t("map.region.no")}>{norway.map(option)}</optgroup>
           </>
         )}
       </select>

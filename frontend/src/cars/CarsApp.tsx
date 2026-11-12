@@ -1,6 +1,8 @@
 // DriveCheap root (spec 022 R1, 023, 025 R1): routes under /drive-cheap/* plus
 // the state provider. Mounted from AppRoutes and loaded on demand.
 
+import "../i18n/registerCars";
+
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { DRIVE_PATH } from "../lib/productRoutes";

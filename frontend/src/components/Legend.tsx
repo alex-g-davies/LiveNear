@@ -1,4 +1,5 @@
 import { type ColorStop, type MetricDef, NO_DATA_COLOR } from "../config";
+import { useT } from "../i18n/react";
 import { formatMonthYear } from "../lib/format";
 
 interface Props {
@@ -17,10 +18,11 @@ interface Props {
  * sits under the list so a months-old snapshot is never mistaken for live.
  */
 export default function Legend({ metric, stops, budget, asOf }: Props) {
+  const { t } = useT();
   const showOverBudget = budget > 0;
   const vintage = formatMonthYear(asOf);
   return (
-    <div className="legend" aria-label={`${metric.label} legend`}>
+    <div className="legend" aria-label={t("map.legend.label", { metric: metric.label })}>
       <div className="legend-title">{metric.label}</div>
       <ul className="legend-list">
         {stops.map((stop, i) => {
@@ -37,16 +39,16 @@ export default function Legend({ metric, stops, budget, asOf }: Props) {
         })}
         <li className="legend-row">
           <span className="legend-swatch" style={{ background: NO_DATA_COLOR }} />
-          No data
+          {t("map.legend.noData")}
         </li>
         {showOverBudget && (
           <li className="legend-row">
             <span className="legend-swatch legend-swatch--faded" />
-            Over budget
+            {t("map.legend.overBudget")}
           </li>
         )}
       </ul>
-      {vintage && <p className="legend-vintage">Values as of {vintage} · Zillow ZHVI</p>}
+      {vintage && <p className="legend-vintage">{t("map.legend.vintage", { date: vintage })} · Zillow ZHVI</p>}
     </div>
   );
 }

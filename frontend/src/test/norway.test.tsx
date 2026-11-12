@@ -49,11 +49,12 @@ function record(over: Partial<ZipValue>): ZipValue {
   };
 }
 
+// Norwegian number style (028 R10): no-break-space groups, decimal comma.
 describe("locale (026 R15)", () => {
   it("shows kroner, metric units and a 24-hour clock in Norway", () => {
-    expect(NO_LOCALE.money(5_250_000)).toBe("5,250,000 kr");
-    expect(NO_LOCALE.moneyCompact(5_250_000)).toBe("5.3M kr");
-    expect(NO_LOCALE.perArea(98_381)).toBe("98,381 kr/m²");
+    expect(NO_LOCALE.money(5_250_000)).toBe("5\u00a0250\u00a0000 kr");
+    expect(NO_LOCALE.moneyCompact(5_250_000)).toBe("5,3M kr");
+    expect(NO_LOCALE.perArea(98_381)).toBe("98\u00a0381 kr/m²");
     expect(NO_LOCALE.reachArea(100)).toBe("259 km²");
     expect(NO_LOCALE.departure("2026-07-15T16:45")).toBe("Wed 16:45");
   });
