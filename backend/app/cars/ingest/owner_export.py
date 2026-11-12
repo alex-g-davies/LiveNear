@@ -60,6 +60,113 @@ TARGET_TO_VARIANT: dict[str, str] = {
 
 
 @dataclass(frozen=True)
+class SpecRule:
+    """Third export shape (2026-11-12): `target_variant` names only the model,
+    so the variant comes from the listing's free-text `spec` and its model
+    year. A rule matches when `include` is found, `exclude` is not, and the
+    year is in range. Listings that match no rule (other trims, or text too
+    vague to tell) are skipped, never guessed."""
+
+    variant_id: str
+    include: str
+    exclude: str
+    year_min: int
+    year_max: int
+
+    def matches(self, spec: str, year: int) -> bool:
+        return (
+            self.year_min <= year <= self.year_max
+            and re.search(self.include, spec, flags=re.IGNORECASE) is not None
+            and (not self.exclude or re.search(self.exclude, spec, flags=re.IGNORECASE) is None)
+        )
+
+
+# Model label -> rules, tried in order. Patterns read Norwegian ad text
+# ("hk" = hp). Model years follow each variant's `model_years` in the seed.
+TARGET_MODEL_RULES: dict[str, tuple[SpecRule, ...]] = {
+    "Tesla Model Y": (
+        # Long Range AWD: "Long Range", "LR" or plain "AWD"; never Performance
+        # or the 2024 Long Range RWD.
+        SpecRule(
+            "tesla-modely-lr-awd",
+            r"long\s*e?\s*range|\blr\b|\bawd\b|dual\s*motor",
+            r"performance|\bperf\b|\brwd\b|\bstandard\b",
+            2022,
+            2024,
+        ),
+        SpecRule(
+            "tesla-modely-rwd",
+            r"\brwd\b|\bstandard\b|\bbakhjul",
+            r"long\s*e?\s*range|\blr\b|\bawd\b|performance",
+            2023,
+            2024,
+        ),
+    ),
+    "VW ID.4": (
+        SpecRule(
+            "vw-id4-pro-rwd",
+            r"\bpro\b|\b77\s*kwh|\b204\s*hk|\b150\s*kw|\b1st\b|first\s*edition",
+            r"4\s*motion|\bawd\b|\bgtx\b|\b(?:174|265|299|313|340)\s*hk|\b(?:128|220)\s*kw|\bpure\b|\b52\s*kwh",
+            2021,
+            2023,
+        ),
+    ),
+    "Skoda Enyaq": (
+        SpecRule(
+            "skoda-enyaq-80-rwd",
+            r"(?<![\dx])80(?!\s*x|\d)",
+            r"\b80\s*x|\b85|\bvrs\b|\brs\b|\b4x4\b|\bawd\b|\b60\b",
+            2021,
+            2023,
+        ),
+    ),
+    "Hyundai Ioniq 5": (
+        SpecRule(
+            "hyundai-ioniq5-lr-rwd",
+            r"(long\s*range|\blr\b|\b7[237](?:[.,]\d)?\s*kwh).*(\brwd\b|\b2wd\b|bakhjul)|"
+            r"(\brwd\b|\b2wd\b|bakhjul).*(long\s*range|\blr\b|\b7[237](?:[.,]\d)?\s*kwh)",
+            r"\bawd\b|\b4wd\b|4x4|\bhtrac\b",
+            2021,
+            2023,
+        ),
+    ),
+    "Volvo XC40 Recharge": (
+        SpecRule(
+            "volvo-xc40-sm-er-82",
+            r"extended\s*range|\b82\s*kwh|\b252\s*hk",
+            r"\btwin\b|\bawd\b|\bp8\b|\b408\s*hk",
+            2024,
+            2024,
+        ),
+        SpecRule(
+            "volvo-xc40-sm-69",
+            r"single|\b231\s*hk|\b69\s*kwh|\bfwd\b|\bforhjul",
+            r"\btwin\b|\bawd\b|\bp8\b|\b408\s*hk|extended\s*range|\b82\s*kwh",
+            2022,
+            2023,
+        ),
+    ),
+    "Kia EV6": (
+        SpecRule(
+            "kia-ev6-lr-rwd",
+            r"(\b77(?:[.,]\d)?\s*kwh|long\s*range|\blr\b).*(\brwd\b|\b2wd\b|bakhjul)|"
+            r"(\brwd\b|\b2wd\b|bakhjul).*(\b77(?:[.,]\d)?\s*kwh|long\s*range|\blr\b)",
+            r"\bawd\b|\b4wd\b|\bgt\b(?!\s*-?\s*line)",
+            2022,
+            2024,
+        ),
+    ),
+}
+
+
+def match_spec(label: str, spec: str, year: int) -> str | None:
+    for rule in TARGET_MODEL_RULES.get(label, ()):
+        if rule.matches(spec, year):
+            return rule.variant_id
+    return None
+
+
+@dataclass(frozen=True)
 class TrimRule:
     """Match a free-text trim/spec of (make, model) to a variant, optionally
     only for a model-year window (facelifts are separate variants)."""
@@ -214,12 +321,14 @@ def convert_listings(
 ) -> Conversion:
     """Owner used-listings export -> listings contract rows.
 
-    Two export shapes are accepted: the first has `cohort` + `trim_match`
+    Three export shapes are accepted: the first has `cohort` + `trim_match`
     columns (kept when `trim_match == yes`); the second has a
     `target_variant` label and no trim column (the owner filtered by trim
-    before exporting). Kept: plain sales (`sales_form`/`sale_form` blank or
-    `sale`; lease take-overs and auctions are not asking prices) whose label
-    maps to a catalogue variant. The asking price is the
+    before exporting); the third has a model-level `target_variant` and the
+    variant is read from `spec` and the model year (`TARGET_MODEL_RULES`).
+    Kept: plain sales (`sales_form`/`sale_form` blank or `sale`; lease
+    take-overs and auctions are not asking prices) whose label maps to a
+    catalogue variant. The asking price is the
     price **excluding** the re-registration fee when the export has it
     (`price_basis = excl_rereg`), because the engine charges that fee as its
     own line item and a seller never receives it; otherwise the total price
@@ -240,6 +349,12 @@ def convert_listings(
                 continue
         label = str(r.get("cohort") or r.get("target_variant") or "").strip()
         vid = cmap.get(label)
+        if vid is None and label in TARGET_MODEL_RULES:
+            year = _int(r.get("model_year")) or 0
+            vid = match_spec(label, str(r.get("spec") or ""), year)
+            if vid is None:
+                out.skipped[f"spec:unmatched:{label}"] += 1
+                continue
         if vid is None:
             out.skipped["cohort:unmapped"] += 1
             continue
@@ -266,8 +381,12 @@ def convert_listings(
                 "model_year": str(r.get("model_year") or "").strip(),
                 "first_reg_month": first_reg[:7] if re.match(r"^\d{4}-\d{2}", first_reg) else "",
                 "battery_kwh": str(r.get("battery_kwh") or "").strip(),
-                "drive": str(r.get("drivetrain") or "").strip().upper(),
-                "power_kw_or_hp": f"{power_hp} hp" if power_hp else "",
+                # The matched variant fixes drive and power; use it when the
+                # export has no column for them (third shape).
+                "drive": str(r.get("drivetrain") or (v.drive if v else "")).strip().upper(),
+                "power_kw_or_hp": f"{power_hp} hp"
+                if power_hp
+                else (f"{v.power_kw} kW" if v and v.power_kw else ""),
                 "km": _int(r.get("mileage_km")),
                 "asking_price_nok": ask,
                 "price_basis": "excl_rereg" if excl else "incl_rereg",

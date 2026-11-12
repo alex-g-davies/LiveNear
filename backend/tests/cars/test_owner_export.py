@@ -136,6 +136,68 @@ def test_both_export_shapes_convert_in_one_run():
     assert [r["variant_id"] for r in conv.rows] == ["tesla-model3-rwd", "nissan-leaf-40"]
 
 
+def _model_listing(target: str, spec: str, year: int = 2023, **over):
+    """Third export shape (2026-11-12): model-level label, trim only in `spec`,
+    no drivetrain or power columns."""
+    return _target_listing(
+        target_variant=target,
+        spec=spec,
+        model_year=str(year),
+        drivetrain="",
+        power_hp="",
+        first_reg="",
+        **over,
+    )
+
+
+def test_model_level_export_reads_the_variant_from_the_spec_text():
+    cases = [
+        ("Tesla Model Y", "533KM - Long Range AWD Hengerfeste", 2023, "tesla-modely-lr-awd"),
+        ("Tesla Model Y", "AWD 533km Berlin/ AMD Ryzen", 2022, "tesla-modely-lr-awd"),
+        ("Tesla Model Y", "Standard Range RWD", 2024, "tesla-modely-rwd"),
+        ("VW ID.4", "PRO LIMITED 77KWH 204HK / KROK", 2023, "vw-id4-pro-rwd"),
+        ("Skoda Enyaq", "iV80 Sportline", 2022, "skoda-enyaq-80-rwd"),
+        ("Hyundai Ioniq 5", "LR RWD Premium", 2022, "hyundai-ioniq5-lr-rwd"),
+        ("Volvo XC40 Recharge", "Recharge 231hk FWD Core", 2022, "volvo-xc40-sm-69"),
+        ("Volvo XC40 Recharge", "Extended Range Ultimate", 2024, "volvo-xc40-sm-er-82"),
+        ("Kia EV6", "Active 77 kWh RWD", 2023, "kia-ev6-lr-rwd"),
+    ]
+    for target, spec, year, want in cases:
+        assert oe.match_spec(target, spec, year) == want, (target, spec)
+
+
+def test_model_level_export_never_guesses_other_trims_or_years():
+    cases = [
+        ("Tesla Model Y", "Performance AWD 534HK", 2023),
+        ("Tesla Model Y", "Long Range AWD (507km)", 2021),  # not a catalogue year
+        ("Tesla Model Y", "Long Range RWD", 2024),  # a different variant
+        ("VW ID.4", "GTX 4MOTION 77KWH", 2022),
+        ("VW ID.4", "Pro 77kWh 174hk", 2022),  # lower-power Pro
+        ("VW ID.4", "Hengerfeste Ryggekamera ACC", 2023),  # trim not stated
+        ("Skoda Enyaq", "iV 80x Sportline", 2023),
+        ("Skoda Enyaq", "iV60 Lounge", 2023),
+        ("Hyundai Ioniq 5", "LR AWD Premium", 2022),
+        ("Hyundai Ioniq 5", "Premium 2WD", 2022),  # battery not stated
+        ("Volvo XC40 Recharge", "Recharge Twin 408hk AWD", 2023),
+        ("Kia EV6", "GT-Line AWD", 2022),
+    ]
+    for target, spec, year in cases:
+        assert oe.match_spec(target, spec, year) is None, (target, spec, year)
+
+
+def test_model_level_export_fills_drive_and_power_from_the_variant():
+    rows = [
+        _model_listing("Kia EV6", "Exclusive 77 kWh RWD", make="Kia", model="EV6"),
+        _model_listing("Kia EV6", "GT-Line AWD", make="Kia", model="EV6"),
+    ]
+    conv = oe.convert_listings(rows, VEHICLES)
+    assert conv.n == 1 and conv.skipped == {"spec:unmatched:Kia EV6": 1}
+    row = conv.rows[0]
+    assert row["variant_id"] == "kia-ev6-lr-rwd"
+    assert row["drive"] == "RWD" and row["power_kw_or_hp"].endswith(" kW")
+    assert row["first_reg_month"] == ""
+
+
 def test_lease_id3_pro_58_maps_to_the_performance_variant():
     assert oe.match_trim("Volkswagen", "ID.3", "ID.3 Pro Limited 58KWH", 2023) == (
         "vw-id3-pro-performance-58"
