@@ -1,6 +1,6 @@
 # Market model backtest (eb-v1)
 
-Rendered by `app.cars.market.report` from **owner listings CSV (listings.csv)**, as of 2026-11-02. Model status: `live`.
+Rendered by `app.cars.market.report` from **owner listings CSV (listings.csv)**, as of 2026-11-12. Model status: `live`.
 
 Leave-one-listing-out CV on the cohort fit set (one row per listing, latest
 `listed` snapshot): the cohort intercept is refitted without the listing
@@ -13,32 +13,32 @@ interval on that share.
 
 ## Data
 
-- Distinct listings in the fit: 1548
+- Distinct listings in the fit: 1773
 - Cohorts (variant x model year): 52
-- Weekly snapshots: 2
+- Weekly snapshots: 3
 - Variants with a fitted cohort: 21
 
 ## Overall
 
 | Set | n | MAPE | 80 % PI coverage | Wilson 95 % |
 |---|---:|---:|---:|---|
-| all listings | 1548 | 5.2 % | 77.5 % | 75.3 % to 79.5 % |
+| all listings | 1773 | 5.0 % | 76.6 % | 74.6 % to 78.5 % |
 
 ## By segment
 
 | Segment | n | MAPE | 80 % PI coverage | Wilson 95 % |
 |---|---:|---:|---:|---|
-| ev-mid | 475 | 5.0 % | 80.6 % | 76.8 % to 83.9 % |
+| ev-mid | 559 | 5.1 % | 76.0 % | 72.3 % to 79.4 % |
 | ev-small | 590 | 6.2 % | 78.5 % | 75.0 % to 81.6 % |
-| ev-suv | 483 | 4.0 % | 73.1 % | 69.0 % to 76.8 % |
+| ev-suv | 624 | 3.9 % | 75.3 % | 71.8 % to 78.5 % |
 
 ## By age band
 
 | Age at as-of | n | MAPE | 80 % PI coverage | Wilson 95 % |
 |---|---:|---:|---:|---|
 | <2y | 4 | 3.0 % | 100.0 % | 51.0 % to 100.0 % |
-| 2-4y | 693 | 4.4 % | 76.9 % | 73.6 % to 79.9 % |
-| 4y+ | 851 | 5.8 % | 77.8 % | 74.9 % to 80.5 % |
+| 2-4y | 823 | 4.4 % | 76.9 % | 73.9 % to 79.7 % |
+| 4y+ | 946 | 5.6 % | 76.2 % | 73.4 % to 78.8 % |
 
 ## Temporal backtest
 
@@ -54,7 +54,7 @@ Not run: fewer than 100 listings were removed after the cutoff week. Leave-one-o
 
 ## Fitted global terms
 
-- Dealer premium delta: 0.0185 log points (`live`, Pooled dealer term of within-cohort residuals (eb-v1))
+- Dealer premium delta: 0.0187 log points (`live`, Market model: price gap between dealer and private sales)
 - Used-price drift: 0 % per year (`estimate`, P10-P90 -6 to 2)
 - Ask-to-sale discount: 0 % (`estimate`, Placeholder until removed listings are tracked)
 - Fleet / taxi and warranty terms: not fitted in v1 (columns carried through).
@@ -63,11 +63,11 @@ Not run: fewer than 100 listings were removed after the cutoff week. Leave-one-o
 
 | Segment | a | b | c | sigma_resid | sigma_per_year | beta_logkm |
 |---|---:|---:|---:|---:|---:|---:|
-| ev-mid | 2.4724 | -0.1008 | -0.2237 | 0.053 | 0.080 | -0.2237 |
-| ev-small | 1.6988 | -0.0699 | -0.1767 | 0.091 | 0.090 | -0.1767 |
-| ev-suv | 2.3220 | -0.1150 | -0.2041 | 0.050 | 0.080 | -0.2041 |
+| ev-mid | 2.5359 | -0.0983 | -0.2299 | 0.050 | 0.080 | -0.2299 |
+| ev-small | 1.7006 | -0.0699 | -0.1767 | 0.091 | 0.090 | -0.1767 |
+| ev-suv | 2.3495 | -0.1168 | -0.2058 | 0.050 | 0.080 | -0.2058 |
 
 ## Notes
 
-- drift and ask-to-sale kept at the priors: 2 weekly snapshot(s) < 8
+- drift and ask-to-sale kept at the priors: 3 weekly snapshot(s) < 8
 - temporal backtest skipped: fewer than 100 listings removed after the cutoff week

@@ -72,6 +72,12 @@ Run order: `scripts/cars_convert_owner_export.py` -> `python -m app.cars.ingest.
 |---|---|---|---|---|
 | Owner used-listings export, second batch (`target_variant` shape) | 589 rows pre-filtered by trim for 12 new variants; 577 sale rows kept (8 auctions, 4 lease take-overs skipped), 1 548 listings stored in total | Same converter (both shapes, several files per run) -> `ingest.runner` -> bundle | As above: private file, only derived cohort aggregates committed. | 2026-11-02 |
 
+## Owner exports (2026-11-12)
+
+| Source | Data | Access | Terms decision | Date |
+|---|---|---|---|---|
+| Owner used-listings export, third batch (model-level `target_variant`, 20 models) | 3 075 used listings collected by hand by the owner (owner confirmed, 2026-11-12). 441 kept for 8 catalogue variants of 6 models (Model Y LR AWD 251, ID.4 Pro 76, Enyaq 80 57, XC40 SM 69 20, Model Y RWD 14, Ioniq 5 LR RWD 11, EV6 LR RWD 8, XC40 SM ER 82 4); 896 skipped where the ad text names another trim or none (`TARGET_MODEL_RULES` never guesses); 1 738 rows for the 14 models not in the catalogue left in the private file. 1 773 distinct listings in the fit. | Same converter (third shape: variant read from the ad's trim text and model year) -> `ingest.runner` -> bundle | As above: private file, only derived cohort aggregates committed. The export has no first-registration, drivetrain or power columns: drive and power are taken from the matched variant; the ingest health check's first-registration empty-rate alarm (1 % -> 23 %) is expected for this shape, and that field is only used in the listing drill-down. | 2026-11-12 |
+
 ## Running-cost sources (spec 024, read 2026-11-02)
 
 | Source | Used for | Figure as published | Terms decision |
