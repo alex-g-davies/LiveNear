@@ -102,9 +102,15 @@ def load_vehicles(path: Path = SEED_DIR / "vehicles.yaml") -> list[VariantRecord
                 auto_precondition=bool(v.get("auto_precondition", True)),
                 tyre_size=str(v.get("tyre_size", "")),
                 weight_kg=v.get("weight_kg"),
-                efficiency_wh_per_km=seed_in(
-                    pick("efficiency_wh_per_km"), f"{vid}.efficiency", as_of
-                ),
+                fuel=v.get("fuel"),
+                efficiency_wh_per_km=seed_in(v["efficiency_wh_per_km"], f"{vid}.efficiency", as_of)
+                if v.get("efficiency_wh_per_km")
+                else None,
+                fuel_l_per_100km=seed_in(
+                    v["fuel_l_per_100km"], f"{vid}.fuel_use", as_of, kind=Decimal
+                )
+                if v.get("fuel_l_per_100km")
+                else None,
                 winter_factor=seed_in(
                     pick("winter_factor"), f"{vid}.winter_factor", as_of, kind=Decimal
                 ),
@@ -145,6 +151,8 @@ def load_rates(path: Path = SEED_DIR / "rates.yaml") -> RatesRecord:
         car_loan_rate_pct=i("car_loan_rate_pct", kind=Decimal),
         home_ore_per_kwh=i("home_ore_per_kwh"),
         public_ore_per_kwh=i("public_ore_per_kwh"),
+        petrol_ore_per_litre=i("petrol_ore_per_litre") if "petrol_ore_per_litre" in d else None,
+        diesel_ore_per_litre=i("diesel_ore_per_litre") if "diesel_ore_per_litre" in d else None,
         new_car_fees_ore=i("new_car_fees_nok", money=True),
         loan_establishment_fee_ore=i("loan_establishment_fee_nok", money=True),
         loan_monthly_fee_ore=i("loan_monthly_fee_nok", money=True),

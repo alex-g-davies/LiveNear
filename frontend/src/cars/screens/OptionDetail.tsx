@@ -29,6 +29,7 @@ import {
   readableDates,
   sourceParts,
 } from "../lib/format";
+import { energyName } from "../lib/market";
 import { MODE_LABELS, estimateLabels, measureDef, measureInSentence } from "../lib/measures";
 import { useCarState } from "../state";
 import { DRIVE_PATH, drivePath } from "../../lib/productRoutes";
@@ -174,6 +175,7 @@ export default function OptionDetail() {
     isLease
       ? t("carsCompare.leaseTerm", { term: monthsText(36) })
       : t("carsCompare.detail.modelYear", { mode: MODE_LABELS[option.option_kind], year: r.model_year }),
+    energyName(r.energy_type, r.fuel),
     option.seller_type === "dealer"
       ? t("carsCompare.detail.fromDealer")
       : option.seller_type === "private"

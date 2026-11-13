@@ -71,6 +71,9 @@ def _replace_inputs(obj: Any, overrides: dict[str, Any], as_of: date) -> Any:
         return new_items if any(a is not b for a, b in zip(new_items, obj, strict=True)) else obj
     if isinstance(obj, list):
         return [_replace_inputs(x, overrides, as_of) for x in obj]
+    if isinstance(obj, dict):  # e.g. TollRing.fuel_rates (029 R4)
+        new_map = {k: _replace_inputs(v, overrides, as_of) for k, v in obj.items()}
+        return new_map if any(new_map[k] is not obj[k] for k in obj) else obj
     return obj
 
 

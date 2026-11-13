@@ -165,7 +165,11 @@ def cohorts(
                 status=c.status,
                 as_of=c.as_of,
                 range_km_wltp=v.range_km_wltp,
-                efficiency_wh_per_km=v.efficiency_wh_per_km.value,
+                efficiency_wh_per_km=v.efficiency_wh_per_km.value
+                if v.efficiency_wh_per_km
+                else None,
+                fuel=v.fuel,
+                fuel_l_per_100km=v.fuel_l_per_100km.value if v.fuel_l_per_100km else None,
                 accel_0_100_s=v.accel_0_100_s,
                 meets_must_haves=_meets(v, must_have or []),
             )

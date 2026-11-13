@@ -72,10 +72,14 @@ class SpecRule:
     exclude: str
     year_min: int
     year_max: int
+    # FINN `fuel` values the variant accepts (029 R8); empty = any. Keeps,
+    # say, a petrol C-HR or a mild-hybrid diesel V60 out of a cohort.
+    fuels: tuple[str, ...] = ()
 
-    def matches(self, spec: str, year: int) -> bool:
+    def matches(self, spec: str, year: int, fuel: str = "") -> bool:
         return (
             self.year_min <= year <= self.year_max
+            and (not self.fuels or fuel.strip().lower() in self.fuels)
             and re.search(self.include, spec, flags=re.IGNORECASE) is not None
             and (not self.exclude or re.search(self.exclude, spec, flags=re.IGNORECASE) is None)
         )
@@ -159,9 +163,161 @@ TARGET_MODEL_RULES: dict[str, tuple[SpecRule, ...]] = {
 }
 
 
-def match_spec(label: str, spec: str, year: int) -> str | None:
+# Spec 029: the 14 models added with fuel-car support, one variant each (the
+# most-listed trim and years in the 2026-11-12 export).
+TARGET_MODEL_RULES.update(
+    {
+        "Audi Q4 e-tron": (
+            SpecRule(
+                "audi-q4-50-quattro",
+                r"\b50\b",
+                r"\b(?:35|40|45|55)\b|\bs-?line\s*55",
+                2022,
+                2024,
+                ("bev",),
+            ),
+        ),
+        "BMW i4": (
+            SpecRule(
+                "bmw-i4-m50",
+                r"\bm\s*-?50\b|\b544\s*hk",
+                r"edrive\s*(?:35|40)|\bi4\s*(?:35|40)\b|\bm60\b",
+                2022,
+                2024,
+                ("bev",),
+            ),
+        ),
+        "Polestar 2": (
+            SpecRule(
+                "polestar-2-lr-dual-motor",
+                r"dual\s*motor|\bawd\b|\blrdm\b|\b4x4\b|\b408\s*hk",
+                r"performance|\bsingle\b|\bstandard\b|\bbst\b|\b476\s*hk",
+                2021,
+                2023,
+                ("bev",),
+            ),
+        ),
+        "Porsche Taycan": (
+            SpecRule(
+                "porsche-taycan-4-cross-turismo",
+                r"cross\s*turismo|\bct\b",
+                r"\b4s\b|\bturbo\b|\bgts\b|sport\s*turismo",
+                2021,
+                2023,
+                ("bev",),
+            ),
+        ),
+        "Toyota Yaris": (
+            SpecRule(
+                "toyota-yaris-15-hybrid",
+                r"hybrid|\b1[.,]5\b|\b116\s*hk|\b130\s*hk",
+                r"\bgr\s*yaris\b|\bcross\b|\b261\s*hk",
+                2020,
+                2024,
+                ("hev",),
+            ),
+        ),
+        "Toyota Corolla": (
+            SpecRule(
+                "toyota-corolla-18-hybrid",
+                r"\b1[.,]8\b|\b122\s*hk|\b140\s*hk",
+                r"\b2[.,]0\b|\b18[04]\s*hk|\b196\s*hk",
+                2019,
+                2024,
+                ("hev",),
+            ),
+        ),
+        "Toyota C-HR": (
+            SpecRule(
+                "toyota-chr-18-hybrid",
+                r"\b1[.,]8|\b122\s*hk|\b140\s*hk|\b8i\b",
+                r"\b2[.,]0\b|\b18[04]\s*hk|\b196\s*hk|\bgr\s*sport",
+                2019,
+                2023,
+                ("hev",),
+            ),
+        ),
+        "Toyota RAV4": (
+            SpecRule(
+                "toyota-rav4-25-hybrid-awd",
+                r"awd|\b4x4\b|\b4wd\b|\b222\s*hk",
+                r"\b2wd\b|\bfwd\b|plug-?in|\bphev\b|\b306\s*hk|\b218\s*hk",
+                2019,
+                2024,
+                ("hev",),
+            ),
+        ),
+        "VW Golf": (
+            SpecRule(
+                "vw-golf-etsi",
+                r"e-?tsi",
+                r"\bgti\b|\bgte\b|\bgtd\b|\bR\b|\btdi\b|e-?hybrid",
+                2020,
+                2024,
+                ("hev", "petrol"),
+            ),
+        ),
+        "Skoda Octavia": (
+            SpecRule(
+                "skoda-octavia-20-tdi-4x4",
+                r"(?=.*\b(?:4x4|4wd)\b)(?=.*\b150\s*(?:hk|d)\b)",
+                r"\b(?:184|200)\s*hk|\bv?rs\b",
+                # Gen 3 (2019) and gen 4 (2021-24) share the 150 hk 4x4 DSG; no
+                # 2020 car was listed with it (generation change).
+                2019,
+                2024,
+                ("diesel",),
+            ),
+        ),
+        "Skoda Kodiaq": (
+            SpecRule(
+                "skoda-kodiaq-20-tdi-4x4",
+                r"(?=.*\b4x4\b)(?=.*\b(?:190|193|200)\s*hk)",
+                r"\b150\s*hk|\brs\b|\b240\s*hk",
+                2019,
+                2024,
+                ("diesel",),
+            ),
+        ),
+        "VW Tiguan": (
+            SpecRule(
+                "vw-tiguan-20-tdi-4motion",
+                r"(?=.*\b150\s*(?:hk|tdi))(?=.*(?:4\s*m(?:otion)?\b|\b4x4\b|\bawd\b))",
+                r"\b(?:190|200|240)\s*(?:hk|tdi)|allspace",
+                2019,
+                2023,
+                ("diesel",),
+            ),
+        ),
+        "Volvo V60": (
+            SpecRule(
+                "volvo-v60-d4",
+                r"\bd4\b|\b190\s*hk",
+                r"\bd3\b|\bb4\b|\b150\s*hk|\bt[4-8]\b|recharge|cross\s*country",
+                2019,
+                2021,
+                ("diesel",),
+            ),
+        ),
+        "Toyota Land Cruiser": (
+            # Passenger-car registrations only; vans are skipped before this
+            # (029 R8). Estimate-only cohort (owner, 2026-11-13).
+            SpecRule(
+                "toyota-landcruiser-28-d4d",
+                r"\b2[.,]8|d-?4d|\b204\s*hk|\b177\s*hk|\bgx\b|\bvx\b|\bdlx\b",
+                r"\b3[.,]0\b|\bv8\b|\b300\b",
+                2019,
+                2023,
+                ("diesel",),
+            ),
+        ),
+    }
+)
+
+
+def match_spec(label: str, spec: str, year: int, fuel: str = "") -> str | None:
     for rule in TARGET_MODEL_RULES.get(label, ()):
-        if rule.matches(spec, year):
+        if rule.matches(spec, year, fuel):
             return rule.variant_id
     return None
 
@@ -342,6 +498,11 @@ def convert_listings(
         if form != "sale":
             out.skipped[f"sales_form:{form}"] += 1
             continue
+        # Vans (varebil) have other taxes and VAT; out of scope (029 R8).
+        reg_class = _norm(r.get("registration_class"))
+        if reg_class == "varebil":
+            out.skipped["registration:varebil"] += 1
+            continue
         if "trim_match" in r:
             match = _norm(r.get("trim_match"))
             if match != "yes":
@@ -351,7 +512,7 @@ def convert_listings(
         vid = cmap.get(label)
         if vid is None and label in TARGET_MODEL_RULES:
             year = _int(r.get("model_year")) or 0
-            vid = match_spec(label, str(r.get("spec") or ""), year)
+            vid = match_spec(label, str(r.get("spec") or ""), year, str(r.get("fuel") or ""))
             if vid is None:
                 out.skipped[f"spec:unmatched:{label}"] += 1
                 continue

@@ -24,7 +24,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .engine.models import Drive, EnergyType, In, Status
+from .engine.models import Drive, EnergyType, Fuel, In, Status
 
 ListingsMode = Literal["r2", "fixture", "unavailable"]
 
@@ -65,7 +65,9 @@ class VariantRecord(BaseModel):
     auto_precondition: bool = True
     tyre_size: str = ""
     weight_kg: int | None = None
-    efficiency_wh_per_km: In[int]
+    fuel: Fuel | None = None  # hybrid and ice only (029 R1)
+    efficiency_wh_per_km: In[int] | None = None  # electric cars
+    fuel_l_per_100km: In[Decimal] | None = None  # fuel cars, WLTP plus real-world uplift
     winter_factor: In[Decimal]
     tyre_set_ore: In[int]
     tyre_life_km: In[int]
@@ -189,6 +191,9 @@ class RatesRecord(BaseModel):
     car_loan_rate_pct: In[Decimal]  # market nominal rate with P10–P90 range
     home_ore_per_kwh: In[int]
     public_ore_per_kwh: In[int]
+    # Pump prices incl. taxes, øre per litre with P10-P90 (029 R2).
+    petrol_ore_per_litre: In[int] | None = None
+    diesel_ore_per_litre: In[int] | None = None
     cpi_index: In[Decimal] | None = None
     policy_rate_pct: In[Decimal] | None = None
     new_car_fees_ore: In[int]  # delivery + registration handling default

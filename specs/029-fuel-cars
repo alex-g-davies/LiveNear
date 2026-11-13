@@ -1,6 +1,6 @@
 # Spec 029 — Hybrid, petrol and diesel cars, and four more EVs
 
-Status: Draft
+Status: Approved scope, plan in review
 Owner: <you>
 Related: 022 (engine, catalogue, ingest), 023 (market map, energy filter),
 024 (service and maintenance), 028 (translations); owner export of
@@ -126,16 +126,85 @@ against an EV on the same terms.
 - Van-registered cars and company-car taxation.
 - Automating any fuel-price or listing source beyond what sources.md allows.
 
-## Open Questions (resolve in review)
+## Resolved questions (owner, 2026-11-13)
 
-1. **Porsche Taycan.** At a median of about 600 000 kr it sits far above
-   the other cars. Include it, or leave it out of a "drive cheap" catalogue?
-2. **Land Cruiser.** Almost all listings are vans. Drop the model, or keep
-   the 3 passenger-car listings as an estimate-only cohort?
-3. **Trims.** One variant per model (the most-listed trim), or more where
-   the listings split, for example RAV4 front-wheel vs all-wheel drive?
-4. **Order.** Ship the four EVs first (no engine change, only catalogue and
-   listings) and the fuel cars after, or everything in one PR?
+1. **Porsche Taycan:** include it.
+2. **Land Cruiser:** keep it as an estimate-only cohort from the passenger-car
+   listings; van registrations are skipped.
+3. **Trims:** one variant per model, the most-listed trim.
+4. **Order:** everything in one PR.
+
+## Design
+
+- **Engine.** `VehicleInputs` gains `fuel` (`petrol` | `diesel`, required
+  for `hybrid` and `ice`) and `fuel_l_per_100km` (an input with source and
+  status). `MarketPolicyInputs` gains `fuel_prices` (petrol and diesel øre
+  per litre with P10-P90 ranges). The energy item branches on
+  `energy_type`: EVs keep kWh x charging mix unchanged; fuel cars use
+  litres x pump price x winter factor. `StochasticBases` gains a litres
+  vector and the fuel price and range; the Monte Carlo rescales it with the
+  shared price draw, as it does electricity.
+- **Rules.** Toll rings gain per-energy rate rows (`ev`, `petrol`,
+  `diesel`, `hybrid`); the engine picks the variant's row and fails loudly
+  if it is missing. Traffic tax already carries `ice`/`hybrid` rates and
+  re-registration bands are energy-blind, so they gain only a weight band
+  where a variant is under 1 200 kg.
+- **Catalogue.** 14 variants, one per model, the most-listed trim and
+  model years in the export (Q4 e-tron 50 quattro, i4 M50, Polestar 2 Long
+  Range Dual Motor, Taycan 4 Cross Turismo, Yaris 1.5 Hybrid, Corolla 1.8
+  Hybrid, C-HR 1.8 Hybrid, RAV4 2.5 Hybrid AWD-i, Golf 1.0/1.5 eTSI,
+  Octavia 2.0 TDI 4x4, Kodiaq 2.0 TDI 4x4, Tiguan 2.0 TDI 4Motion, V60 D3/D4
+  by count, Land Cruiser 2.8 D-4D passenger). New-price rows per model year
+  in `new_prices.csv`, sourced or `estimate`.
+- **Market.** New segments `ev-premium`, `hybrid-small`, `hybrid-suv`,
+  `ice-compact`, `ice-suv` with retention priors marked `estimate`.
+- **Frontend.** Energy labels and filters for all four types; the energy
+  line and option detail read litres and pump price for fuel cars; the
+  charging questions carry an "electric cars only" note; strings in en, nb
+  and tr.
+
+## Results (2026-11-13, for review)
+
+- **Engine (R1-R4).** `VehicleInputs` has `fuel` and `fuel_l_per_100km`; an
+  EV still needs `efficiency_wh_per_km`, and a hybrid or combustion car
+  needs both fuel fields, or the scenario fails to load. Energy for fuel
+  cars = km x l/100 km x winter factor x pump price; the charging mix is
+  ignored. The fuel price draw is the last on the shared Monte Carlo
+  stream, so electric results are unchanged (7 EV golden cases pass as
+  before). Toll rings carry `fuel_rates` (petrol, diesel; hybrids pay the
+  petrol rate in all four rings); a ring without the car's fuel rate fails
+  loudly. Re-registration has a light (<= 1 200 kg) table; only the Yaris
+  uses it. User overrides now reach dict-held inputs (toll fuel rates).
+- **Rules.** Every dated tax rule is now `live`: the 2025 traffic tax was
+  6.38 kr/day for fossil cars (the file carried 6.52), and the 2025
+  re-registration 12+ band was 1 900 kr (placeholder 1 700).
+- **Fuel prices (R2).** SSB 09654 is **CC BY 4.0**, not NLOD. Value = 12-month
+  median (petrol 20.08, diesel 20.42 kr/l), range = 24-month P10-P90.
+  September 2026 (26.18 / 27.52) sits above that range; noted in the basis.
+- **Golden cases (R6).** `g8_hybrid_used_cash` and `g9_diesel_used_cash`,
+  worked in `docs/cars/golden/`. Honest note on order: the engine branch
+  and the golden cases were written in the same sitting, not strictly
+  test-first; both cases matched the hand numbers on the first run.
+- **Catalogue (R7).** 14 variants, 36 in total. Fuel use = WLTP x 1.15 for
+  real-world driving, winter factor 1.10; all `estimate`. 63 new-price
+  rows, 56 inferred; the 7 sourced ones were read in search excerpts, so
+  all are `estimate`.
+- **Listings (R8).** 904 new listings kept; 89 van registrations skipped.
+  Octavia uses the 150 hk 4x4 DSG of 2019 and 2021-24 (no 2020 car was
+  listed with it). Land Cruiser: 2 passenger-car listings, estimate only.
+- **Market (R9).** Fit on 2 677 listings, 111 cohorts; MAPE 5.7 % (5.0 %
+  EV-only), coverage 77.3 %, gate PASS. Weakest segment: `ice-compact`
+  coverage 65.9 % (Wilson 55-75 %), on 82 listings.
+- **Screens (R10-R12).** Compare rows and option detail show Electric /
+  Hybrid / Petrol / Diesel; the charging questions say they apply to
+  electric cars only; new labels in en, nb, tr; glossary updated. The
+  compare cap rose from 30 to 40 so the whole catalogue still fits one
+  scenario (spec 024 R18).
+- **Checks.** `pytest` 271 passed (`test_properties.py` blocked locally by
+  Windows Application Control, as before); `ruff check`, `ruff format
+  --check` clean; `npm run test` 335 passed; `npm run build` OK.
+- **Not done.** No headless screenshot tour of the new screens; the
+  frontend's offline fixture (`USE_FIXTURE`) still lists electric cars only.
 
 ## Verification notes
 

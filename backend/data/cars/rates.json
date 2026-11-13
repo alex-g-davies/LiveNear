@@ -36,6 +36,30 @@
    "high": "750"
   }
  },
+ "petrol_ore_per_litre": {
+  "id": "rates.petrol_ore_per_litre",
+  "value": 2008,
+  "source": "SSB table 09654, bensin 95 blyfri, monthly average pump price (CC BY 4.0), https://www.ssb.no/statbank/table/09654",
+  "as_of": "2026-09-30",
+  "status": "estimate",
+  "basis": "Median of the last 12 months (2025-10 to 2026-09); range is the P10-P90 of the last 24 months. September 2026 was 26.18 kr/l, above that range; the owner can enter today's pump price",
+  "range": {
+   "low": "1935",
+   "high": "2211"
+  }
+ },
+ "diesel_ore_per_litre": {
+  "id": "rates.diesel_ore_per_litre",
+  "value": 2042,
+  "source": "SSB table 09654, avgiftspliktig diesel, monthly average pump price (CC BY 4.0), https://www.ssb.no/statbank/table/09654",
+  "as_of": "2026-09-30",
+  "status": "estimate",
+  "basis": "Median of the last 12 months (2025-10 to 2026-09); range is the P10-P90 of the last 24 months. September 2026 was 27.52 kr/l, above that range; the owner can enter today's pump price",
+  "range": {
+   "low": "1909",
+   "high": "2276"
+  }
+ },
  "cpi_index": null,
  "policy_rate_pct": null,
  "new_car_fees_ore": {

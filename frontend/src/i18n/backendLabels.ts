@@ -41,12 +41,14 @@ export function materialLabel(materialId: string, fallback: string): string {
 // Same order as INPUT_LABELS, so suffix matching picks the same entry.
 const INPUT_KEYS = [
   "price", "fees", "delivery_months", "loan_rate", "loan_establishment_fee", "loan_monthly_fee",
-  "exit_friction_pct", "insurance_annual", "efficiency", "winter_factor", "tyre_set", "tyre_life_km",
+  "exit_friction_pct", "insurance_annual", "efficiency", "fuel_use", "winter_factor", "tyre_set", "tyre_life_km",
   "service_price", "service_first_price", "service_price_after_7y", "wear_per_year", "repair_allowance",
   "repair_ev_factor", "repair_in_warranty_factor", "inspection_fee", "wheel_change", "toll_offpeak",
-  "toll_rush", "toll_ring", "fun_score", "new_price", "resale_path", "resale_retention", "lease_monthly",
+  "toll_rush", "toll_ring", "toll_petrol_offpeak", "toll_petrol_rush", "toll_diesel_offpeak",
+  "toll_diesel_rush", "fun_score", "new_price", "resale_path", "resale_retention", "lease_monthly",
   "lease_upfront", "lease_fees", "lease_km_cap", "lease_excess_km_fee", "lease_end_fee", "early_exit_pct",
   "early_exit_recovery", "early_exit_table", "charging_home", "charging_public", "home_ore_per_kwh",
-  "public_ore_per_kwh", "monthly", "upfront", "km_cap", "excess_km_fee", "end_fee", "dealer_premium",
+  "public_ore_per_kwh", "fuel_petrol", "fuel_diesel", "petrol_ore_per_litre", "diesel_ore_per_litre",
+  "monthly", "upfront", "km_cap", "excess_km_fee", "end_fee", "dealer_premium",
   "ask_to_sale_discount", "used_price_drift", "rental_per_month", "materiality_threshold",
 ];

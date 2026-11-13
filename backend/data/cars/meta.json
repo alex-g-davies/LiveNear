@@ -5,7 +5,7 @@
   {
    "name": "seed catalogue",
    "last_fetch": "2026-11-12",
-   "rows": 22,
+   "rows": 36,
    "quarantined": 0,
    "status": "manual",
    "note": ""
@@ -13,7 +13,7 @@
   {
    "name": "new-price history CSV",
    "last_fetch": "2026-11-12",
-   "rows": 59,
+   "rows": 122,
    "quarantined": 0,
    "status": "manual",
    "note": ""
@@ -29,11 +29,11 @@
   {
    "name": "listings CSV",
    "last_fetch": null,
-   "rows": 1773,
+   "rows": 2677,
    "quarantined": 0,
    "status": "manual",
    "note": ""
   }
  ],
- "note": "drift and ask-to-sale kept at the priors: 3 weekly snapshot(s) < 8"
+ "note": "segment ev-premium: fitted age slope b=0.082 > 0, clamped to 0; segment hybrid-suv: fitted age slope b=0.005 > 0, clamped to 0; drift and ask-to-sale kept at the priors: 3 weekly snapshot(s) < 8"
 }

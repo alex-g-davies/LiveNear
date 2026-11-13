@@ -119,6 +119,8 @@ def simulate(
     z_home = z(shared, forced.price_z)
     z_pub = z(shared, forced.price_z)
     z_drift = z(shared, forced.drift_z)
+    # Drawn last on the shared stream so electric cars' draws are unchanged (029).
+    z_fuel = z(shared, forced.price_z)
     z_ins = z(own, forced.insurance_z)
     z_res = z(own, forced.resale_z)
 
@@ -147,6 +149,16 @@ def simulate(
             :, None
         ]
     )
+
+    if b.fuel_price_ore > 0:
+        litres = np.asarray([float(v) for v in b.litres])
+        cf = (
+            cf
+            + litres[None, :]
+            * (b.fuel_price_ore * _lognormal_factor(b.fuel_price_ore, b.fuel_range, z_fuel))[
+                :, None
+            ]
+        )
 
     payoff = np.zeros((draws, MONTHS))
     if b.loan_principal > 0 and b.loan_rate_pct is not None:

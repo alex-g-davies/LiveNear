@@ -1,15 +1,22 @@
-# Toll rings by municipality, electric passenger car (rate group 1), spec 024 R5.
+# Toll rings by municipality, passenger car (rate group 1), spec 024 R5.
+# `offpeak_nok`/`rush_nok` are the electric-car rates; `fuel_rates` holds the
+# petrol and diesel rates (029 R4). Hybrids and plug-in hybrids pay the petrol
+# rate in every ring below, and no ring splits group 1 by Euro class.
 # Rates in NOK per passage as published by the toll company; `effective_from`
 # is the date on the page. The engine blends off-peak and rush 50/50 and
-# flags the item Estimate (see rules/loader.py). Read on 2026-11-02.
-as_of: 2026-11-02
+# flags the item Estimate (see rules/loader.py). Electric rates read on
+# 2026-11-02, fuel rates on 2026-11-13.
+as_of: 2026-11-13
 rings:
   - id: oslo
     municipalities: [Oslo, Bærum]
-    name: "Oslo toll ring (Fjellinjen), electric car"
+    name: "Oslo toll ring (Fjellinjen)"
     offpeak_nok: 21
     rush_nok: 26
     monthly_cap_passages: 120
+    fuel_rates:
+      petrol: {offpeak_nok: 38, rush_nok: 47}
+      diesel: {offpeak_nok: 42, rush_nok: 50}
     effective_from: 2026-01-01
     source_url: https://www.fjellinjen.no/en/tariffs-and-toll-stations
     status: live
@@ -20,36 +27,48 @@ rings:
       Osloringen + Indre ring with AutoPASS.
   - id: bergen
     municipalities: [Bergen]
-    name: "Bergen toll ring (Bypakke Bergen, Ferde), electric car with AutoPASS"
+    name: "Bergen toll ring (Bypakke Bergen, Ferde), with AutoPASS"
     offpeak_nok: 17.60
     rush_nok: 35.20
     monthly_cap_passages: 60
+    fuel_rates:
+      petrol: {offpeak_nok: 25.60, rush_nok: 51.20}
+      diesel: {offpeak_nok: 30.40, rush_nok: 56.00}
     effective_from: 2026-03-25
     source_url: https://ferde.no/bomanlegg-og-priser/bypakke-bergen
     status: live
     note: >-
-      Rates with an AutoPASS agreement (22.00 / 44.00 without); rush Mon-Fri
+      Rates with an AutoPASS agreement (electric 22.00 / 44.00, petrol and
+      hybrid 32 / 64, diesel 38 / 70 without); rush Mon-Fri
       06:30-09:00 and 14:30-16:30 at marked stations only.
   - id: trondheim
     municipalities: [Trondheim]
-    name: "Trondheim toll ring (Miljøpakken, Vegamot), electric car with AutoPASS, high-rate stations"
+    name: "Trondheim toll ring (Miljøpakken, Vegamot), with AutoPASS, high-rate stations"
     offpeak_nok: 12.32
     rush_nok: 24.64
     monthly_cap_passages: 110
+    fuel_rates:
+      petrol: {offpeak_nok: 17.60, rush_nok: 35.20}
+      diesel: {offpeak_nok: 17.60, rush_nok: 35.20}
     effective_from: 2025-09-01
     source_url: https://www.vegamot.no/takster-og-bomstasjoner/miljopakken-trondheim/
     status: live
     note: >-
       High-rate stations (Sør, Sluppen, Øst, Klæbu); the low-rate stations are
-      8.96 / 11.76. Rush 07:00-09:00 and 15:00-17:00.
+      8.96 / 11.76 (fuel cars 12.80 / 16.80). Rush 07:00-09:00 and
+      15:00-17:00. Petrol and diesel pay the same rate.
   - id: nord-jaeren
     municipalities: [Stavanger, Sandnes, Sola, Randaberg]
-    name: "Nord-Jæren toll ring (Bymiljøpakken, Ferde), electric car with AutoPASS"
+    name: "Nord-Jæren toll ring (Bymiljøpakken, Ferde), with AutoPASS"
     offpeak_nok: 16.80
     rush_nok: 16.80
     monthly_cap_passages: 75
+    fuel_rates:
+      petrol: {offpeak_nok: 24.00, rush_nok: 24.00}
+      diesel: {offpeak_nok: 24.00, rush_nok: 24.00}
     effective_from: 2026-08-04
     source_url: https://ferde.no/bomanlegg-og-priser/nord-jaeren
     status: live
     note: >-
-      No rush differentiation since 2020; 30.00 without an AutoPASS agreement.
+      No rush differentiation since 2020; 30.00 for every fuel without an
+      AutoPASS agreement. Petrol and diesel pay the same "ordinary" rate.

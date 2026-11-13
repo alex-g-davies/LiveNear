@@ -1,0 +1,110 @@
+name: g9_diesel_used_cash
+worked_in: docs/cars/golden/g9_diesel_used_cash.md
+inputs:
+  seed: 1
+  draws: 200
+  user:
+    start_date: '2027-01-01'
+    exit_odds: {p12: 50, p24: 0, p36: 50, p48: 0}
+    km_per_year: 12000
+    charging_mix: {home_pct: 100, work_free_pct: 0, public_pct: 0}
+    pay_mode: loan
+    return_on_cash_pct: 0
+    down_payment_nok: 0
+    insurance: {age_band: 30-39, claims_free_years: 5, has_claims_free_letter: false}
+    limits:
+      modes: [new, lease, used_1_3, used_5_plus]
+    toll_passages_per_week: 10
+  market:
+    tax_rules: tests/cars/fixtures/tax_rules_fixture.yaml
+    charging:
+      home: {value: 100, source: golden fixture, as_of: '2026-10-31', status: live}
+      public: {value: 500, source: golden fixture, as_of: '2026-10-31', status: live}
+    used_price_drift: {value: 0, source: golden fixture, as_of: '2026-10-31', status: live}
+    rental_per_month: {value_nok: 0, source: golden fixture, as_of: '2026-10-31', status: live}
+    materiality_threshold: {value: 0.05, source: golden fixture, as_of: '2026-10-31', status: live}
+    inspection_fee: {value_nok: 0, source: golden fixture, as_of: '2026-10-31', status: live}
+    wheel_change: {value_nok: 0, source: golden fixture, as_of: '2026-10-31', status: live}
+    repair:
+      bands_ore_per_km:
+      - [999999999, 0]
+      source: {value: fixture repair table, source: golden fixture, as_of: '2026-10-31', status: live,
+        kind: str}
+      ev_factor: {value: 1, source: golden fixture, as_of: '2026-10-31', status: live}
+      in_warranty_factor: {value: 1, source: golden fixture, as_of: '2026-10-31', status: live}
+    fuel_prices:
+      petrol: {value_nok: 20, source: golden fixture, as_of: '2026-10-31', status: live}
+      diesel: {value_nok: 22, source: golden fixture, as_of: '2026-10-31', status: live}
+    toll_ring:
+      name: Fixture ring
+      offpeak: {value_nok: 10, source: golden fixture, as_of: '2026-10-31', status: live}
+      rush: {value_nok: 10, source: golden fixture, as_of: '2026-10-31', status: live}
+      monthly_cap: 40
+      source: {value: fixture ring, kind: str, source: golden fixture, as_of: '2026-10-31', status: live}
+      fuel_rates:
+        petrol:
+          offpeak: {value_nok: 20, source: golden fixture, as_of: '2026-10-31', status: live}
+          rush: {value_nok: 30, source: golden fixture, as_of: '2026-10-31', status: live}
+        diesel:
+          offpeak: {value_nok: 30, source: golden fixture, as_of: '2026-10-31', status: live}
+          rush: {value_nok: 40, source: golden fixture, as_of: '2026-10-31', status: live}
+  options:
+  - id: diesel-used-cash
+    label: diesel-used-cash
+    vehicle:
+      variant_id: fx-ice
+      make: Fixture
+      model: ICE
+      trim_group: Base
+      model_year: 2023
+      energy_type: ice
+      drive: rwd
+      heat_pump: false
+      auto_precondition: true
+      winter_factor: {value: 1.1, source: golden fixture, as_of: '2026-10-31', status: live}
+      tyre_set: {value_nok: 10000, source: golden fixture, as_of: '2026-10-31', status: live}
+      tyre_life_km: {value: 1000000, source: golden fixture, as_of: '2026-10-31', status: live}
+      service_interval_months: 12
+      service_interval_km: 0
+      service_price: {value_nok: 1200, source: golden fixture, as_of: '2026-10-31', status: live}
+      wear_per_year: {value_nok: 0, source: golden fixture, as_of: '2026-10-31', status: live}
+      fun_score: {value: 5, source: golden fixture, as_of: '2026-10-31', status: live}
+      new_price: {value_nok: 400000, source: golden fixture, as_of: '2026-10-31', status: live}
+      fuel: diesel
+      fuel_l_per_100km: {value: 6.0, source: golden fixture, as_of: '2026-10-31', status: live}
+      weight_kg: 1600
+    deal:
+      mode: used_1_3
+      price: {value_nok: 200000, source: golden fixture, as_of: '2026-10-31', status: live}
+      age_months_at_purchase: 36
+      km_at_purchase: 40000
+      seller_type: dealer
+      purchase_date: '2027-01-01'
+      delivery_months: {value: 0, source: golden fixture, as_of: '2026-10-31', status: live}
+      exit_friction_pct: {value: 5, source: golden fixture, as_of: '2026-10-31', status: live}
+    insurance:
+      annual: {value_nok: 12000, source: golden fixture, as_of: '2026-10-31', status: live}
+    resale:
+      p50_nok: [200000, 198333.33, 196666.67, 195000.0, 193333.33, 191666.67, 190000.0, 188333.33, 186666.67,
+        185000.0, 183333.33, 181666.67, 180000, 178500.0, 177000.0, 175500.0, 174000.0, 172500.0, 171000.0,
+        169500.0, 168000.0, 166500.0, 165000.0, 163500.0, 162000, 160650.0, 159300.0, 157950.0, 156600.0,
+        155250.0, 153900.0, 152550.0, 151200.0, 149850.0, 148500.0, 147150.0, 145800, 144585.0, 143370.0,
+        142155.0, 140940.0, 139725.0, 138510.0, 137295.0, 136080.0, 134865.0, 133650.0, 132435.0, 131220,
+        131220.0, 131220.0, 131220.0, 131220.0, 131220.0, 131220.0, 131220.0, 131220.0, 131220.0, 131220.0,
+        131220.0, 131220]
+      log_sigma: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      source: {value: explicit fixture path, source: golden fixture, as_of: '2026-10-31', status: live,
+        kind: str}
+expected:
+  cash_up_front_ore: 21500000
+  tco_ore: {12: 9507400, 36: 22972200}
+  npc_ore: {12: 9507400, 36: 22972200}
+  per_month_ore: {12: 792283, 36: 638117}
+  per_km_ore: {12: 792, 36: 638}
+  expected_tco_ore: 16239800
+  display_36_ore: {value_lost: 6149000, financing: 0, insurance: 3600000, fees_and_taxes: 1596000, energy: 5227200,
+    tyres: 1000000, service: 360000, tolls: 5040000, opportunity_cost: 0}
+  option: diesel-used-cash

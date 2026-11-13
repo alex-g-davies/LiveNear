@@ -100,6 +100,8 @@ class OptionResult(BaseModel):
     model: str
     trim_group: str
     model_year: int
+    energy_type: str = "ev"  # 029 R10
+    fuel: str | None = None
     fun_score: str
     status: str  # "live" | "estimate"
     material_estimates: list[str]
@@ -260,6 +262,8 @@ def build_option_result(
         model=option.vehicle.model,
         trim_group=option.vehicle.trim_group,
         model_year=option.vehicle.model_year,
+        energy_type=option.vehicle.energy_type,
+        fuel=option.vehicle.fuel,
         fun_score=str(option.vehicle.fun_score.value),
         status="estimate" if material_estimates else "live",
         material_estimate_labels=[material_label(m) for m in material_estimates],
@@ -288,6 +292,7 @@ INPUT_LABELS = {
     "exit_friction_pct": "Cost to exit (% of value)",
     "insurance_annual": "Insurance (per year)",
     "efficiency": "Energy use (Wh/km)",
+    "fuel_use": "Fuel use (l/100 km)",
     "winter_factor": "Winter factor",
     "tyre_set": "Winter tyres",
     "tyre_life_km": "Tyre life (km)",
@@ -303,6 +308,10 @@ INPUT_LABELS = {
     "toll_offpeak": "Toll per passage (off-peak)",
     "toll_rush": "Toll per passage (rush)",
     "toll_ring": "Toll ring",
+    "toll_petrol_offpeak": "Toll per passage, petrol or hybrid (off-peak)",
+    "toll_petrol_rush": "Toll per passage, petrol or hybrid (rush)",
+    "toll_diesel_offpeak": "Toll per passage, diesel (off-peak)",
+    "toll_diesel_rush": "Toll per passage, diesel (rush)",
     "fun_score": "Fun score",
     "new_price": "New price",
     "resale_path": "Resale value path",
@@ -320,6 +329,10 @@ INPUT_LABELS = {
     "charging_public": "Public charging price",
     "home_ore_per_kwh": "Home charging price (øre/kWh)",
     "public_ore_per_kwh": "Public charging price (øre/kWh)",
+    "fuel_petrol": "Petrol price",
+    "fuel_diesel": "Diesel price",
+    "petrol_ore_per_litre": "Petrol price",
+    "diesel_ore_per_litre": "Diesel price",
     "monthly": "Lease monthly payment",
     "upfront": "Lease upfront rent",
     "km_cap": "Lease km cap (per year)",
@@ -363,6 +376,15 @@ INPUT_UNITS = {
     "excess_km_fee": "kr/km",
     "toll_offpeak": "kr/passage",
     "toll_rush": "kr/passage",
+    "toll_petrol_offpeak": "kr/passage",
+    "toll_petrol_rush": "kr/passage",
+    "toll_diesel_offpeak": "kr/passage",
+    "toll_diesel_rush": "kr/passage",
+    "fuel_petrol": "kr/l",
+    "fuel_diesel": "kr/l",
+    "petrol_ore_per_litre": "kr/l",
+    "diesel_ore_per_litre": "kr/l",
+    "fuel_use": "l/100 km",
     "home_ore_per_kwh": "øre/kWh",
     "public_ore_per_kwh": "øre/kWh",
     "charging_home": "øre/kWh",
@@ -383,7 +405,7 @@ INPUT_UNITS = {
     "repair_ev_factor": "×",
     "repair_in_warranty_factor": "×",
 }
-MONEY_UNITS = ("kr", "kr/year", "kr/month", "kr/km", "kr/passage", "kr/day")
+MONEY_UNITS = ("kr", "kr/year", "kr/month", "kr/km", "kr/passage", "kr/day", "kr/l")
 
 
 def input_unit(input_id: str, value: object) -> str | None:

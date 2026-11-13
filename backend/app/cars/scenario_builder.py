@@ -31,6 +31,7 @@ from .engine.models import (
     DefaultEarlyExit,
     ExitOdds,
     FixedTable,
+    FuelPrices,
     In,
     InsuranceDefault,
     InsuranceProfile,
@@ -77,7 +78,9 @@ def _vehicle_inputs(v: VariantRecord, model_year: int) -> VehicleInputs:
         auto_precondition=v.auto_precondition,
         tyre_size=v.tyre_size,
         weight_kg=v.weight_kg,
+        fuel=v.fuel,
         efficiency_wh_per_km=v.efficiency_wh_per_km,
+        fuel_l_per_100km=v.fuel_l_per_100km,
         winter_factor=v.winter_factor,
         tyre_set_ore=v.tyre_set_ore,
         tyre_life_km=v.tyre_life_km,
@@ -215,6 +218,12 @@ def build_scenario(
         inspection_fee_ore=r.inspection_fee_ore,
         wheel_change_ore=r.wheel_change_ore,
         toll_ring=toll_ring_for(profile.municipality),
+        fuel_prices=FuelPrices(
+            petrol_ore_per_litre=r.petrol_ore_per_litre,
+            diesel_ore_per_litre=r.diesel_ore_per_litre,
+        )
+        if r.petrol_ore_per_litre and r.diesel_ore_per_litre
+        else None,
     )
     options: list[Option] = []
     notes: list[str] = []

@@ -168,6 +168,7 @@ export default function Situation() {
           </label>
           <div className="cars-field">
             <span className="cars-field__label">{t("carsPlan.situation.chargeWhere")}</span>
+            <p className="cars-hint">{t("carsPlan.situation.chargeEvOnly")}</p>
             <div className="cars-grid cars-grid--3">
               {(
                 [

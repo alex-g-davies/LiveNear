@@ -23,6 +23,7 @@ EXIT_POINTS = (12, 24, 36, 48)
 Status = Literal["live", "estimate"]
 Mode = Literal["new", "lease", "used_1_3", "used_5_plus"]
 EnergyType = Literal["ev", "phev", "hybrid", "ice"]
+Fuel = Literal["petrol", "diesel"]
 Drive = Literal["rwd", "fwd", "awd"]
 SellerType = Literal["dealer", "private"]
 PayMode = Literal["cash", "loan"]
@@ -162,8 +163,12 @@ class VehicleInputs(BaseModel):
     auto_precondition: bool = True
     tyre_size: str = ""
     weight_kg: int | None = None
+    # Fuel cars (029 R1): which pump fuel a hybrid or combustion car burns.
+    fuel: Fuel | None = None
     # Real-world energy use at mild temperatures; the winter factor lifts it.
-    efficiency_wh_per_km: In[int]
+    # Electric cars give Wh/km, fuel cars litres per 100 km (029 R1).
+    efficiency_wh_per_km: In[int] | None = None
+    fuel_l_per_100km: In[Decimal] | None = None
     winter_factor: In[Decimal]
     # A second (winter) set, bought at purchase unless the deal includes tyres.
     tyre_set_ore: In[int]
@@ -184,6 +189,22 @@ class VehicleInputs(BaseModel):
     warranty_km: int = 100_000
     fun_score: In[Decimal]  # 0–10, shown next to cost, never folded in (R11)
     new_price_ore: In[int] | None = None  # for retention display; may be absent
+
+    @model_validator(mode="after")
+    def _energy_inputs(self) -> VehicleInputs:
+        if self.burns_fuel:
+            if self.fuel is None or self.fuel_l_per_100km is None:
+                raise ValueError(
+                    f"{self.variant_id}: a {self.energy_type} car needs fuel and fuel_l_per_100km"
+                )
+        elif self.efficiency_wh_per_km is None:
+            raise ValueError(f"{self.variant_id}: an electric car needs efficiency_wh_per_km")
+        return self
+
+    @property
+    def burns_fuel(self) -> bool:
+        """Hybrid and combustion cars pay for fuel, not charging (029 R1)."""
+        return self.energy_type in ("hybrid", "ice")
 
 
 # --------------------------------------------------------------------------- deals
@@ -345,6 +366,17 @@ class ChargingPrices(BaseModel):
     public_ore_per_kwh: In[int]
 
 
+class FuelPrices(BaseModel):
+    """Pump prices in øre per litre incl. taxes, P10-P90 in `range` (029 R2)."""
+
+    model_config = ConfigDict(frozen=True)
+    petrol_ore_per_litre: In[int]
+    diesel_ore_per_litre: In[int]
+
+    def for_fuel(self, fuel: Fuel) -> In[int]:
+        return self.petrol_ore_per_litre if fuel == "petrol" else self.diesel_ore_per_litre
+
+
 class InsuranceDefault(BaseModel):
     """Annual premium for this profile × vehicle until the user enters a quote."""
 
@@ -378,8 +410,18 @@ class RepairAllowance(BaseModel):
         return self.bands[-1][1]
 
 
+class TollRates(BaseModel):
+    """Off-peak and rush rate per passage for one fuel (029 R4)."""
+
+    model_config = ConfigDict(frozen=True)
+    offpeak_ore: In[int]
+    rush_ore: In[int]
+
+
 class TollRing(BaseModel):
-    """The toll ring of the user's municipality, electric-car rates (024 R5)."""
+    """The toll ring of the user's municipality (024 R5). `offpeak_ore` and
+    `rush_ore` are the electric-car rates; `fuel_rates` holds the petrol and
+    diesel rates (029 R4). Hybrids pay the petrol rate in every ring read."""
 
     model_config = ConfigDict(frozen=True)
     name: str
@@ -387,6 +429,16 @@ class TollRing(BaseModel):
     rush_ore: In[int]
     monthly_cap_passages: int = Field(default=0, ge=0)  # 0 = no cap
     source: In[str]
+    fuel_rates: dict[str, TollRates] = Field(default_factory=dict)
+
+    def rates_for(self, vehicle: VehicleInputs) -> tuple[In[int], In[int]]:
+        if not vehicle.burns_fuel:
+            return self.offpeak_ore, self.rush_ore
+        assert vehicle.fuel is not None
+        rates = self.fuel_rates.get(vehicle.fuel)
+        if rates is None:
+            raise LookupError(f"toll ring {self.name!r} has no {vehicle.fuel} rate")
+        return rates.offpeak_ore, rates.rush_ore
 
 
 class MarketPolicyInputs(BaseModel):
@@ -403,6 +455,8 @@ class MarketPolicyInputs(BaseModel):
     inspection_fee_ore: In[int]
     wheel_change_ore: In[int]  # per change; two a year
     toll_ring: TollRing | None = None
+    # Required once any option burns fuel (029 R2); EV-only scenarios omit it.
+    fuel_prices: FuelPrices | None = None
 
 
 # ------------------------------------------------------------------------- option
@@ -431,6 +485,8 @@ class Scenario(BaseModel):
         for o in self.options:
             if o.deal.mode != "lease" and o.resale is None:
                 raise ValueError(f"option {o.id!r} needs a resale path")
+            if o.vehicle.burns_fuel and self.market.fuel_prices is None:
+                raise ValueError(f"option {o.id!r} burns fuel but the market has no fuel prices")
         ids = [o.id for o in self.options]
         if len(set(ids)) != len(ids):
             raise ValueError("option ids must be unique")

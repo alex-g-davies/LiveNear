@@ -17,6 +17,7 @@ import { monthsText } from "../../i18n/dates";
 import { useT } from "../../i18n/react";
 import { formatMonths, formatNokSigned } from "../lib/format";
 import { MODES, type Mode } from "../lib/profile";
+import { energyName } from "../lib/market";
 import { MODE_FILTER_LABELS, MODE_LABELS, estimateLabels, measureDef, measureInSentence } from "../lib/measures";
 import { useCarState } from "../state";
 import { useColorOf } from "../lib/colors";
@@ -144,6 +145,7 @@ export default function CompareTable() {
                           <div className="cars-hint">
                             {MODE_LABELS[o.option_kind]}
                             {o.option_kind === "lease" ? `, ${monthsText(36)}` : ` · ${r.model_year}`}
+                            {` · ${energyName(r.energy_type, r.fuel)}`}
                             {seller}
                           </div>
                         </td>

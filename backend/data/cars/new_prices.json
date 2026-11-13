@@ -883,5 +883,950 @@
   },
   "valid_from": "2025-01-01",
   "valid_to": null
+ },
+ {
+  "variant_id": "audi-q4-50-quattro",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "audi-q4-50-quattro.2022.new_price",
+   "value": 52000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "audi-q4-50-quattro",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "audi-q4-50-quattro.2023.new_price",
+   "value": 60000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "audi-q4-50-quattro",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "audi-q4-50-quattro.2024.new_price",
+   "value": 62000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "bmw-i4-m50",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "bmw-i4-m50.2022.new_price",
+   "value": 70000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "bmw-i4-m50",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "bmw-i4-m50.2023.new_price",
+   "value": 80000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "bmw-i4-m50",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "bmw-i4-m50.2024.new_price",
+   "value": 82000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "polestar-2-lr-dual-motor",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "polestar-2-lr-dual-motor.2021.new_price",
+   "value": 48000000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "polestar-2-lr-dual-motor",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "polestar-2-lr-dual-motor.2022.new_price",
+   "value": 50000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "polestar-2-lr-dual-motor",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "polestar-2-lr-dual-motor.2023.new_price",
+   "value": 56000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "porsche-taycan-4-cross-turismo",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "porsche-taycan-4-cross-turismo.2021.new_price",
+   "value": 84800000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "Tek.no launch article (search excerpt): 848 000 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "porsche-taycan-4-cross-turismo",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "porsche-taycan-4-cross-turismo.2022.new_price",
+   "value": 90000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "porsche-taycan-4-cross-turismo",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "porsche-taycan-4-cross-turismo.2023.new_price",
+   "value": 105000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-yaris-15-hybrid",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "toyota-yaris-15-hybrid.2020.new_price",
+   "value": 26880000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Nordvik press release 2020-06-09 (search excerpt): Active 268 800 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-yaris-15-hybrid",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "toyota-yaris-15-hybrid.2021.new_price",
+   "value": 27500000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-yaris-15-hybrid",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "toyota-yaris-15-hybrid.2022.new_price",
+   "value": 29000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-yaris-15-hybrid",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "toyota-yaris-15-hybrid.2023.new_price",
+   "value": 31000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-yaris-15-hybrid",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "toyota-yaris-15-hybrid.2024.new_price",
+   "value": 32500000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "toyota-corolla-18-hybrid.2019.new_price",
+   "value": 34930000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "Nordvik press release 2019 (search excerpt): Touring Sports Active 349 300 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "toyota-corolla-18-hybrid.2020.new_price",
+   "value": 35500000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "toyota-corolla-18-hybrid.2021.new_price",
+   "value": 36500000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "toyota-corolla-18-hybrid.2022.new_price",
+   "value": 37500000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "toyota-corolla-18-hybrid.2023.new_price",
+   "value": 39500000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "toyota-corolla-18-hybrid.2024.new_price",
+   "value": 41000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-chr-18-hybrid",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "toyota-chr-18-hybrid.2019.new_price",
+   "value": 32500000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-chr-18-hybrid",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "toyota-chr-18-hybrid.2020.new_price",
+   "value": 33530000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Nordvik press release (search excerpt): 1.8 Hybrid Active 335 300 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-chr-18-hybrid",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "toyota-chr-18-hybrid.2021.new_price",
+   "value": 34500000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-chr-18-hybrid",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "toyota-chr-18-hybrid.2022.new_price",
+   "value": 35500000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-chr-18-hybrid",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "toyota-chr-18-hybrid.2023.new_price",
+   "value": 36500000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.2019.new_price",
+   "value": 42650000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "Klikk RAV4 2019 (search excerpt): AWD-i from 426 500 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.2020.new_price",
+   "value": 46080000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "Vi Menn RAV4 Hybrid 2020 test (search excerpt): from 460 800 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.2021.new_price",
+   "value": 47500000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.2022.new_price",
+   "value": 50000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.2023.new_price",
+   "value": 54000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.2024.new_price",
+   "value": 56000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-golf-etsi",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "vw-golf-etsi.2020.new_price",
+   "value": 33000000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-golf-etsi",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "vw-golf-etsi.2021.new_price",
+   "value": 34000000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-golf-etsi",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "vw-golf-etsi.2022.new_price",
+   "value": 35500000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-golf-etsi",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "vw-golf-etsi.2023.new_price",
+   "value": 37500000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-golf-etsi",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "vw-golf-etsi.2024.new_price",
+   "value": 39000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-octavia-20-tdi-4x4",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.2019.new_price",
+   "value": 43000000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-octavia-20-tdi-4x4",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.2021.new_price",
+   "value": 46000000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-octavia-20-tdi-4x4",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.2022.new_price",
+   "value": 47500000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-octavia-20-tdi-4x4",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.2023.new_price",
+   "value": 50000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-octavia-20-tdi-4x4",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.2024.new_price",
+   "value": 52000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.2019.new_price",
+   "value": 59000000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.2020.new_price",
+   "value": 60000000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.2021.new_price",
+   "value": 62000000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.2022.new_price",
+   "value": 64000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.2023.new_price",
+   "value": 66000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "model_year": 2024,
+  "price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.2024.new_price",
+   "value": 68000000,
+   "source": "New-price history CSV",
+   "as_of": "2024-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2024-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-tiguan-20-tdi-4motion",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.2019.new_price",
+   "value": 48000000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-tiguan-20-tdi-4motion",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.2020.new_price",
+   "value": 49000000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-tiguan-20-tdi-4motion",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.2021.new_price",
+   "value": 50500000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-tiguan-20-tdi-4motion",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.2022.new_price",
+   "value": 52000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "vw-tiguan-20-tdi-4motion",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.2023.new_price",
+   "value": 54000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "volvo-v60-d4",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "volvo-v60-d4.2019.new_price",
+   "value": 50400000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "Vi Menn V60 D4 automat test (search excerpt): D4 Momentum 504 000 kr; read in a search excerpt, not on the page",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "volvo-v60-d4",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "volvo-v60-d4.2020.new_price",
+   "value": 51500000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "volvo-v60-d4",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "volvo-v60-d4.2021.new_price",
+   "value": 53000000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-landcruiser-28-d4d",
+  "model_year": 2019,
+  "price_ore": {
+   "id": "toyota-landcruiser-28-d4d.2019.new_price",
+   "value": 130000000,
+   "source": "New-price history CSV",
+   "as_of": "2019-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2019-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-landcruiser-28-d4d",
+  "model_year": 2020,
+  "price_ore": {
+   "id": "toyota-landcruiser-28-d4d.2020.new_price",
+   "value": 135000000,
+   "source": "New-price history CSV",
+   "as_of": "2020-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2020-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-landcruiser-28-d4d",
+  "model_year": 2021,
+  "price_ore": {
+   "id": "toyota-landcruiser-28-d4d.2021.new_price",
+   "value": 145000000,
+   "source": "New-price history CSV",
+   "as_of": "2021-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2021-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-landcruiser-28-d4d",
+  "model_year": 2022,
+  "price_ore": {
+   "id": "toyota-landcruiser-28-d4d.2022.new_price",
+   "value": 150000000,
+   "source": "New-price history CSV",
+   "as_of": "2022-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2022-01-01",
+  "valid_to": null
+ },
+ {
+  "variant_id": "toyota-landcruiser-28-d4d",
+  "model_year": 2023,
+  "price_ore": {
+   "id": "toyota-landcruiser-28-d4d.2023.new_price",
+   "value": 155000000,
+   "source": "New-price history CSV",
+   "as_of": "2023-01-01",
+   "status": "estimate",
+   "basis": "No Norwegian list price found; inferred from nearby years, the brand's other trims and the 2023 EV VAT change (research 2026-11-13)",
+   "range": null
+  },
+  "valid_from": "2023-01-01",
+  "valid_to": null
  }
 ]
