@@ -4,7 +4,10 @@ scenario runs and source health.
 Nothing here stores anything per user: the profile arrives in the request
 and leaves in the response. Scenario results are memoised in a small
 in-process LRU keyed by the request hash so slider churn does not recompute
-identical runs; the cache holds no identity.
+identical runs; the cache holds no identity. It stores the serialised JSON
+under a byte budget: each selection is a new key and a response runs to
+several MB, so an entry-count cap let ~45 selections exhaust a 512 MB
+instance.
 """
 
 from __future__ import annotations
@@ -17,10 +20,10 @@ import time
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pydantic import BaseModel
 
-from ..bounded_cache import BoundedCache
+from ..bounded_cache import ByteBudgetCache
 from ..cars import data_bundle
 from ..cars.bundle_schema import ListingsMode
 from ..cars.data_bundle import Bundle, BundleError, Listing
@@ -52,8 +55,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/cars", tags=["cars"])
 
 SCENARIO_LIMIT = os.getenv("CARS_SCENARIO_LIMIT", "30/minute")
-_SCENARIO_CACHE: BoundedCache[str, ScenarioResponse] = BoundedCache(256)
-_RECOMMEND_CACHE: BoundedCache[str, RecommendResponse] = BoundedCache(64)
+# Budgets in MB of JSON. A 30-car comparison is ~5 MB, so the defaults keep
+# roughly the last 10 big runs (or many small ones) well inside 512 MB.
+_SCENARIO_CACHE = ByteBudgetCache(int(os.getenv("CARS_SCENARIO_CACHE_MB", "48")) * 2**20)
+_RECOMMEND_CACHE = ByteBudgetCache(int(os.getenv("CARS_RECOMMEND_CACHE_MB", "16")) * 2**20)
+
+
+def _json(body: bytes) -> Response:
+    return Response(content=body, media_type="application/json")
+
 
 # Keys the browser may put in `overrides` to persist Curves-view assumptions
 # that have no Profile field (the frontend's "Save as my assumptions").
@@ -286,13 +296,13 @@ def _request_key(req: BaseModel, start: date, bundle_as_of: date) -> str:
 @limiter.limit(SCENARIO_LIMIT)
 def scenarios(
     request: Request, body: ScenarioRequest, cfg: Settings = Depends(get_settings)
-) -> ScenarioResponse:
+) -> Response:
     b = _bundle(cfg)
     start = body.profile.start_date or _today()
     key = _request_key(body, start, b.meta.bundle_as_of)
     cached = _SCENARIO_CACHE.get(key)
     if cached is not None:
-        return cached
+        return _json(cached)
     t0 = time.perf_counter()
     rules = load_tax_rules()
     try:
@@ -345,8 +355,9 @@ def scenarios(
         sensitivity_option_id=res.sensitivity_option_id,
         elapsed_ms=int((time.perf_counter() - t0) * 1000),
     )
-    _SCENARIO_CACHE[key] = resp
-    return resp
+    body_bytes = resp.model_dump_json().encode()
+    _SCENARIO_CACHE[key] = body_bytes
+    return _json(body_bytes)
 
 
 REASON_LOWEST = "lowest expected cost"
@@ -378,14 +389,14 @@ def _reasons(options, measure: str) -> dict[str, list[str]]:
 @limiter.limit(SCENARIO_LIMIT)
 def recommend(
     request: Request, body: RecommendRequest, cfg: Settings = Depends(get_settings)
-) -> RecommendResponse:
+) -> Response:
     """Rank every option the catalogue and the profile's limits allow (024 R11)."""
     b = _bundle(cfg)
     start = body.profile.start_date or _today()
     key = _request_key(body, start, b.meta.bundle_as_of)
     cached = _RECOMMEND_CACHE.get(key)
     if cached is not None:
-        return cached
+        return _json(cached)
     t0 = time.perf_counter()
     selection = [
         SelectionItem(
@@ -436,8 +447,9 @@ def recommend(
         rows=rows,
         elapsed_ms=int((time.perf_counter() - t0) * 1000),
     )
-    _RECOMMEND_CACHE[key] = resp
-    return resp
+    body_bytes = resp.model_dump_json().encode()
+    _RECOMMEND_CACHE[key] = body_bytes
+    return _json(body_bytes)
 
 
 @router.get("/sources", response_model=SourcesResponse)

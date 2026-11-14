@@ -54,3 +54,52 @@ class BoundedCache(Generic[K, V]):
 
     def clear(self) -> None:
         self._data.clear()
+
+
+class ByteBudgetCache:
+    """LRU map of `bytes` values capped by their total size, not their count.
+
+    For payloads whose size varies by orders of magnitude (a car scenario
+    response is 0.5 MB for 3 cars and 7 MB for 36), an entry cap does not
+    bound memory. Storing the serialised bytes rather than the model also
+    keeps each entry ~6x smaller than the equivalent pydantic object tree,
+    and lets the allocator hand freed blocks back to the OS. A value larger
+    than the whole budget is simply not cached.
+    """
+
+    def __init__(self, max_bytes: int) -> None:
+        if max_bytes < 1:
+            raise ValueError("max_bytes must be >= 1")
+        self.max_bytes = max_bytes
+        self.total_bytes = 0
+        self._data: OrderedDict[str, bytes] = OrderedDict()
+
+    def get(self, key: str) -> bytes | None:
+        """Return the value (refreshing its recency) or None."""
+        try:
+            self._data.move_to_end(key)
+        except KeyError:
+            return None
+        return self._data[key]
+
+    def __setitem__(self, key: str, value: bytes) -> None:
+        old = self._data.pop(key, None)
+        if old is not None:
+            self.total_bytes -= len(old)
+        if len(value) > self.max_bytes:
+            return
+        while self._data and self.total_bytes + len(value) > self.max_bytes:
+            _, evicted = self._data.popitem(last=False)  # least recently used
+            self.total_bytes -= len(evicted)
+        self._data[key] = value
+        self.total_bytes += len(value)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._data
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def clear(self) -> None:
+        self._data.clear()
+        self.total_bytes = 0
