@@ -1,5 +1,5 @@
 # Round-number tax rules for golden cases: 10 kr/day traffic tax from 2020,
-# a flat 5 000 kr re-registration fee, and the real EV VAT rule.
+# a flat 5 000 kr re-registration fee (3 000 kr up to 1 200 kg own weight), and the real EV VAT rule.
 rules:
   - id: fx_traffic_tax
     kind: traffic_insurance_tax
@@ -15,6 +15,9 @@ rules:
     params:
       age_bands_ore:
         - {min_years: 0, ore: 500000}
+      light_max_kg: 1200
+      light_age_bands_ore:
+        - {min_years: 0, ore: 300000}
       ev_factor: "1"
     source_url: fixture
     status: live

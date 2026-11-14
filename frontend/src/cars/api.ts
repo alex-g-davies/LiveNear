@@ -115,6 +115,9 @@ export interface OptionResult {
   model: string;
   trim_group: string;
   model_year: number;
+  /** 029 R10; older servers omit them (electric). */
+  energy_type?: EnergyType;
+  fuel?: "petrol" | "diesel" | null;
   fun_score: string;
   status: Status;
   material_estimates: string[];
@@ -192,7 +195,10 @@ export interface CohortOut {
   status: Status;
   as_of: string;
   range_km_wltp: number | null;
-  efficiency_wh_per_km: number;
+  /** Electric cars only; null for hybrids and petrol or diesel cars (029). */
+  efficiency_wh_per_km: number | null;
+  fuel?: "petrol" | "diesel" | null;
+  fuel_l_per_100km?: string | null;
   accel_0_100_s: string | null;
   meets_must_haves: boolean;
 }

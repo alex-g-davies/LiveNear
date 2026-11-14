@@ -14,24 +14,26 @@
 rules:
   # --- Trafikkforsikringsavgift: a daily tax collected with the insurance --
   # Rates apply to policies starting or renewing from 1 March of the year
-  # (Skatteetaten). Only the electric-car figure is checked; the catalogue is
-  # electric-only. Petrol/hybrid use the ordinary passenger-car rate.
+  # (Skatteetaten). Petrol, hybrid and diesel cars with a factory particle
+  # filter pay the ordinary "bil under 7 500 kg" rate (029 R3); every fuel
+  # car in the catalogue has a particle filter.
   - id: traffic_tax_2025
     kind: traffic_insurance_tax
     effective_from: 2025-03-01
     effective_to: 2026-03-01
     params:            # øre per day by energy type
       ev: 896
-      phev: 652
-      hybrid: 652
-      ice: 652
+      phev: 638
+      hybrid: 638
+      ice: 638
     source_url: https://www.skatteetaten.no/satser/trafikkforsikringsavgift/
-    status: unverified
-    checked_on: 2026-11-02
+    status: live
+    checked_on: 2026-11-13
     note: >-
-      Electric car 8.96 kr/day for 1 Mar 2025 - 28 Feb 2026 per the Skatteetaten
-      rate table read on 2026-11-02; the 2025 petrol rate was not read and
-      carries the 2026 figure, hence unverified.
+      Electric car 8.96 kr/day, other passenger cars under 7 500 kg 6.38 kr/day
+      (diesel without a particle filter 7.93) for 1 Mar 2025 - 28 Feb 2026, read
+      on the Skatteetaten rate table 2026-11-13. The page does not name hybrids;
+      they are read as ordinary passenger cars.
   - id: traffic_tax_2026
     kind: traffic_insurance_tax
     effective_from: 2026-03-01
@@ -43,10 +45,11 @@ rules:
       ice: 652
     source_url: https://www.skatteetaten.no/satser/trafikkforsikringsavgift/
     status: live
-    checked_on: 2026-11-02
+    checked_on: 2026-11-13
     note: >-
       Electric car 9.16 kr/day, other passenger cars under 7 500 kg 6.52 kr/day
       (diesel without a particle filter 8.10) for policies from 1 Mar 2026.
+      The page does not name hybrids; they are read as ordinary passenger cars.
       The 2027 proposal (9.41) is listed under `pending`.
 
   # --- Omregistreringsavgift: paid by the buyer of a used car ---------------
@@ -55,20 +58,25 @@ rules:
     effective_from: 2025-01-01
     effective_to: 2026-01-01
     params:
-      # Passenger cars over 1 200 kg (every EV in the catalogue); bands by
-      # vehicle age in whole years at purchase.
+      # Passenger cars over 1 200 kg own weight; bands by vehicle age in whole
+      # years at purchase (registered 2022-2025, 2014-2021, 2013 and older).
       age_bands_ore:
         - {min_years: 0, ore: 734300}
         - {min_years: 4, ore: 443400}
-        - {min_years: 12, ore: 170000}
+        - {min_years: 12, ore: 190000}
+      # Own weight up to 1 200 kg (029 R3).
+      light_max_kg: 1200
+      light_age_bands_ore:
+        - {min_years: 0, ore: 481200}
+        - {min_years: 4, ore: 316600}
+        - {min_years: 12, ore: 190000}
       ev_factor: "1"
     source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
-    status: unverified
+    status: live
+    checked_on: 2026-11-13
     note: >-
-      0-3 and 4-11 year bands are the fees dealers still quoted on a minority
-      of October 2026 listings (7 343 / 4 434 kr), read as the 2025 rates;
-      the 12+ band is a recalled placeholder. Verify on the Skatteetaten
-      rate table before marking live.
+      2025 table read on the Skatteetaten page (?year=2025) on 2026-11-13. The
+      table has no fuel split.
   - id: re_registration_2026
     kind: re_registration_fee
     effective_from: 2026-01-01
@@ -83,12 +91,18 @@ rules:
         - {min_years: 0, ore: 750500}
         - {min_years: 4, ore: 453200}
         - {min_years: 12, ore: 194200}
+      # Own weight up to 1 200 kg (029 R3): 4 918 / 3 236 / 1 942 kr.
+      light_max_kg: 1200
+      light_age_bands_ore:
+        - {min_years: 0, ore: 491800}
+        - {min_years: 4, ore: 323600}
+        - {min_years: 12, ore: 194200}
       ev_factor: "1"
     source_url: https://www.skatteetaten.no/satser/omregistreringsavgift/
     status: live
-    checked_on: 2026-11-02
+    checked_on: 2026-11-13
     note: >-
-      2026 table read on 2026-11-02. The age-band mapping is exact for 2026
+      2026 table read on 2026-11-02, weight bands on 2026-11-13; no fuel split. The age-band mapping is exact for 2026
       and drifts by one year for later start dates until the 2027 table is
       added.
 

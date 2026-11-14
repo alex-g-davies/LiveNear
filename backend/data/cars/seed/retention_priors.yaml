@@ -9,6 +9,14 @@ segments:
   ev-mid:   {a: 0.737, b: -0.11, c: -0.08, sigma_resid: 0.10, sigma_per_year: 0.08, beta_logkm: -0.08}
   ev-suv:   {a: 0.737, b: -0.10, c: -0.08, sigma_resid: 0.10, sigma_per_year: 0.08, beta_logkm: -0.08}
   ev-small: {a: 0.737, b: -0.12, c: -0.08, sigma_resid: 0.12, sigma_per_year: 0.09, beta_logkm: -0.08}
+  # Spec 029 segments, priors only until their cohorts are fitted. Norwegian
+  # used hybrids have held value better than diesels (petrol and diesel cars
+  # face rising toll and tax gaps against EVs); premium EVs lose value fastest.
+  ev-premium:   {a: 0.737, b: -0.14, c: -0.08, sigma_resid: 0.12, sigma_per_year: 0.09, beta_logkm: -0.08}
+  hybrid-small: {a: 0.737, b: -0.08, c: -0.08, sigma_resid: 0.10, sigma_per_year: 0.07, beta_logkm: -0.08}
+  hybrid-suv:   {a: 0.737, b: -0.08, c: -0.08, sigma_resid: 0.10, sigma_per_year: 0.07, beta_logkm: -0.08}
+  ice-compact:  {a: 0.737, b: -0.11, c: -0.09, sigma_resid: 0.11, sigma_per_year: 0.08, beta_logkm: -0.09}
+  ice-suv:      {a: 0.737, b: -0.10, c: -0.09, sigma_resid: 0.11, sigma_per_year: 0.08, beta_logkm: -0.09}
 dealer_premium: {value: 0.06, source: "Placeholder delta (log points)", status: estimate, basis: "Dealer asking vs private asking; fitted from listings later"}
 used_price_drift_pct: {value: 0, range: [-6, 2], source: "Placeholder until 12 weekly snapshots exist", status: estimate, basis: "Build spec: default 0, plausible range sets the slider ends"}
 ask_to_sale_discount_pct: {value: 0, source: "Placeholder until removed listings are tracked", status: estimate, basis: "Needs weekly snapshots of the same ads"}

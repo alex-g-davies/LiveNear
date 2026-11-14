@@ -19,6 +19,7 @@
   "auto_precondition": true,
   "tyre_size": "235/45 R18",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "tesla-model3-rwd.efficiency",
    "value": 150,
@@ -28,6 +29,7 @@
    "basis": "Real-world mild-weather use; NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "tesla-model3-rwd.winter_factor",
    "value": "1.25",
@@ -112,6 +114,7 @@
   "auto_precondition": true,
   "tyre_size": "235/45 R18",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "tesla-model3-rwd-highland.efficiency",
    "value": 145,
@@ -121,6 +124,7 @@
    "basis": "Facelift is slightly more efficient; NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "tesla-model3-rwd-highland.winter_factor",
    "value": "1.25",
@@ -204,6 +208,7 @@
   "auto_precondition": true,
   "tyre_size": "235/45 R18",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "tesla-model3-lr-awd.efficiency",
    "value": 160,
@@ -213,6 +218,7 @@
    "basis": "Pre-heat-pump cars use more in winter",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "tesla-model3-lr-awd.winter_factor",
    "value": "1.25",
@@ -297,6 +303,7 @@
   "auto_precondition": true,
   "tyre_size": "255/45 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "tesla-modely-lr-awd.efficiency",
    "value": 170,
@@ -306,6 +313,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "tesla-modely-lr-awd.winter_factor",
    "value": "1.25",
@@ -390,6 +398,7 @@
   "auto_precondition": false,
   "tyre_size": "235/55 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "hyundai-ioniq5-lr-rwd.efficiency",
    "value": 175,
@@ -399,6 +408,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "hyundai-ioniq5-lr-rwd.winter_factor",
    "value": "1.25",
@@ -483,6 +493,7 @@
   "auto_precondition": false,
   "tyre_size": "235/50 R20",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "skoda-enyaq-80-rwd.efficiency",
    "value": 180,
@@ -492,6 +503,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "skoda-enyaq-80-rwd.winter_factor",
    "value": "1.25",
@@ -576,6 +588,7 @@
   "auto_precondition": false,
   "tyre_size": "235/55 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "vw-id4-pro-rwd.efficiency",
    "value": 180,
@@ -585,6 +598,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "vw-id4-pro-rwd.winter_factor",
    "value": "1.25",
@@ -668,6 +682,7 @@
   "auto_precondition": false,
   "tyre_size": "215/55 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "hyundai-kona-64.efficiency",
    "value": 155,
@@ -677,6 +692,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "hyundai-kona-64.winter_factor",
    "value": "1.25",
@@ -760,6 +776,7 @@
   "auto_precondition": true,
   "tyre_size": "255/45 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "tesla-modely-lr-awd-juniper.efficiency",
    "value": 165,
@@ -769,6 +786,7 @@
    "basis": "Facelift is slightly more efficient than the 2022-2024 car; NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "tesla-modely-lr-awd-juniper.winter_factor",
    "value": "1.25",
@@ -854,6 +872,7 @@
   "auto_precondition": false,
   "tyre_size": "235/45 R18",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "mg-mg4-64.efficiency",
    "value": 165,
@@ -863,6 +882,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "mg-mg4-64.winter_factor",
    "value": "1.25",
@@ -947,6 +967,7 @@
   "auto_precondition": false,
   "tyre_size": "215/50 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "nissan-leaf-40.efficiency",
    "value": 170,
@@ -956,6 +977,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "nissan-leaf-40.winter_factor",
    "value": "1.25",
@@ -1039,6 +1061,7 @@
   "auto_precondition": false,
   "tyre_size": "235/50 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "volvo-xc40-sm-69.efficiency",
    "value": 185,
@@ -1048,6 +1071,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "volvo-xc40-sm-69.winter_factor",
    "value": "1.25",
@@ -1130,6 +1154,7 @@
   "auto_precondition": false,
   "tyre_size": "235/50 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "volvo-xc40-sm-er-82.efficiency",
    "value": 180,
@@ -1139,6 +1164,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "volvo-xc40-sm-er-82.winter_factor",
    "value": "1.25",
@@ -1223,6 +1249,7 @@
   "auto_precondition": true,
   "tyre_size": "235/55 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "kia-ev6-lr-rwd.efficiency",
    "value": 165,
@@ -1232,6 +1259,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "kia-ev6-lr-rwd.winter_factor",
    "value": "1.25",
@@ -1324,6 +1352,7 @@
   "auto_precondition": false,
   "tyre_size": "215/55 R18",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "vw-id3-pro-performance-58.efficiency",
    "value": 160,
@@ -1333,6 +1362,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "vw-id3-pro-performance-58.winter_factor",
    "value": "1.25",
@@ -1416,6 +1446,7 @@
   "auto_precondition": false,
   "tyre_size": "215/55 R18",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "vw-id3-pro-58.efficiency",
    "value": 160,
@@ -1425,6 +1456,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "vw-id3-pro-58.winter_factor",
    "value": "1.25",
@@ -1508,6 +1540,7 @@
   "auto_precondition": true,
   "tyre_size": "255/45 R19",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "tesla-modely-rwd.efficiency",
    "value": 160,
@@ -1517,6 +1550,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "tesla-modely-rwd.winter_factor",
    "value": "1.25",
@@ -1602,6 +1636,7 @@
   "auto_precondition": false,
   "tyre_size": "205/45 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "peugeot-e208-50.efficiency",
    "value": 165,
@@ -1611,6 +1646,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "peugeot-e208-50.winter_factor",
    "value": "1.25",
@@ -1704,6 +1740,7 @@
   "auto_precondition": false,
   "tyre_size": "205/45 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "opel-corsa-e-50.efficiency",
    "value": 165,
@@ -1713,6 +1750,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "opel-corsa-e-50.winter_factor",
    "value": "1.25",
@@ -1804,6 +1842,7 @@
   "auto_precondition": false,
   "tyre_size": "205/45 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "renault-zoe-ze50.efficiency",
    "value": 165,
@@ -1813,6 +1852,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "renault-zoe-ze50.winter_factor",
    "value": "1.25",
@@ -1897,6 +1937,7 @@
   "auto_precondition": false,
   "tyre_size": "205/45 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "fiat-500e-42.efficiency",
    "value": 160,
@@ -1906,6 +1947,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "fiat-500e-42.winter_factor",
    "value": "1.25",
@@ -1997,6 +2039,7 @@
   "auto_precondition": false,
   "tyre_size": "205/50 R17",
   "weight_kg": null,
+  "fuel": null,
   "efficiency_wh_per_km": {
    "id": "byd-dolphin-60.efficiency",
    "value": 165,
@@ -2006,6 +2049,7 @@
    "basis": "NAF El Prix to confirm",
    "range": null
   },
+  "fuel_l_per_100km": null,
   "winter_factor": {
    "id": "byd-dolphin-60.winter_factor",
    "value": "1.25",
@@ -2069,5 +2113,1356 @@
   },
   "range_km_wltp": 427,
   "accel_0_100_s": "7.0"
+ },
+ {
+  "variant_id": "audi-q4-50-quattro",
+  "make": "Audi",
+  "model": "Q4 e-tron",
+  "trim_group": "50 quattro",
+  "segment": "ev-suv",
+  "model_years": [
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "suv",
+  "battery_kwh": "76.6",
+  "power_kw": 220,
+  "heat_pump": false,
+  "auto_precondition": true,
+  "tyre_size": "235/55 R19",
+  "weight_kg": 2210,
+  "fuel": null,
+  "efficiency_wh_per_km": {
+   "id": "audi-q4-50-quattro.efficiency",
+   "value": 190,
+   "source": "ev-database.org Audi Q4 e-tron 50 quattro: WLTP 166-213 Wh/km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Real-world mild-weather use near the middle of the WLTP band",
+   "range": null
+  },
+  "fuel_l_per_100km": null,
+  "winter_factor": {
+   "id": "audi-q4-50-quattro.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "audi-q4-50-quattro.tyre_set",
+   "value": 1600000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in (research estimate 14 000-18 000)",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "audi-q4-50-quattro.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 24,
+  "service_interval_km": 30000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "audi-q4-50-quattro.service_price",
+   "value": 770000,
+   "source": "mollerbil.no Audi service: from 6 890 kr (2-year) / 8 490 kr (4-year), materials extra (2026)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mean of the two published from-prices; km interval assumed",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "audi-q4-50-quattro.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "audi-q4-50-quattro.fun_score",
+   "value": "6.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": 470,
+  "accel_0_100_s": "6.2"
+ },
+ {
+  "variant_id": "bmw-i4-m50",
+  "make": "BMW",
+  "model": "i4",
+  "trim_group": "M50",
+  "segment": "ev-premium",
+  "model_years": [
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "hatchback",
+  "battery_kwh": "80.7",
+  "power_kw": 400,
+  "heat_pump": true,
+  "auto_precondition": true,
+  "tyre_size": "245/40 R19",
+  "weight_kg": 2290,
+  "fuel": null,
+  "efficiency_wh_per_km": {
+   "id": "bmw-i4-m50.efficiency",
+   "value": 205,
+   "source": "ev-database.org BMW i4 M50: WLTP 181-225 Wh/km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Real-world mild-weather use near the middle of the WLTP band",
+   "range": null
+  },
+  "fuel_l_per_100km": null,
+  "winter_factor": {
+   "id": "bmw-i4-m50.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "bmw-i4-m50.tyre_set",
+   "value": 1700000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in staggered, premium brand",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "bmw-i4-m50.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 24,
+  "service_interval_km": 30000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "bmw-i4-m50.service_price",
+   "value": 500000,
+   "source": "BMW Condition Based Service (no fixed Norwegian price published)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Brake fluid and cabin filter visit at a dealer; interval typical of BMW EVs",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "bmw-i4-m50.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 2,
+  "warranty_km": 200000,
+  "fun_score": {
+   "id": "bmw-i4-m50.fun_score",
+   "value": "9.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": 470,
+  "accel_0_100_s": "3.9"
+ },
+ {
+  "variant_id": "polestar-2-lr-dual-motor",
+  "make": "Polestar",
+  "model": "2",
+  "trim_group": "Long Range Dual Motor",
+  "segment": "ev-mid",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "hatchback",
+  "battery_kwh": "75.0",
+  "power_kw": 300,
+  "heat_pump": false,
+  "auto_precondition": true,
+  "tyre_size": "245/45 R19",
+  "weight_kg": 2188,
+  "fuel": null,
+  "efficiency_wh_per_km": {
+   "id": "polestar-2-lr-dual-motor.efficiency",
+   "value": 198,
+   "source": "ev-database.org Polestar 2 Long Range Dual Motor: WLTP 193-203 Wh/km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Real-world mild-weather use at the WLTP mid-point; heat pump optional",
+   "range": null
+  },
+  "fuel_l_per_100km": null,
+  "winter_factor": {
+   "id": "polestar-2-lr-dual-motor.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "polestar-2-lr-dual-motor.tyre_set",
+   "value": 1500000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 19 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "polestar-2-lr-dual-motor.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 24,
+  "service_interval_km": 30000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "polestar-2-lr-dual-motor.service_price",
+   "value": 450000,
+   "source": "Polestar service schedule (no Norwegian price published)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "EV inspection, brake fluid and cabin filter",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "polestar-2-lr-dual-motor.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 2,
+  "warranty_km": 200000,
+  "fun_score": {
+   "id": "polestar-2-lr-dual-motor.fun_score",
+   "value": "7.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": 470,
+  "accel_0_100_s": "4.7"
+ },
+ {
+  "variant_id": "porsche-taycan-4-cross-turismo",
+  "make": "Porsche",
+  "model": "Taycan",
+  "trim_group": "4 Cross Turismo",
+  "segment": "ev-premium",
+  "model_years": [
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ev",
+  "drive": "awd",
+  "body": "estate",
+  "battery_kwh": "83.7",
+  "power_kw": 350,
+  "heat_pump": false,
+  "auto_precondition": true,
+  "tyre_size": "245/45 R19",
+  "weight_kg": 2320,
+  "fuel": null,
+  "efficiency_wh_per_km": {
+   "id": "porsche-taycan-4-cross-turismo.efficiency",
+   "value": 235,
+   "source": "ev-database.org Porsche Taycan 4 Cross Turismo: WLTP 218-264 Wh/km (MY21-22), 213-248 (MY23)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Real-world mild-weather use near the middle of the WLTP band",
+   "range": null
+  },
+  "fuel_l_per_100km": null,
+  "winter_factor": {
+   "id": "porsche-taycan-4-cross-turismo.winter_factor",
+   "value": "1.25",
+   "source": "Placeholder winter uplift",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NAF El Prix winter tests to confirm per model",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "porsche-taycan-4-cross-turismo.tyre_set",
+   "value": 2200000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Porsche-approved winter set on rims, 19-20 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "porsche-taycan-4-cross-turismo.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 24,
+  "service_interval_km": 30000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "porsche-taycan-4-cross-turismo.service_price",
+   "value": 1000000,
+   "source": "Porsche Taycan service schedule (no Norwegian price published)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Porsche dealer labour rates",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "porsche-taycan-4-cross-turismo.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 2,
+  "warranty_km": 200000,
+  "fun_score": {
+   "id": "porsche-taycan-4-cross-turismo.fun_score",
+   "value": "9.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": 440,
+  "accel_0_100_s": "5.1"
+ },
+ {
+  "variant_id": "toyota-yaris-15-hybrid",
+  "make": "Toyota",
+  "model": "Yaris",
+  "trim_group": "1.5 Hybrid",
+  "segment": "hybrid-small",
+  "model_years": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "hybrid",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": null,
+  "power_kw": 85,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "185/65 R15",
+  "weight_kg": 1135,
+  "fuel": "petrol",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "toyota-yaris-15-hybrid.fuel_use",
+   "value": "5.2",
+   "source": "Toyota UK Yaris technical specifications (2023): WLTP 4.0-4.9 l/100 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 4.5 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "toyota-yaris-15-hybrid.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "toyota-yaris-15-hybrid.tyre_set",
+   "value": 800000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 15-16 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "toyota-yaris-15-hybrid.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "toyota-yaris-15-hybrid.service_price",
+   "value": 400000,
+   "source": "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "No Norwegian Toyota price list; dealer annual hybrid service, which also renews Toyota Relax",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "toyota-yaris-15-hybrid.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "toyota-yaris-15-hybrid.fun_score",
+   "value": "5.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "9.7"
+ },
+ {
+  "variant_id": "toyota-corolla-18-hybrid",
+  "make": "Toyota",
+  "model": "Corolla",
+  "trim_group": "1.8 Hybrid",
+  "segment": "hybrid-small",
+  "model_years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "hybrid",
+  "drive": "fwd",
+  "body": "estate",
+  "battery_kwh": null,
+  "power_kw": 90,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "205/55 R16",
+  "weight_kg": 1420,
+  "fuel": "petrol",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "toyota-corolla-18-hybrid.fuel_use",
+   "value": "5.5",
+   "source": "Toyota UK Corolla technical specifications (2021): WLTP 4.5-5.1 l/100 km (hatch and Touring Sports)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 4.8 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "toyota-corolla-18-hybrid.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "toyota-corolla-18-hybrid.tyre_set",
+   "value": 900000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 16-17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "toyota-corolla-18-hybrid.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "toyota-corolla-18-hybrid.service_price",
+   "value": 420000,
+   "source": "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Toyota dealer annual hybrid service",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "toyota-corolla-18-hybrid.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "toyota-corolla-18-hybrid.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "11.0"
+ },
+ {
+  "variant_id": "toyota-chr-18-hybrid",
+  "make": "Toyota",
+  "model": "C-HR",
+  "trim_group": "1.8 Hybrid",
+  "segment": "hybrid-small",
+  "model_years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "hybrid",
+  "drive": "fwd",
+  "body": "crossover",
+  "battery_kwh": null,
+  "power_kw": 90,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "215/60 R17",
+  "weight_kg": 1515,
+  "fuel": "petrol",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "toyota-chr-18-hybrid.fuel_use",
+   "value": "5.9",
+   "source": "Toyota UK C-HR technical specifications (2021): WLTP 4.9-5.3 l/100 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 5.1 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "toyota-chr-18-hybrid.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "toyota-chr-18-hybrid.tyre_set",
+   "value": 1000000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "toyota-chr-18-hybrid.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "toyota-chr-18-hybrid.service_price",
+   "value": 420000,
+   "source": "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Toyota dealer annual hybrid service",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "toyota-chr-18-hybrid.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "toyota-chr-18-hybrid.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "11.0"
+ },
+ {
+  "variant_id": "toyota-rav4-25-hybrid-awd",
+  "make": "Toyota",
+  "model": "RAV4",
+  "trim_group": "2.5 Hybrid AWD-i",
+  "segment": "hybrid-suv",
+  "model_years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "hybrid",
+  "drive": "awd",
+  "body": "suv",
+  "battery_kwh": null,
+  "power_kw": 163,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "225/60 R18",
+  "weight_kg": 1765,
+  "fuel": "petrol",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "toyota-rav4-25-hybrid-awd.fuel_use",
+   "value": "6.7",
+   "source": "Toyota UK RAV4 technical specifications (2022): WLTP 5.8-5.9 l/100 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 5.8 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "toyota-rav4-25-hybrid-awd.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.tyre_set",
+   "value": 1150000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "toyota-rav4-25-hybrid-awd.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.service_price",
+   "value": 500000,
+   "source": "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Larger Toyota hybrid annual service",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "toyota-rav4-25-hybrid-awd.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "toyota-rav4-25-hybrid-awd.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "8.1"
+ },
+ {
+  "variant_id": "vw-golf-etsi",
+  "make": "Volkswagen",
+  "model": "Golf",
+  "trim_group": "1.0/1.5 eTSI DSG",
+  "segment": "ice-compact",
+  "model_years": [
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ice",
+  "drive": "fwd",
+  "body": "hatchback",
+  "battery_kwh": null,
+  "power_kw": 110,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "205/55 R16",
+  "weight_kg": 1340,
+  "fuel": "petrol",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "vw-golf-etsi.fuel_use",
+   "value": "6.9",
+   "source": "VW UK Golf 1.5 eTSI DSG: WLTP 5.7-6.3 l/100 km (44.8-49.6 mpg), read in a forum excerpt",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Mild hybrid (48 V) petrol, costed as a petrol car; WLTP combined 6.0 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "vw-golf-etsi.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "vw-golf-etsi.tyre_set",
+   "value": 900000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 16-17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "vw-golf-etsi.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "vw-golf-etsi.service_price",
+   "value": 500000,
+   "source": "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Between Møller's small and large service prices; newer cars are priced in the booking tool",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "vw-golf-etsi.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "vw-golf-etsi.fun_score",
+   "value": "6.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "8.5"
+ },
+ {
+  "variant_id": "skoda-octavia-20-tdi-4x4",
+  "make": "Skoda",
+  "model": "Octavia",
+  "trim_group": "2.0 TDI 150 hk 4x4 DSG",
+  "segment": "ice-compact",
+  "model_years": [
+   2019,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ice",
+  "drive": "awd",
+  "body": "estate",
+  "battery_kwh": null,
+  "power_kw": 110,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "205/55 R17",
+  "weight_kg": 1560,
+  "fuel": "diesel",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "skoda-octavia-20-tdi-4x4.fuel_use",
+   "value": "6.3",
+   "source": "Skoda technical data Octavia Combi diesel (2020): 2.0 TDI 110 kW; 4x4 consumption estimated from the FWD figure",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "FWD 150 hk DSG 4.6-5.4 l/100 km plus about 0.6 for 4x4; WLTP combined 5.5 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "skoda-octavia-20-tdi-4x4.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.tyre_set",
+   "value": 1000000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "skoda-octavia-20-tdi-4x4.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.service_price",
+   "value": 500000,
+   "source": "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Between Møller's small and large service prices",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "skoda-octavia-20-tdi-4x4.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "skoda-octavia-20-tdi-4x4.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "8.8"
+ },
+ {
+  "variant_id": "skoda-kodiaq-20-tdi-4x4",
+  "make": "Skoda",
+  "model": "Kodiaq",
+  "trim_group": "2.0 TDI 190/200 hk 4x4 DSG",
+  "segment": "ice-suv",
+  "model_years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "energy_type": "ice",
+  "drive": "awd",
+  "body": "suv",
+  "battery_kwh": null,
+  "power_kw": 147,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "235/55 R18",
+  "weight_kg": 1870,
+  "fuel": "diesel",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "skoda-kodiaq-20-tdi-4x4.fuel_use",
+   "value": "7.6",
+   "source": "Skoda technical data Kodiaq (2021): 2.0 TDI 147 kW 4x4 DSG, WLTP 6.3-7.0 l/100 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 6.6 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "skoda-kodiaq-20-tdi-4x4.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.tyre_set",
+   "value": 1150000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "skoda-kodiaq-20-tdi-4x4.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.service_price",
+   "value": 500000,
+   "source": "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Between Møller's small and large service prices",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "skoda-kodiaq-20-tdi-4x4.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "skoda-kodiaq-20-tdi-4x4.fun_score",
+   "value": "5.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "7.7"
+ },
+ {
+  "variant_id": "vw-tiguan-20-tdi-4motion",
+  "make": "Volkswagen",
+  "model": "Tiguan",
+  "trim_group": "2.0 TDI 150 hk 4Motion DSG",
+  "segment": "ice-suv",
+  "model_years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ice",
+  "drive": "awd",
+  "body": "suv",
+  "battery_kwh": null,
+  "power_kw": 110,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "235/55 R18",
+  "weight_kg": 1715,
+  "fuel": "diesel",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "vw-tiguan-20-tdi-4motion.fuel_use",
+   "value": "7.2",
+   "source": "auto-data.net Tiguan II 2.0 TDI 150 hk 4Motion DSG: WLTP 6.2-6.4 l/100 km (excerpt)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 6.3 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "vw-tiguan-20-tdi-4motion.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.tyre_set",
+   "value": 1050000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17-18 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "vw-tiguan-20-tdi-4motion.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.service_price",
+   "value": 500000,
+   "source": "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Between Møller's small and large service prices",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "vw-tiguan-20-tdi-4motion.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "vw-tiguan-20-tdi-4motion.fun_score",
+   "value": "5.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "9.3"
+ },
+ {
+  "variant_id": "volvo-v60-d4",
+  "make": "Volvo",
+  "model": "V60",
+  "trim_group": "D4 190 hk",
+  "segment": "ice-compact",
+  "model_years": [
+   2019,
+   2020,
+   2021
+  ],
+  "energy_type": "ice",
+  "drive": "fwd",
+  "body": "estate",
+  "battery_kwh": null,
+  "power_kw": 140,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "225/50 R17",
+  "weight_kg": 1739,
+  "fuel": "diesel",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "volvo-v60-d4.fuel_use",
+   "value": "6.6",
+   "source": "Vi Menn test Volvo V60 D4 automat: 4.7 l/100 km NEDC (excerpt); WLTP estimated",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "NEDC 4.7 x about 1.2 for WLTP; WLTP combined 5.7 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "volvo-v60-d4.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "volvo-v60-d4.tyre_set",
+   "value": 1000000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "volvo-v60-d4.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 30000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "volvo-v60-d4.service_price",
+   "value": 600000,
+   "source": "Volvo Nordic service schedule (third-party); no Norwegian price published",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Swedish Originalservice 3 795-4 295 SEK scaled to Norwegian labour rates",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "volvo-v60-d4.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 2,
+  "warranty_km": 200000,
+  "fun_score": {
+   "id": "volvo-v60-d4.fun_score",
+   "value": "6.5",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "7.9"
+ },
+ {
+  "variant_id": "toyota-landcruiser-28-d4d",
+  "make": "Toyota",
+  "model": "Land Cruiser",
+  "trim_group": "2.8 D-4D (passenger car)",
+  "segment": "ice-suv",
+  "model_years": [
+   2019,
+   2020,
+   2021,
+   2022,
+   2023
+  ],
+  "energy_type": "ice",
+  "drive": "awd",
+  "body": "suv",
+  "battery_kwh": null,
+  "power_kw": 150,
+  "heat_pump": false,
+  "auto_precondition": false,
+  "tyre_size": "265/65 R17",
+  "weight_kg": 2320,
+  "fuel": "diesel",
+  "efficiency_wh_per_km": null,
+  "fuel_l_per_100km": {
+   "id": "toyota-landcruiser-28-d4d.fuel_use",
+   "value": "11.2",
+   "source": "Toyota UK Land Cruiser press pack (2022): WLTP 9.3-10.2 l/100 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "WLTP combined 9.7 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts",
+   "range": null
+  },
+  "winter_factor": {
+   "id": "toyota-landcruiser-28-d4d.winter_factor",
+   "value": "1.1",
+   "source": "Placeholder winter uplift for fuel cars",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %",
+   "range": null
+  },
+  "tyre_set_ore": {
+   "id": "toyota-landcruiser-28-d4d.tyre_set",
+   "value": 1400000,
+   "source": "Research estimate by rim size (2026-11-13)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Winter set on rims, 17 in, large SUV tyres",
+   "range": null
+  },
+  "tyre_life_km": {
+   "id": "toyota-landcruiser-28-d4d.tyre_life_km",
+   "value": 37000,
+   "source": "OFV Kostnader ved bilhold 2026 (tyre life assumption incl. summer and winter sets)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "OFV calculation assumption, not measured per model",
+   "range": null
+  },
+  "service_interval_months": 12,
+  "service_interval_km": 15000,
+  "service_first_months": 0,
+  "service_price_ore": {
+   "id": "toyota-landcruiser-28-d4d.service_price",
+   "value": 650000,
+   "source": "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Large diesel 4x4 annual service",
+   "range": null
+  },
+  "service_first_price_ore": null,
+  "service_price_after_7y_ore": null,
+  "wear_per_year_ore": {
+   "id": "toyota-landcruiser-28-d4d.wear_per_year",
+   "value": 120000,
+   "source": "BEMA/mekke 2025 parts list (wipers 505-825, cabin filter 242-790, 12 V battery 954-1 281 kr ex VAT) plus workshop labour; brake fluid 1 490 kr every 2 yr (BOS)",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Wipers yearly, cabin filter every 2 yr, brake fluid every 2-4 yr, 12 V battery every 5-6 yr, incl. VAT and fitting",
+   "range": null
+  },
+  "warranty_years": 5,
+  "warranty_km": 100000,
+  "fun_score": {
+   "id": "toyota-landcruiser-28-d4d.fun_score",
+   "value": "5.0",
+   "source": "Owner weighting",
+   "as_of": "2026-10-31",
+   "status": "estimate",
+   "basis": "Placeholder relative to the existing catalogue; owner to set",
+   "range": null
+  },
+  "range_km_wltp": null,
+  "accel_0_100_s": "9.9"
  }
 ]

@@ -46,7 +46,7 @@ def test_coverage_near_eighty_percent_on_thousand_listings(seed_data):
     assert abs(report.overall.coverage - 0.80) < 0.08
     assert report.overall.mape < 0.12
     assert report.passes
-    assert set(report.by_segment) == {"ev-mid", "ev-suv", "ev-small"}
+    assert set(report.by_segment) == {v.segment for v in vehicles}
     assert list(report.by_age_band) == ["<2y", "2-4y", "4y+"]
     assert sum(c.n for c in report.by_age_band.values()) == report.overall.n
     assert report.thin_cohorts == []

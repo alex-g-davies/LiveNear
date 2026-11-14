@@ -28,7 +28,8 @@ from ..cars import data_bundle
 from ..cars.bundle_schema import ListingsMode
 from ..cars.data_bundle import Bundle, BundleError, Listing
 from ..cars.engine.overrides import WhatIf, apply_input_overrides, apply_what_if
-from ..cars.engine.run import run_scenario
+from ..cars.engine.result import build_option_result
+from ..cars.engine.run import RankRow, rank_options, run_scenario
 from ..cars.rules import load_tax_rules, pending_rules
 from ..cars.scenario_builder import build_scenario
 from ..cars.schemas import (
@@ -175,7 +176,11 @@ def cohorts(
                 status=c.status,
                 as_of=c.as_of,
                 range_km_wltp=v.range_km_wltp,
-                efficiency_wh_per_km=v.efficiency_wh_per_km.value,
+                efficiency_wh_per_km=v.efficiency_wh_per_km.value
+                if v.efficiency_wh_per_km
+                else None,
+                fuel=v.fuel,
+                fuel_l_per_100km=v.fuel_l_per_100km.value if v.fuel_l_per_100km else None,
                 accel_0_100_s=v.accel_0_100_s,
                 meets_must_haves=_meets(v, must_have or []),
             )
@@ -362,21 +367,19 @@ REASON_FUN = "best fun score"
 REASON_CASH = "lowest cash up front"
 
 
-def _reasons(options, measure: str) -> dict[str, list[str]]:
+def _reasons(rows: list[RankRow]) -> dict[str, list[str]]:
     """Tags per option id (024 R11): rank 1, narrowest P10-P90 band of the
     expected measure, best fun score, lowest cash up front. Ties go to the
     better-ranked option, so every tag names exactly one row."""
-    out: dict[str, list[str]] = {o.option_id: [] for o in options}
-    if not options:
+    out: dict[str, list[str]] = {r.option_id: [] for r in rows}
+    if not rows:
         return out
-    out[options[0].option_id].append(REASON_LOWEST)
-    narrow = min(
-        options, key=lambda o: o.measures[measure].expected.p90 - o.measures[measure].expected.p10
-    )
+    out[rows[0].option_id].append(REASON_LOWEST)
+    narrow = min(rows, key=lambda r: r.expected_p90 - r.expected_p10)
     out[narrow.option_id].append(REASON_NARROWEST)
-    fun = max(options, key=lambda o: Decimal(o.fun_score))
+    fun = max(rows, key=lambda r: r.fun_score)
     out[fun.option_id].append(REASON_FUN)
-    cash = min(options, key=lambda o: o.cash_up_front)
+    cash = min(rows, key=lambda r: r.cash_up_front)
     out[cash.option_id].append(REASON_CASH)
     return out
 
@@ -406,19 +409,22 @@ def recommend(
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from None
-    res = run_scenario(sc, body.measure)
-    reasons = _reasons(res.options, body.measure)
+    # Rank everything cheaply, then build full results only for the rows
+    # returned: the full-catalogue run otherwise blew the 2 s budget (029).
+    ranked, ruled_out = rank_options(sc, body.measure)
+    reasons = _reasons(ranked)
     ruled: dict[str, int] = {}
-    for r in res.ruled_out:
+    for r in ruled_out:
         for reason in r.reasons:
             ruled[reason] = ruled.get(reason, 0) + 1
-    picked = [o for o in res.options[: body.n]]
-    for o in res.options[body.n :]:
-        if reasons[o.option_id]:
-            picked.append(o)  # a tag holder outside the top n still shows
-    rank_of = {o.option_id: i + 1 for i, o in enumerate(res.options)}
+    picked = list(ranked[: body.n])
+    for row in ranked[body.n :]:
+        if reasons[row.option_id]:
+            picked.append(row)  # a tag holder outside the top n still shows
+    rank_of = {row.option_id: i + 1 for i, row in enumerate(ranked)}
     rows = []
-    for o in picked:
+    for row in picked:
+        o = build_option_result(sc, row.option)[0]
         m = meta.get(o.option_id.removesuffix(":cash"), {})
         rows.append(
             RecommendRow(
@@ -437,7 +443,7 @@ def recommend(
         ranking_measure=body.measure,
         bundle_as_of=b.meta.bundle_as_of,
         start_date=start,
-        n_considered=len(res.options),
+        n_considered=len(ranked),
         ruled_out=ruled,
         skipped=len(notes),
         rows=rows,

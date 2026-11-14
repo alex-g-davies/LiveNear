@@ -66,6 +66,11 @@ native-speaker review (owner decision, 2026-11-12). Corrections go in
 | electric car (EV) | elbil | elektrikli araba |
 | plug-in hybrid | ladbar hybrid | şarj edilebilir hibrit |
 | petrol or diesel | bensin eller diesel | benzinli veya dizel |
+| hybrid (full hybrid) | hybrid | hibrit |
+| petrol / diesel (fuel) | bensin / diesel | benzin / dizel |
+| fuel use (l/100 km) | drivstofforbruk | yakıt tüketimi |
+| pump price | pumpepris | pompa fiyatı |
+| toll per passage | bompenger per passering | geçiş başına ücret |
 | dealer / private seller | forhandler / privat selger | bayi / bireysel satıcı |
 | listing | annonse | ilan |
 | asking price | prisantydning | ilan fiyatı |

@@ -58,12 +58,17 @@ def test_overlapping_rules_are_rejected():
         load_tax_rules(FIX / "tax_rules_overlap.yaml")
 
 
-def test_unverified_rule_makes_option_estimate():
-    """The shipped 2025 traffic-tax rule is unverified (only the EV figure was
-    checked), so a scenario starting in 2025 must show Estimate even when every
-    other input is live; the 2026 rule is live (checked 2026-11-02)."""
+def test_unverified_rule_makes_option_estimate(tmp_path):
+    """An unverified rule makes the option Estimate even when every other input
+    is live. Every shipped rule is now live (029 R3), so the test marks the 2025
+    traffic-tax rule unverified in a copy of the rules file."""
+    text = RULES_FILE.read_text(encoding="utf-8")
+    head, tail = text.split("id: traffic_tax_2025", 1)
+    tail = tail.replace("status: live", "status: unverified", 1)
+    rules = tmp_path / "tax_rules.yaml"
+    rules.write_text(head + "id: traffic_tax_2025" + tail, encoding="utf-8")
     d = b.scenario([b.used_cash(purchase_date="2025-06-01")], market=b.market())
-    d["market"]["tax_rules"] = str(RULES_FILE)
+    d["market"]["tax_rules"] = str(rules)
     d["user"]["start_date"] = "2025-06-01"
     d["user"]["return_on_cash_pct"] = 0
     d["market"]["materiality_threshold"] = b.inp(0.01)

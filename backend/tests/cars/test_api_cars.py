@@ -180,7 +180,8 @@ def test_limits_rule_out_and_bad_selection_422(client):
 def test_sources_and_health_report_cars(client):
     s = client.get("/api/cars/sources").json()
     assert s["sources"] and any(p["id"] == "ev_vat_2027_proposed" for p in s["pending_rules"])
-    assert "traffic_tax_2025" in s["unverified_rules"]
+    # Every dated rule has been read on its official page (029 R3).
+    assert s["unverified_rules"] == []
     h = client.get("/api/health").json()
     assert h["cars"]["bundle_as_of"] and h["cars"]["listings"] in ("fixture", "unavailable")
 
@@ -262,7 +263,11 @@ def test_market_points_filters(client):
     vehicles = {v["variant_id"]: v for v in client.get("/api/cars/vehicles").json()}
     assert awd["n_points"] < base["n_points"]
     assert all(vehicles[p["variant_id"]]["drive"] == "awd" for p in awd["points"])
-    none = client.get("/api/cars/market/points", params={"energy_type": ["ice"]}).json()
+    ice = client.get("/api/cars/market/points", params={"energy_type": ["ice"]}).json()
+    assert 0 < ice["n_points"] < base["n_points"]  # 029: petrol and diesel cars
+    assert all(vehicles[p["variant_id"]]["energy_type"] == "ice" for p in ice["points"])
+    # No plug-in hybrids in the catalogue (out of scope for 029).
+    none = client.get("/api/cars/market/points", params={"energy_type": ["phev"]}).json()
     assert none["n_points"] == 0
 
 

@@ -24,7 +24,7 @@ Measure = Literal["per_month", "tco", "npc", "cash_up_front", "per_km"]
 # whole catalogue must fit (a test asserts it) so every recommendation can
 # be added to the comparison; `frontend/src/cars/lib/market.ts` mirrors the
 # number so the screens stop adding cars before the server would refuse.
-MAX_COMPARE_VARIANTS = 30
+MAX_COMPARE_VARIANTS = 40  # 36 variants since spec 029
 
 
 class ExitOddsIn(BaseModel):
@@ -203,7 +203,9 @@ class CohortOut(BaseModel):
     status: str
     as_of: date
     range_km_wltp: int | None
-    efficiency_wh_per_km: int
+    efficiency_wh_per_km: int | None
+    fuel: str | None = None
+    fuel_l_per_100km: Decimal | None = None
     accel_0_100_s: Decimal | None
     meets_must_haves: bool
 

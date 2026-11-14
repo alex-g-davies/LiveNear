@@ -4,6 +4,10 @@ as_of: 2026-10-31
 car_loan_rate_pct: {value: 6.9, range: [5.5, 8.5], source: "Placeholder: typical Norwegian car-loan nominal rate", status: estimate, basis: "Owner enters the bank's quoted rate; monthly refresh planned"}
 home_ore_per_kwh: {value: 150, range: [100, 230], source: "Placeholder: Oslo household price incl. grid fee and VAT", status: estimate, basis: "SSB electricity price series will feed this"}
 public_ore_per_kwh: {value: 550, range: [450, 750], source: "Placeholder: fast-charging price", status: estimate, basis: "Operators on the owner's routes"}
+# --- spec 029 R2: pump prices, øre per litre incl. taxes. SSB table 09654
+# (CC BY 4.0), months 2024-10 to 2026-09 read 2026-11-13 via PxWebApi v2.
+petrol_ore_per_litre: {value: 2008, range: [1935, 2211], source: "SSB table 09654, bensin 95 blyfri, monthly average pump price (CC BY 4.0), https://www.ssb.no/statbank/table/09654", as_of: 2026-09-30, status: estimate, basis: "Median of the last 12 months (2025-10 to 2026-09); range is the P10-P90 of the last 24 months. September 2026 was 26.18 kr/l, above that range; the owner can enter today's pump price"}
+diesel_ore_per_litre: {value: 2042, range: [1909, 2276], source: "SSB table 09654, avgiftspliktig diesel, monthly average pump price (CC BY 4.0), https://www.ssb.no/statbank/table/09654", as_of: 2026-09-30, status: estimate, basis: "Median of the last 12 months (2025-10 to 2026-09); range is the P10-P90 of the last 24 months. September 2026 was 27.52 kr/l, above that range; the owner can enter today's pump price"}
 new_car_fees_nok: {value: 12000, source: "Placeholder delivery and registration fees", status: estimate, basis: "Typical leveringsomkostninger"}
 loan_establishment_fee_nok: {value: 2500, source: "Placeholder", status: estimate, basis: "Typical etableringsgebyr"}
 loan_monthly_fee_nok: {value: 50, source: "Placeholder", status: estimate, basis: "Typical termingebyr"}

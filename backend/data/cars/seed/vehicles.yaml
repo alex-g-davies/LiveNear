@@ -517,3 +517,356 @@ variants:
     service_interval_months: 24
     service_interval_km: 30000
     service_price_nok: {value: 4500, source: "BYD (Denmark release): interval 24 months / 30 000 km; Norwegian dealer listings agree; price not published", status: estimate, basis: "Small-EV main service, Bertel O. Steen range"}
+  # --- spec 029: 14 models from the owner's 2026-11-12 export, one variant each
+  # (the most-listed trim and years). Researched 2026-11-13; figures read only
+  # in a search excerpt, or inferred, are estimates with a basis.
+  - variant_id: audi-q4-50-quattro
+    make: Audi
+    model: "Q4 e-tron"
+    trim_group: "50 quattro"
+    segment: ev-suv
+    model_years: [2022, 2023, 2024]
+    energy_type: ev
+    drive: awd
+    body: suv
+    battery_kwh: 76.6
+    power_kw: 220
+    heat_pump: false
+    auto_precondition: true
+    tyre_size: 235/55 R19
+    weight_kg: 2210
+    range_km_wltp: 470
+    accel_0_100_s: 6.2
+    efficiency_wh_per_km: {value: 190, source: "ev-database.org Audi Q4 e-tron 50 quattro: WLTP 166-213 Wh/km", status: estimate, basis: "Real-world mild-weather use near the middle of the WLTP band"}
+    tyre_set_nok: {value: 16000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 19 in (research estimate 14 000-18 000)"}
+    fun_score: {value: 6.0, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 7700, source: "mollerbil.no Audi service: from 6 890 kr (2-year) / 8 490 kr (4-year), materials extra (2026)", status: estimate, basis: "Mean of the two published from-prices; km interval assumed"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: bmw-i4-m50
+    make: BMW
+    model: "i4"
+    trim_group: "M50"
+    segment: ev-premium
+    model_years: [2022, 2023, 2024]
+    energy_type: ev
+    drive: awd
+    body: hatchback
+    battery_kwh: 80.7
+    power_kw: 400
+    heat_pump: true
+    auto_precondition: true
+    tyre_size: 245/40 R19
+    weight_kg: 2290
+    range_km_wltp: 470
+    accel_0_100_s: 3.9
+    efficiency_wh_per_km: {value: 205, source: "ev-database.org BMW i4 M50: WLTP 181-225 Wh/km", status: estimate, basis: "Real-world mild-weather use near the middle of the WLTP band"}
+    tyre_set_nok: {value: 17000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 19 in staggered, premium brand"}
+    fun_score: {value: 9.0, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 5000, source: "BMW Condition Based Service (no fixed Norwegian price published)", status: estimate, basis: "Brake fluid and cabin filter visit at a dealer; interval typical of BMW EVs"}
+    warranty_years: 2
+    warranty_km: 200000
+  - variant_id: polestar-2-lr-dual-motor
+    make: Polestar
+    model: "2"
+    trim_group: "Long Range Dual Motor"
+    segment: ev-mid
+    model_years: [2021, 2022, 2023]
+    energy_type: ev
+    drive: awd
+    body: hatchback
+    battery_kwh: 75.0
+    power_kw: 300
+    heat_pump: false
+    auto_precondition: true
+    tyre_size: 245/45 R19
+    weight_kg: 2188
+    range_km_wltp: 470
+    accel_0_100_s: 4.7
+    efficiency_wh_per_km: {value: 198, source: "ev-database.org Polestar 2 Long Range Dual Motor: WLTP 193-203 Wh/km", status: estimate, basis: "Real-world mild-weather use at the WLTP mid-point; heat pump optional"}
+    tyre_set_nok: {value: 15000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 19 in"}
+    fun_score: {value: 7.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 4500, source: "Polestar service schedule (no Norwegian price published)", status: estimate, basis: "EV inspection, brake fluid and cabin filter"}
+    warranty_years: 2
+    warranty_km: 200000
+  - variant_id: porsche-taycan-4-cross-turismo
+    make: Porsche
+    model: "Taycan"
+    trim_group: "4 Cross Turismo"
+    segment: ev-premium
+    model_years: [2021, 2022, 2023]
+    energy_type: ev
+    drive: awd
+    body: estate
+    battery_kwh: 83.7
+    power_kw: 350
+    heat_pump: false
+    auto_precondition: true
+    tyre_size: 245/45 R19
+    weight_kg: 2320
+    range_km_wltp: 440
+    accel_0_100_s: 5.1
+    efficiency_wh_per_km: {value: 235, source: "ev-database.org Porsche Taycan 4 Cross Turismo: WLTP 218-264 Wh/km (MY21-22), 213-248 (MY23)", status: estimate, basis: "Real-world mild-weather use near the middle of the WLTP band"}
+    tyre_set_nok: {value: 22000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Porsche-approved winter set on rims, 19-20 in"}
+    fun_score: {value: 9.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 24
+    service_interval_km: 30000
+    service_price_nok: {value: 10000, source: "Porsche Taycan service schedule (no Norwegian price published)", status: estimate, basis: "Porsche dealer labour rates"}
+    warranty_years: 2
+    warranty_km: 200000
+  - variant_id: toyota-yaris-15-hybrid
+    make: Toyota
+    model: "Yaris"
+    trim_group: "1.5 Hybrid"
+    segment: hybrid-small
+    model_years: [2020, 2021, 2022, 2023, 2024]
+    energy_type: hybrid
+    fuel: petrol
+    drive: fwd
+    body: hatchback
+    power_kw: 85
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 185/65 R15
+    weight_kg: 1135
+    accel_0_100_s: 9.7
+    fuel_l_per_100km: {value: 5.2, source: "Toyota UK Yaris technical specifications (2023): WLTP 4.0-4.9 l/100 km", status: estimate, basis: "WLTP combined 4.5 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 8000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 15-16 in"}
+    fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 4000, source: "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km", status: estimate, basis: "No Norwegian Toyota price list; dealer annual hybrid service, which also renews Toyota Relax"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: toyota-corolla-18-hybrid
+    make: Toyota
+    model: "Corolla"
+    trim_group: "1.8 Hybrid"
+    segment: hybrid-small
+    model_years: [2019, 2020, 2021, 2022, 2023, 2024]
+    energy_type: hybrid
+    fuel: petrol
+    drive: fwd
+    body: estate
+    power_kw: 90
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 205/55 R16
+    weight_kg: 1420
+    accel_0_100_s: 11.0
+    fuel_l_per_100km: {value: 5.5, source: "Toyota UK Corolla technical specifications (2021): WLTP 4.5-5.1 l/100 km (hatch and Touring Sports)", status: estimate, basis: "WLTP combined 4.8 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 9000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 16-17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 4200, source: "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km", status: estimate, basis: "Toyota dealer annual hybrid service"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: toyota-chr-18-hybrid
+    make: Toyota
+    model: "C-HR"
+    trim_group: "1.8 Hybrid"
+    segment: hybrid-small
+    model_years: [2019, 2020, 2021, 2022, 2023]
+    energy_type: hybrid
+    fuel: petrol
+    drive: fwd
+    body: crossover
+    power_kw: 90
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 215/60 R17
+    weight_kg: 1515
+    accel_0_100_s: 11.0
+    fuel_l_per_100km: {value: 5.9, source: "Toyota UK C-HR technical specifications (2021): WLTP 4.9-5.3 l/100 km", status: estimate, basis: "WLTP combined 5.1 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 10000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 4200, source: "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km", status: estimate, basis: "Toyota dealer annual hybrid service"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: toyota-rav4-25-hybrid-awd
+    make: Toyota
+    model: "RAV4"
+    trim_group: "2.5 Hybrid AWD-i"
+    segment: hybrid-suv
+    model_years: [2019, 2020, 2021, 2022, 2023, 2024]
+    energy_type: hybrid
+    fuel: petrol
+    drive: awd
+    body: suv
+    power_kw: 163
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 225/60 R18
+    weight_kg: 1765
+    accel_0_100_s: 8.1
+    fuel_l_per_100km: {value: 6.7, source: "Toyota UK RAV4 technical specifications (2022): WLTP 5.8-5.9 l/100 km", status: estimate, basis: "WLTP combined 5.8 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 11500, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 18 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 5000, source: "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km", status: estimate, basis: "Larger Toyota hybrid annual service"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: vw-golf-etsi
+    make: Volkswagen
+    model: "Golf"
+    trim_group: "1.0/1.5 eTSI DSG"
+    segment: ice-compact
+    model_years: [2020, 2021, 2022, 2023, 2024]
+    energy_type: ice
+    fuel: petrol
+    drive: fwd
+    body: hatchback
+    power_kw: 110
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 205/55 R16
+    weight_kg: 1340
+    accel_0_100_s: 8.5
+    fuel_l_per_100km: {value: 6.9, source: "VW UK Golf 1.5 eTSI DSG: WLTP 5.7-6.3 l/100 km (44.8-49.6 mpg), read in a forum excerpt", status: estimate, basis: "Mild hybrid (48 V) petrol, costed as a petrol car; WLTP combined 6.0 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 9000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 16-17 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 5000, source: "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)", status: estimate, basis: "Between Møller's small and large service prices; newer cars are priced in the booking tool"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: skoda-octavia-20-tdi-4x4
+    make: Skoda
+    model: "Octavia"
+    trim_group: "2.0 TDI 150 hk 4x4 DSG"
+    segment: ice-compact
+    model_years: [2019, 2021, 2022, 2023, 2024]
+    energy_type: ice
+    fuel: diesel
+    drive: awd
+    body: estate
+    power_kw: 110
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 205/55 R17
+    weight_kg: 1560
+    accel_0_100_s: 8.8
+    fuel_l_per_100km: {value: 6.3, source: "Skoda technical data Octavia Combi diesel (2020): 2.0 TDI 110 kW; 4x4 consumption estimated from the FWD figure", status: estimate, basis: "FWD 150 hk DSG 4.6-5.4 l/100 km plus about 0.6 for 4x4; WLTP combined 5.5 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 10000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 5000, source: "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)", status: estimate, basis: "Between Møller's small and large service prices"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: skoda-kodiaq-20-tdi-4x4
+    make: Skoda
+    model: "Kodiaq"
+    trim_group: "2.0 TDI 190/200 hk 4x4 DSG"
+    segment: ice-suv
+    model_years: [2019, 2020, 2021, 2022, 2023, 2024]
+    energy_type: ice
+    fuel: diesel
+    drive: awd
+    body: suv
+    power_kw: 147
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 235/55 R18
+    weight_kg: 1870
+    accel_0_100_s: 7.7
+    fuel_l_per_100km: {value: 7.6, source: "Skoda technical data Kodiaq (2021): 2.0 TDI 147 kW 4x4 DSG, WLTP 6.3-7.0 l/100 km", status: estimate, basis: "WLTP combined 6.6 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 11500, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 18 in"}
+    fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 5000, source: "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)", status: estimate, basis: "Between Møller's small and large service prices"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: vw-tiguan-20-tdi-4motion
+    make: Volkswagen
+    model: "Tiguan"
+    trim_group: "2.0 TDI 150 hk 4Motion DSG"
+    segment: ice-suv
+    model_years: [2019, 2020, 2021, 2022, 2023]
+    energy_type: ice
+    fuel: diesel
+    drive: awd
+    body: suv
+    power_kw: 110
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 235/55 R18
+    weight_kg: 1715
+    accel_0_100_s: 9.3
+    fuel_l_per_100km: {value: 7.2, source: "auto-data.net Tiguan II 2.0 TDI 150 hk 4Motion DSG: WLTP 6.2-6.4 l/100 km (excerpt)", status: estimate, basis: "WLTP combined 6.3 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 10500, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 17-18 in"}
+    fun_score: {value: 5.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 5000, source: "mollerbil.no 5+ Originalservice: 4 490 kr small / 6 490 kr large service for VW and Skoda over 5 years (2026)", status: estimate, basis: "Between Møller's small and large service prices"}
+    warranty_years: 5
+    warranty_km: 100000
+  - variant_id: volvo-v60-d4
+    make: Volvo
+    model: "V60"
+    trim_group: "D4 190 hk"
+    segment: ice-compact
+    model_years: [2019, 2020, 2021]
+    energy_type: ice
+    fuel: diesel
+    drive: fwd
+    body: estate
+    power_kw: 140
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 225/50 R17
+    weight_kg: 1739
+    accel_0_100_s: 7.9
+    fuel_l_per_100km: {value: 6.6, source: "Vi Menn test Volvo V60 D4 automat: 4.7 l/100 km NEDC (excerpt); WLTP estimated", status: estimate, basis: "NEDC 4.7 x about 1.2 for WLTP; WLTP combined 5.7 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 10000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 17 in"}
+    fun_score: {value: 6.5, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 30000
+    service_price_nok: {value: 6000, source: "Volvo Nordic service schedule (third-party); no Norwegian price published", status: estimate, basis: "Swedish Originalservice 3 795-4 295 SEK scaled to Norwegian labour rates"}
+    warranty_years: 2
+    warranty_km: 200000
+  - variant_id: toyota-landcruiser-28-d4d
+    make: Toyota
+    model: "Land Cruiser"
+    trim_group: "2.8 D-4D (passenger car)"
+    segment: ice-suv
+    model_years: [2019, 2020, 2021, 2022, 2023]
+    energy_type: ice
+    fuel: diesel
+    drive: awd
+    body: suv
+    power_kw: 150
+    heat_pump: false
+    auto_precondition: false
+    tyre_size: 265/65 R17
+    weight_kg: 2320
+    accel_0_100_s: 9.9
+    fuel_l_per_100km: {value: 11.2, source: "Toyota UK Land Cruiser press pack (2022): WLTP 9.3-10.2 l/100 km", status: estimate, basis: "WLTP combined 9.7 l/100 km plus 15 % for real-world driving (ICCT gap estimate for WLTP cars); winter factor adds cold starts"}
+    winter_factor: {value: 1.1, source: "Placeholder winter uplift for fuel cars", status: estimate, basis: "Cold starts and winter fuel raise consumption about 10 %; less than an EV's 25 %"}
+    tyre_set_nok: {value: 14000, source: "Research estimate by rim size (2026-11-13)", status: estimate, basis: "Winter set on rims, 17 in, large SUV tyres"}
+    fun_score: {value: 5.0, source: "Owner weighting", status: estimate, basis: "Placeholder relative to the existing catalogue; owner to set"}
+    service_interval_months: 12
+    service_interval_km: 15000
+    service_price_nok: {value: 6500, source: "toyota.no Toyota garantier / Relax vilkår: service every 12 months or 15 000 km", status: estimate, basis: "Large diesel 4x4 annual service"}
+    warranty_years: 5
+    warranty_km: 100000

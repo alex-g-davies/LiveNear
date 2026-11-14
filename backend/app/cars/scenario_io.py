@@ -36,6 +36,7 @@ from .engine.models import (
     DefaultEarlyExit,
     ExitOdds,
     FixedTable,
+    FuelPrices,
     In,
     InsuranceDefault,
     InsuranceProfile,
@@ -49,6 +50,7 @@ from .engine.models import (
     RepairAllowance,
     ResalePath,
     Scenario,
+    TollRates,
     TollRing,
     Used,
     UserInputs,
@@ -132,7 +134,13 @@ def _vehicle(v: dict[str, Any], prefix: str) -> VehicleInputs:
         auto_precondition=bool(v.get("auto_precondition", True)),
         tyre_size=v.get("tyre_size", ""),
         weight_kg=v.get("weight_kg"),
-        efficiency_wh_per_km=load_in(v["efficiency_wh_per_km"], f"{prefix}.efficiency"),
+        fuel=v.get("fuel"),
+        efficiency_wh_per_km=load_in(v["efficiency_wh_per_km"], f"{prefix}.efficiency")
+        if v.get("efficiency_wh_per_km")
+        else None,
+        fuel_l_per_100km=load_in(v["fuel_l_per_100km"], f"{prefix}.fuel_use", kind=Decimal)
+        if v.get("fuel_l_per_100km")
+        else None,
         winter_factor=load_in(v["winter_factor"], f"{prefix}.winter_factor", kind=Decimal),
         tyre_set_ore=load_in(v["tyre_set"], f"{prefix}.tyre_set"),
         tyre_life_km=load_in(v["tyre_life_km"], f"{prefix}.tyre_life_km"),
@@ -278,6 +286,22 @@ def _toll_ring(block: dict[str, Any] | None) -> TollRing | None:
         rush_ore=load_in(block["rush"], "market.toll_rush"),
         monthly_cap_passages=int(block.get("monthly_cap", 0)),
         source=load_in(block["source"], "market.toll_ring", kind=str),
+        fuel_rates={
+            fuel: TollRates(
+                offpeak_ore=load_in(fr["offpeak"], f"market.toll_{fuel}_offpeak"),
+                rush_ore=load_in(fr["rush"], f"market.toll_{fuel}_rush"),
+            )
+            for fuel, fr in (block.get("fuel_rates") or {}).items()
+        },
+    )
+
+
+def _fuel_prices(block: dict[str, Any] | None) -> FuelPrices | None:
+    if not block:
+        return None
+    return FuelPrices(
+        petrol_ore_per_litre=load_in(block["petrol"], "market.fuel_petrol"),
+        diesel_ore_per_litre=load_in(block["diesel"], "market.fuel_diesel"),
     )
 
 
@@ -327,6 +351,7 @@ def scenario_from_dict(data: dict[str, Any], base_dir: Path | None = None) -> Sc
         inspection_fee_ore=load_in(m["inspection_fee"], "market.inspection_fee"),
         wheel_change_ore=load_in(m["wheel_change"], "market.wheel_change"),
         toll_ring=_toll_ring(m.get("toll_ring")),
+        fuel_prices=_fuel_prices(m.get("fuel_prices")),
     )
     options = []
     for o in data["options"]:

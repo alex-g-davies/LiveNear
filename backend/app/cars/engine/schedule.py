@@ -75,6 +75,9 @@ class StochasticBases:
     insurance_range: tuple[Decimal, Decimal] | None
     kwh_home: list[Decimal]  # kWh per month charged at home
     kwh_public: list[Decimal]
+    litres: list[Decimal]  # fuel burnt per month (029 R1); zeros for EVs
+    fuel_price_ore: int
+    fuel_range: tuple[Decimal, Decimal] | None
     home_price_ore: int
     home_range: tuple[Decimal, Decimal] | None
     public_price_ore: int
@@ -307,21 +310,36 @@ def build_schedule(user: UserInputs, market: MarketPolicyInputs, option: Option)
             tt[k] = per_day * days_in_month(on)
     add("traffic_tax", "cash", tt, used, extra_estimate=any_carried)
 
-    # ---- energy ------------------------------------------------------------------
+    # ---- energy: electricity by charging mix, or fuel at the pump (029 R1) -------
+    kwh_home: list[Decimal] = [Decimal(0)] * MONTHS
+    kwh_public: list[Decimal] = [Decimal(0)] * MONTHS
+    litres: list[Decimal] = [Decimal(0)] * MONTHS
+    fuel_price = 0
+    fuel_range = None
     with ctx.item("energy") as used:
-        wh = Decimal(ctx.use(veh.efficiency_wh_per_km)) * ctx.use(veh.winter_factor)
-        mix = user.charging_mix
-        home_p = ctx.use(market.charging.home_ore_per_kwh)
-        pub_p = ctx.use(market.charging.public_ore_per_kwh)
-        kwh_home: list[Decimal] = [Decimal(0)] * MONTHS
-        kwh_public: list[Decimal] = [Decimal(0)] * MONTHS
         en = [0] * MONTHS
-        for k in range(1, MONTHS):
-            km_month = km_at[k] - km_at[k - 1]
-            kwh = Decimal(km_month) * wh / Decimal(1000)
-            kwh_home[k] = kwh * mix.home_pct / 100
-            kwh_public[k] = kwh * mix.public_pct / 100
-            en[k] = mul(home_p, kwh_home[k]) + mul(pub_p, kwh_public[k])
+        if veh.burns_fuel:
+            assert veh.fuel is not None and veh.fuel_l_per_100km is not None
+            assert market.fuel_prices is not None
+            price_in = market.fuel_prices.for_fuel(veh.fuel)
+            l_per_km = ctx.use(veh.fuel_l_per_100km) * ctx.use(veh.winter_factor) / 100
+            fuel_price = ctx.use(price_in)
+            fuel_range = _rng(price_in)
+            for k in range(1, MONTHS):
+                litres[k] = Decimal(km_at[k] - km_at[k - 1]) * l_per_km
+                en[k] = mul(fuel_price, litres[k])
+        else:
+            assert veh.efficiency_wh_per_km is not None
+            wh = Decimal(ctx.use(veh.efficiency_wh_per_km)) * ctx.use(veh.winter_factor)
+            mix = user.charging_mix
+            home_p = ctx.use(market.charging.home_ore_per_kwh)
+            pub_p = ctx.use(market.charging.public_ore_per_kwh)
+            for k in range(1, MONTHS):
+                km_month = km_at[k] - km_at[k - 1]
+                kwh = Decimal(km_month) * wh / Decimal(1000)
+                kwh_home[k] = kwh * mix.home_pct / 100
+                kwh_public[k] = kwh * mix.public_pct / 100
+                en[k] = mul(home_p, kwh_home[k]) + mul(pub_p, kwh_public[k])
     add("energy", "cash", en, used)
 
     # ---- tyres: winter set at purchase unless included; replacements by km;
@@ -420,14 +438,16 @@ def build_schedule(user: UserInputs, market: MarketPolicyInputs, option: Option)
                 insp[k] = fee
     add("inspection", "cash", insp, used, extra_estimate=carried)
 
-    # ---- road tolls: passages per week × blended EV rate, monthly cap (024 R5) ---
+    # ---- road tolls: passages per week × blended rate for the car's fuel, monthly
+    # cap (024 R5, 029 R4) --------------------------------------------------------
     with ctx.item("tolls") as used:
         tl = [0] * MONTHS
         ring = market.toll_ring
         if ring is not None and user.toll_passages_per_week > 0:
             ctx.use(ring.source)
-            off = ctx.use(ring.offpeak_ore)
-            rush = ctx.use(ring.rush_ore)
+            off_in, rush_in = ring.rates_for(veh)
+            off = ctx.use(off_in)
+            rush = ctx.use(rush_in)
             per_month = Decimal(user.toll_passages_per_week) * 52 / 12
             if ring.monthly_cap_passages > 0:
                 per_month = min(per_month, Decimal(ring.monthly_cap_passages))
@@ -446,6 +466,9 @@ def build_schedule(user: UserInputs, market: MarketPolicyInputs, option: Option)
         home_range=_rng(market.charging.home_ore_per_kwh),
         public_price_ore=market.charging.public_ore_per_kwh.value,
         public_range=_rng(market.charging.public_ore_per_kwh),
+        litres=litres,
+        fuel_price_ore=fuel_price,
+        fuel_range=fuel_range,
         loan_principal=principal,
         loan_term=loan_term,
         loan_rate_pct=loan_rate,
@@ -475,8 +498,12 @@ def _age_months_at_start(deal) -> int:
 
 def _re_registration_fee(params: dict[str, object], veh, age_months: int) -> int:
     """Fee table from the rules file: bands by vehicle age in years; EVs may
-    pay a fraction. Values are øre."""
+    pay a fraction. Cars at or under `light_max_kg` own weight use the light
+    table when the rule has one (029 R3). Values are øre."""
     bands = params["age_bands_ore"]  # type: ignore[index]
+    light_max = params.get("light_max_kg")
+    if light_max is not None and veh.weight_kg is not None and veh.weight_kg <= int(light_max):  # type: ignore[call-overload]
+        bands = params["light_age_bands_ore"]  # type: ignore[index]
     years = age_months // 12
     fee = 0
     for band in bands:  # type: ignore[union-attr]

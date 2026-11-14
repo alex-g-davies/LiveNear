@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yaml
 
-from ..engine.models import In, TaxRule, TaxRuleSet, TollRing
+from ..engine.models import In, TaxRule, TaxRuleSet, TollRates, TollRing
 from ..engine.money import nok
 
 RULES_FILE = Path(__file__).with_name("tax_rules.yaml")
@@ -37,7 +37,8 @@ def pending_rules(path: Path = RULES_FILE) -> list[dict]:
 
 @lru_cache(maxsize=8)
 def load_toll_rings(path: Path = TOLLS_FILE) -> dict[str, TollRing]:
-    """Municipality (lower-case) -> toll ring with electric-car rates (024 R5).
+    """Municipality (lower-case) -> toll ring with electric-car rates (024 R5)
+    and petrol/diesel rates under `fuel_rates` (029 R4).
     The ring's `source` is an estimate on purpose: the engine blends the
     off-peak and rush rates 50/50, which no user drives exactly."""
     with open(path, encoding="utf-8") as f:
@@ -47,7 +48,26 @@ def load_toll_rings(path: Path = TOLLS_FILE) -> dict[str, TollRing]:
     for r in data["rings"]:
         rid = r["id"]
         status = r.get("status", "live")
+
+        def rate(nok_value: object, tail: str, r=r, rid=rid, status=status) -> In[int]:
+            return In[int](
+                id=f"tolls.{rid}.{tail}",
+                value=nok(str(nok_value)),
+                source=str(r["source_url"]),
+                as_of=r.get("effective_from", as_of),
+                status=status,
+                basis=r.get("note") if status != "live" else None,
+            )
+
+        fuel_rates = {
+            fuel: TollRates(
+                offpeak_ore=rate(fr["offpeak_nok"], f"toll_{fuel}_offpeak"),
+                rush_ore=rate(fr["rush_nok"], f"toll_{fuel}_rush"),
+            )
+            for fuel, fr in (r.get("fuel_rates") or {}).items()
+        }
         ring = TollRing(
+            fuel_rates=fuel_rates,
             name=str(r["name"]),
             offpeak_ore=In[int](
                 id=f"tolls.{rid}.toll_offpeak",
@@ -74,7 +94,7 @@ def load_toll_rings(path: Path = TOLLS_FILE) -> dict[str, TollRing]:
                 status="estimate",
                 basis=(
                     "Passages per week × 52/12 at a 50/50 blend of the off-peak and rush "
-                    "electric-car rates, capped at the monthly cap; AutoPASS tag discount "
+                    "rates for the car's fuel, capped at the monthly cap; AutoPASS tag discount "
                     "and the hour rule are not modelled. " + str(r.get("note") or "")
                 ).strip(),
             ),

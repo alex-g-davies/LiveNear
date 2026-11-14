@@ -34,6 +34,11 @@ export const ENERGY_LABELS: Readonly<Record<EnergyType, string>> = {
   get hybrid() { return t("carsPlan.energy.hybrid"); },
   get ice() { return t("carsPlan.energy.ice"); },
 };
+/** "Electric", "Hybrid", "Petrol" or "Diesel" for one car (029 R10). */
+export function energyName(energy: EnergyType | undefined, fuel?: "petrol" | "diesel" | null): string {
+  if (energy === "ice" && fuel) return t(`carsPlan.fuel.${fuel}`);
+  return ENERGY_LABELS[energy ?? "ev"];
+}
 // Drive codes are the same in every language.
 export const DRIVE_LABELS: Record<Drive, string> = { rwd: "RWD", fwd: "FWD", awd: "AWD" };
 
@@ -187,7 +192,7 @@ export function addPairs(selection: SelectionItem[], pairs: Iterable<[string, nu
 
 /** Distinct variants one scenario may compare. Mirrors MAX_COMPARE_VARIANTS
  * in backend/app/cars/schemas.py (spec 024 R18); the server refuses more. */
-export const MAX_COMPARE_VARIANTS = 30;
+export const MAX_COMPARE_VARIANTS = 40;
 /** The cap message in the current language. */
 export function capHint(): string {
   return t("carsPlan.capHint", { max: MAX_COMPARE_VARIANTS });

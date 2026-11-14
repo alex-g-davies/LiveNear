@@ -88,3 +88,22 @@ def test_recommend_response_carries_no_identifiers(client):
     r = client.post("/api/cars/recommend", json=_body())
     text = r.text.lower()
     assert "finn.no" not in text and "reg_number" not in text
+
+
+def test_recommend_rows_match_the_full_comparison(client):
+    """Recommend ranks with a light pass and builds full results only for the
+    rows it returns; those must equal a full run of the whole catalogue."""
+    from .test_api_cars import _full_ranges, _req
+
+    rec = client.post("/api/cars/recommend", json=_body(n=5, seed=5, draws=200)).json()
+    full = client.post(
+        "/api/cars/scenarios",
+        json=_req(profile=dict(PROFILE), selection=_full_ranges(client), seed=5, draws=200),
+    ).json()
+    by_id = {o["result"]["option_id"]: (i + 1, o) for i, o in enumerate(full["options"])}
+    assert rec["n_considered"] == len(full["options"])
+    assert len(rec["rows"]) >= 5
+    for row in rec["rows"]:
+        rank, summary = by_id[row["summary"]["result"]["option_id"]]
+        assert row["rank"] == rank
+        assert row["summary"] == summary

@@ -451,7 +451,8 @@ def test_runner_stores_validated_rows_and_quarantines_failures(tmp_path, httpx_m
         out / "store" / "lease_quotes.csv"
     ).exists()
     spot = list(csv.DictReader((out / "quarantine" / "spot_check.csv").open(encoding="utf-8")))
-    assert len(spot) == round(0.02 * (400 + 22 + 2 + 1 + 2))
+    # 2 % of every row stored by the run, across all sources.
+    assert len(spot) == round(0.02 * sum(src.stored for src in report.sources))
     rep = json.loads((out / "run_report.json").read_text())
     assert rep["ok"] and rep["sources"][0]["source"] == "listings_csv"
     raw_dir = tmp_path / "raw" / "norges_bank" / "2026-10-31"
