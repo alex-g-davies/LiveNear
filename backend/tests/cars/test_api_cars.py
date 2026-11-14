@@ -339,3 +339,26 @@ def test_split_year_ranges_build_each_option_once(client):
     # The merged range also covers the middle year, so it is a superset.
     assert set(ids_a) <= set(ids_b)
     assert {i for i in ids_b if f":{years[1]}:" in i} - set(ids_a)
+
+
+def test_scenario_cache_is_bounded_by_bytes_and_replays_identically(client, monkeypatch):
+    """Each selection is a new cache key and a response runs to MBs, so the
+    cache must cap total bytes, not entries (Render OOM, 2026-11-14)."""
+    from app.bounded_cache import ByteBudgetCache
+    from app.routers import cars as cars_router
+
+    full = _full_ranges(client)
+    first = client.post("/api/cars/scenarios", json=_req(selection=full[:4], draws=100))
+    assert first.status_code == 200, first.text
+    budget = 3 * len(first.content)  # room for about three runs this size
+    cache = ByteBudgetCache(budget)
+    cache[next(iter(cars_router._SCENARIO_CACHE._data))] = first.content
+    monkeypatch.setattr(cars_router, "_SCENARIO_CACHE", cache)
+    again = client.post("/api/cars/scenarios", json=_req(selection=full[:4], draws=100))
+    assert again.content == first.content  # served from the cache, byte for byte
+    assert again.headers["content-type"] == "application/json"
+    for k in range(1, 8):
+        r = client.post("/api/cars/scenarios", json=_req(selection=full[k : k + 4], draws=100))
+        assert r.status_code == 200, r.text
+        assert 0 < cache.total_bytes <= budget
+    assert len(cache) < 8  # older runs were evicted

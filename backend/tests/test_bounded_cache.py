@@ -72,3 +72,30 @@ def test_nesting_fallback_logs_warning(caplog: pytest.LogCaptureFixture) -> None
         result = enforce_nesting([("offpeak", outer), ("peak", inner)])
     assert result[1][1].equals(inner)  # fallback: unclipped
     assert any("nesting fallback" in r.message for r in caplog.records)
+
+
+def test_byte_budget_cache_evicts_by_total_size() -> None:
+    from app.bounded_cache import ByteBudgetCache
+
+    cache = ByteBudgetCache(10)
+    cache["a"] = b"1234"
+    cache["b"] = b"5678"
+    assert cache.get("a") == b"1234"  # touch "a" -> "b" becomes LRU
+    cache["c"] = b"abcd"  # 12 bytes > 10 -> evict "b"
+    assert cache.get("b") is None
+    assert (cache.get("a"), cache.get("c")) == (b"1234", b"abcd")
+    assert cache.total_bytes == 8
+    cache["a"] = b"x"  # replacing frees the old value's bytes
+    assert cache.total_bytes == 5
+
+
+def test_byte_budget_cache_skips_values_over_budget() -> None:
+    from app.bounded_cache import ByteBudgetCache
+
+    cache = ByteBudgetCache(4)
+    cache["a"] = b"12"
+    cache["big"] = b"12345"
+    assert "big" not in cache
+    assert cache.get("a") == b"12"  # an oversized value evicts nothing
+    cache.clear()
+    assert len(cache) == 0 and cache.total_bytes == 0
