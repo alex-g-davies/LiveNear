@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
+from functools import lru_cache
 
 from .models import MONTHS
 from .money import share
@@ -21,10 +22,14 @@ MEASURES = ("per_month", "tco", "npc", "cash_up_front", "per_km")
 _CENT = Decimal("1")
 
 
-def growth_factors(return_pct: Decimal) -> list[Decimal]:
-    """g_m = (1 + r)^{m/12} for m = 0..60, exact Decimal arithmetic."""
+@lru_cache(maxsize=64)
+def growth_factors(return_pct: Decimal) -> tuple[Decimal, ...]:
+    """g_m = (1 + r)^{m/12} for m = 0..60, exact Decimal arithmetic.
+
+    Pure and depends only on the rate, so it is computed once per rate
+    rather than once per option (Decimal powers are slow)."""
     base = Decimal(1) + Decimal(return_pct) / Decimal(100)
-    return [base ** (Decimal(m) / Decimal(12)) for m in range(MONTHS)]
+    return tuple(base ** (Decimal(m) / Decimal(12)) for m in range(MONTHS))
 
 
 def _q(x: Decimal) -> int:

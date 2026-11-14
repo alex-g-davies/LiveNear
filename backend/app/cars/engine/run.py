@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
 
@@ -13,6 +14,7 @@ from .measures import MEASURES, expected
 from .models import Lease, Option, Scenario
 from .montecarlo import Z80, Forced, expected_draws, simulate
 from .result import OptionResult, build_option_result
+from .schedule import build_schedule
 
 
 class RuledOut(BaseModel):
@@ -63,6 +65,55 @@ def apply_limits(sc: Scenario, option: Option) -> list[str]:
         elif need == "awd" and veh.drive != "awd":
             reasons.append("not AWD")
     return reasons
+
+
+@dataclass(frozen=True)
+class RankRow:
+    """What ranking and the recommend reasons need for one option (024 R11).
+
+    The expected band comes from the same simulation as the option's full
+    result: draws are seeded by the scenario seed and the option id, so a
+    full `build_option_result` later yields exactly these numbers.
+    """
+
+    option: Option
+    expected_p10: int
+    expected_p50: int
+    expected_p90: int
+    fun_score: Decimal
+    cash_up_front: int
+
+    @property
+    def option_id(self) -> str:
+        return self.option.id
+
+
+def rank_options(
+    sc: Scenario, ranking_measure: str = "per_month"
+) -> tuple[list[RankRow], list[RuledOut]]:
+    """Rank every option without building full results (line items, inputs,
+    bands for every measure). Sorted as `run_scenario` sorts its options."""
+    if ranking_measure not in MEASURES:
+        raise ValueError(f"unknown measure {ranking_measure!r}")
+    odds = sc.user.exit_odds.as_dict()
+    rows: list[RankRow] = []
+    ruled: list[RuledOut] = []
+    for opt in sc.options:
+        reasons = apply_limits(sc, opt)
+        if reasons:
+            ruled.append(RuledOut(option_id=opt.id, label=opt.label, reasons=reasons))
+            continue
+        s = build_schedule(sc.user, sc.market, opt)
+        sim = simulate(s, sc.user.return_on_cash_pct, sc.draws, sc.seed)
+        e10, e50, e90 = (
+            int(v)
+            for v in np.rint(
+                np.percentile(expected_draws(sim.measure(ranking_measure), odds), [10, 50, 90])
+            )
+        )
+        rows.append(RankRow(opt, e10, e50, e90, opt.vehicle.fun_score.value, s.cash_total()[0]))
+    rows.sort(key=lambda r: (r.expected_p50, r.option_id))
+    return rows, ruled
 
 
 def run_scenario(sc: Scenario, ranking_measure: str = "per_month") -> ScenarioResult:
@@ -143,6 +194,8 @@ def expected_of(values: list[int], sc: Scenario) -> int:
 
 __all__ = [
     "ScenarioResult",
+    "RankRow",
+    "rank_options",
     "RuledOut",
     "SensitivityRow",
     "run_scenario",
